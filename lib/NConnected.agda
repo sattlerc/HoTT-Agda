@@ -237,7 +237,8 @@ Trunc-preserves-conn {A = A} {n = S n} m c = lemma (fst c) (snd c)
               (Trunc-fmap (ap [_]) 
                 (–> (Trunc=-equiv [ a ] [ x ]) (p [ x ])))))))
 
-{-
+{- Removed for the universe article code base
+   since it introduces unnecessary dependencies.
 {- Suspension of an n-connected space is n+1-connected 
    what is the best place for this?                    -}
 abstract
