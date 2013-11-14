@@ -10,12 +10,13 @@ open import lib.types.Sigma
 open import lib.types.Paths
 open import lib.types.TLevel
 open import lib.types.Truncation
-open import lib.types.Suspension
+--open import lib.types.Suspension
 
 module lib.NConnected where
 
 is-connected : ∀ {i} → ℕ₋₂ → Type i → Type i
 is-connected n A = is-contr (Trunc n A)
+
 
 is-conn-map : ∀ {i j} {A : Type i} {B : Type j} → ℕ₋₂ → (A → B) → Type (lmax i j)
 is-conn-map {A = A} {B = B} n f =
@@ -236,7 +237,7 @@ Trunc-preserves-conn {A = A} {n = S n} m c = lemma (fst c) (snd c)
               (Trunc-fmap (ap [_]) 
                 (–> (Trunc=-equiv [ a ] [ x ]) (p [ x ])))))))
 
-
+{-
 {- Suspension of an n-connected space is n+1-connected 
    what is the best place for this?                    -}
 abstract
@@ -269,6 +270,7 @@ abstract
         (λ y → ((ap [_] (merid A x) == ap [_] (merid A y)) ,
                 Trunc-level {n = S (S n)} _ _ _ _)) 
         (λ _ → idp) x'
+-}
 
 abstract
   path-conn : ∀ {i} {A : Type i} {x y : A} {n : ℕ₋₂} 
