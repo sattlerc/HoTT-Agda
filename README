@@ -1,0 +1,59 @@
+This code base contains the accompanying code to the article
+
+  "On the Hierarchy of Univalent Universes: U(n) is not n-Truncated"
+
+and all of its dependencies. It has been verified to typecheck
+with the latest Agda release as of 14/11/2012, version 2.3.2.2.
+
+
+Contents
+========
+
+The subdirectory 'Universe' contains our Agda developments implementing
+the contents of the above article. The code is extensively documented
+and should be self-explanatory. The reader is invited to start with
+the entry point 'Universe/index.agda', which establishes correspondence
+of sections of the article with individual modules.
+
+
+The subdirectory 'lib' contains a slightly modified portion of the 2.0 branch
+of the HoTT community's Agda library. For readability and verifiability,
+we decided to include only those parts that are required to typecheck
+the actual code implementing the development of the article.
+
+The only notable use of a postulate occurs in 'lib/types/Truncation'
+to emulate a higher inductive type, the n-truncation, in Agda using
+Dan Licata's "trick" of a partially private definition (note that
+Agda does not currently support higher inductive types natively).
+This file is important at the very end of our development when we
+want to compare our "internal" notions of connectedness to the
+standard one derived from truncations in the theory.
+
+
+How to typecheck
+================
+
+Since this development lead to the discovery of a number of small bugs in
+the typechecking mechanism of Agda, we recommend an installation of the most
+current release of Agda, version 2.3.2.2. Future versions of Agda (2.4 and
+higher) are expected to predefine their own universe level type and would
+hence be compatible only with a small change to 'lib/Base.agda'.
+
+The entry point 'Universe/index.agda' imports all of the files of our
+developments. It is hence enough to run 'agda Universe/index.agda'
+within the working directory this README file is residing in. The flag
+"--without-K" required to make Agda compatible with homotopy type theory
+is given in the header of each individual file, so it is not necessary
+to include it as a command line parameter. Execution of the above command
+should result in a final output line "Finished Universe.index" with no errors,
+unresolved meta-variables or outstanding termination checks.
+
+
+Copyright and Licensing
+=======================
+
+The HoTT community's Agda library, residing in the 'lib' subdirectory, is free
+software distributed under the terms of the ??? license (see 'lib/???').
+
+Our own development, residing in the 'Universe' subdirectory, is free software
+distributed under the terms of the MIT license (see 'Universe/LICENSE').
