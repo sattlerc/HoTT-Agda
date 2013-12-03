@@ -15,7 +15,6 @@ and should be self-explanatory. The reader is invited to start with
 the entry point 'Universe/index.agda', which establishes correspondence
 of sections of the article with individual modules.
 
-
 The subdirectory 'lib' contains a slightly modified portion of the 2.0 branch
 of the HoTT community's Agda library. For readability and verifiability,
 we decided to include only those parts that are required to typecheck
@@ -28,6 +27,9 @@ Agda does not currently support higher inductive types natively).
 This file is important at the very end of our development when we
 want to compare our "internal" notions of connectedness to the
 standard one derived from truncations in the theory.
+
+The subdirectory 'html' contains a browser-readable interactive version
+of the source code generatable by 'agda Universe/index.agda --html'.
 
 
 How to typecheck
@@ -55,5 +57,9 @@ Copyright and Licensing
 The HoTT community's Agda library, residing in the 'lib' subdirectory, is free
 software distributed under the terms of the ??? license (see 'lib/???').
 
+[Note to the editor:
+ the community is currently deciding on a license and will add it shortly.]
+
 Our own development, residing in the 'Universe' subdirectory, is free software
 distributed under the terms of the MIT license (see 'Universe/LICENSE').
+
