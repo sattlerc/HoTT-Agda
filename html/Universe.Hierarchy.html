@@ -1,0 +1,4832 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+><head
+  ><title
+    >Universe.Hierarchy</title
+    ><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"
+     /><meta http-equiv="Content-Style-Type" content="text/css"
+     /><link href="Agda.css" rel="stylesheet" type="text/css"
+     /></head
+  ><body
+  ><pre
+    ><a name="1" class="Symbol"
+      >{-#</a
+      ><a name="4"
+      > </a
+      ><a name="5" class="Keyword"
+      >OPTIONS</a
+      ><a name="12"
+      > --without-K </a
+      ><a name="25" class="Symbol"
+      >#-}</a
+      ><a name="28"
+      >
+
+</a
+      ><a name="30" class="Comment"
+      >{- Here, we derive our main theorem: there is a type in the n-th universe
+   that is not an n-type, implying the n-th universe is not n-truncated.
+   The n-th universe restricted to n-types is hence a 'strict' n-type.
+   For this, we first derive local-global looping in a modular way.
+
+   A technical point worth noting is that Agda does not implement
+   cumulative universes. Since that means the crucial steps in our
+   transformations (where we pass between universes uning univalence)
+   can not be expressed using equality without resorting to explicit lifting,
+   we decide to explicitely uses equivalences (and pointed equivalences,
+   respectively) instead where possible.
+   As a drawback, we have to use lemmata showing preservation of
+   (pointed) equivalences of various (pointed) type constructions,
+   a parametricity property derived for free
+   from univalence-induced equalities. -}</a
+      ><a name="930"
+      >
+</a
+      ><a name="931" class="Keyword"
+      >module</a
+      ><a name="937"
+      > </a
+      ><a name="938" href="Universe.Hierarchy.html#1" class="Module"
+      >Universe.Hierarchy</a
+      ><a name="956"
+      > </a
+      ><a name="957" class="Keyword"
+      >where</a
+      ><a name="962"
+      >
+
+</a
+      ><a name="964" class="Keyword"
+      >open</a
+      ><a name="968"
+      > </a
+      ><a name="969" class="Keyword"
+      >import</a
+      ><a name="975"
+      > </a
+      ><a name="976" href="lib.Basics.html#1" class="Module"
+      >lib.Basics</a
+      ><a name="986"
+      >
+</a
+      ><a name="987" class="Keyword"
+      >open</a
+      ><a name="991"
+      > </a
+      ><a name="992" class="Keyword"
+      >import</a
+      ><a name="998"
+      > </a
+      ><a name="999" href="lib.Equivalences2.html#1" class="Module"
+      >lib.Equivalences2</a
+      ><a name="1016"
+      >
+</a
+      ><a name="1017" class="Keyword"
+      >open</a
+      ><a name="1021"
+      > </a
+      ><a name="1022" class="Keyword"
+      >import</a
+      ><a name="1028"
+      > </a
+      ><a name="1029" href="lib.NType2.html#1" class="Module"
+      >lib.NType2</a
+      ><a name="1039"
+      >
+</a
+      ><a name="1040" class="Keyword"
+      >open</a
+      ><a name="1044"
+      > </a
+      ><a name="1045" class="Keyword"
+      >import</a
+      ><a name="1051"
+      > </a
+      ><a name="1052" href="lib.types.Bool.html#1" class="Module"
+      >lib.types.Bool</a
+      ><a name="1066"
+      >
+</a
+      ><a name="1067" class="Keyword"
+      >open</a
+      ><a name="1071"
+      > </a
+      ><a name="1072" class="Keyword"
+      >import</a
+      ><a name="1078"
+      > </a
+      ><a name="1079" href="lib.types.Nat.html#1" class="Module"
+      >lib.types.Nat</a
+      ><a name="1092"
+      > </a
+      ><a name="1093" class="Keyword"
+      >hiding</a
+      ><a name="1099"
+      > </a
+      ><a name="1100" class="Symbol"
+      >(</a
+      ><a name="1101"
+      >_+_</a
+      ><a name="1104" class="Symbol"
+      >)</a
+      ><a name="1105"
+      >
+</a
+      ><a name="1106" class="Keyword"
+      >open</a
+      ><a name="1110"
+      > </a
+      ><a name="1111" class="Keyword"
+      >import</a
+      ><a name="1117"
+      > </a
+      ><a name="1118" href="lib.types.Paths.html#1" class="Module"
+      >lib.types.Paths</a
+      ><a name="1133"
+      >
+</a
+      ><a name="1134" class="Keyword"
+      >open</a
+      ><a name="1138"
+      > </a
+      ><a name="1139" class="Keyword"
+      >import</a
+      ><a name="1145"
+      > </a
+      ><a name="1146" href="lib.types.Sigma.html#1" class="Module"
+      >lib.types.Sigma</a
+      ><a name="1161"
+      >
+</a
+      ><a name="1162" class="Keyword"
+      >open</a
+      ><a name="1166"
+      > </a
+      ><a name="1167" class="Keyword"
+      >import</a
+      ><a name="1173"
+      > </a
+      ><a name="1174" href="lib.types.TLevel.html#1" class="Module"
+      >lib.types.TLevel</a
+      ><a name="1190"
+      >
+
+</a
+      ><a name="1192" class="Keyword"
+      >open</a
+      ><a name="1196"
+      > </a
+      ><a name="1197" class="Keyword"
+      >import</a
+      ><a name="1203"
+      > </a
+      ><a name="1204" href="Universe.Utility.General.html#1" class="Module"
+      >Universe.Utility.General</a
+      ><a name="1228"
+      >
+</a
+      ><a name="1229" class="Keyword"
+      >open</a
+      ><a name="1233"
+      > </a
+      ><a name="1234" class="Keyword"
+      >import</a
+      ><a name="1240"
+      > </a
+      ><a name="1241" href="Universe.Utility.Pointed.html#1" class="Module"
+      >Universe.Utility.Pointed</a
+      ><a name="1265"
+      >
+</a
+      ><a name="1266" class="Keyword"
+      >open</a
+      ><a name="1270"
+      > </a
+      ><a name="1271" class="Keyword"
+      >import</a
+      ><a name="1277"
+      > </a
+      ><a name="1278" href="Universe.Utility.TruncUniverse.html#1" class="Module"
+      >Universe.Utility.TruncUniverse</a
+      ><a name="1308"
+      >
+
+
+</a
+      ><a name="1311" class="Comment"
+      >{- Our Local-global looping principle.
+   We would like to state this principle in the form of
+     &#937;&#8319;&#8314;&#185; (Type i , A) == &#8704;&#8226; a &#8594; &#937;&#8319; (A , a)
+   for n &#8805; 1. Unfortunately, the two sides have different universe
+   levels since (Type i , A) lives in Type&#8226; (suc i) instead of Type&#8226; i.
+   Morally, this is outbalanced by the extra &#937; on the left-hand side,
+   which might help explain on an intuitive level why
+   the n-th universe ends up being not an n-type.
+   
+   The reason why the univalence principle (A &#8801; B) &#8771; (A &#8771; B)
+   cannot be written as (A &#8801; B) &#8801; (A &#8771; B) is precisely the same. -}</a
+      ><a name="1895"
+      >
+</a
+      ><a name="1896" class="Keyword"
+      >module</a
+      ><a name="1902"
+      > </a
+      ><a name="1903" href="Universe.Hierarchy.html#1903" class="Module"
+      >_</a
+      ><a name="1904"
+      > </a
+      ><a name="1905" class="Symbol"
+      >{</a
+      ><a name="1906" href="Universe.Hierarchy.html#1906" class="Bound"
+      >i</a
+      ><a name="1907" class="Symbol"
+      >}</a
+      ><a name="1908"
+      > </a
+      ><a name="1909" class="Symbol"
+      >{</a
+      ><a name="1910" href="Universe.Hierarchy.html#1910" class="Bound"
+      >A</a
+      ><a name="1911"
+      > </a
+      ><a name="1912" class="Symbol"
+      >:</a
+      ><a name="1913"
+      > </a
+      ><a name="1914" href="lib.Base.html#1215" class="Function"
+      >Type</a
+      ><a name="1918"
+      > </a
+      ><a name="1919" href="Universe.Hierarchy.html#1906" class="Bound"
+      >i</a
+      ><a name="1920" class="Symbol"
+      >}</a
+      ><a name="1921"
+      > </a
+      ><a name="1922" class="Keyword"
+      >where</a
+      ><a name="1927"
+      >
+  </a
+      ><a name="1930" class="Comment"
+      >-- The degenerate pre-base case carries around a propositional component.</a
+      ><a name="2003"
+      >
+  </a
+      ><a name="2006" href="Universe.Hierarchy.html#2006" class="Function"
+      >&#937;-Type</a
+      ><a name="2012"
+      > </a
+      ><a name="2013" class="Symbol"
+      >:</a
+      ><a name="2014"
+      > </a
+      ><a name="2015" href="Universe.Utility.Pointed.html#2690" class="Function"
+      >&#937;</a
+      ><a name="2016"
+      > </a
+      ><a name="2017" class="Symbol"
+      >(</a
+      ><a name="2018" href="lib.Base.html#1215" class="Function"
+      >Type</a
+      ><a name="2022"
+      > </a
+      ><a name="2023" href="Universe.Hierarchy.html#1906" class="Bound"
+      >i</a
+      ><a name="2024"
+      > </a
+      ><a name="2025" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="2026"
+      > </a
+      ><a name="2027" href="Universe.Hierarchy.html#1910" class="Bound"
+      >A</a
+      ><a name="2028" class="Symbol"
+      >)</a
+      ><a name="2029"
+      > </a
+      ><a name="2030" href="Universe.Utility.Pointed.html#1978" class="Function Operator"
+      >&#8771;&#8226;</a
+      ><a name="2032"
+      > </a
+      ><a name="2033" href="Universe.Utility.Pointed.html#6955" class="Function"
+      >&#931;&#8226;</a
+      ><a name="2035"
+      > </a
+      ><a name="2036" class="Symbol"
+      >(</a
+      ><a name="2037" href="Universe.Utility.Pointed.html#7787" class="Function"
+      >&#928;&#8226;</a
+      ><a name="2039"
+      > </a
+      ><a name="2040" class="Symbol"
+      >(</a
+      ><a name="2041" href="Universe.Hierarchy.html#1910" class="Bound"
+      >A</a
+      ><a name="2042"
+      > </a
+      ><a name="2043" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="2044"
+      > </a
+      ><a name="2045" class="Symbol"
+      >&#955;</a
+      ><a name="2046"
+      > </a
+      ><a name="2047" href="Universe.Hierarchy.html#2047" class="Bound"
+      >a</a
+      ><a name="2048"
+      > </a
+      ><a name="2049" class="Symbol"
+      >&#8594;</a
+      ><a name="2050"
+      > </a
+      ><a name="2051" class="Symbol"
+      >(</a
+      ><a name="2052" href="Universe.Hierarchy.html#1910" class="Bound"
+      >A</a
+      ><a name="2053"
+      > </a
+      ><a name="2054" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="2055"
+      > </a
+      ><a name="2056" href="Universe.Hierarchy.html#2047" class="Bound"
+      >a</a
+      ><a name="2057" class="Symbol"
+      >))</a
+      ><a name="2059"
+      >
+                               </a
+      ><a name="2091" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="2092"
+      > </a
+      ><a name="2093" class="Symbol"
+      >(</a
+      ><a name="2094" href="lib.Equivalences.html#986" class="Record"
+      >is-equiv</a
+      ><a name="2102"
+      > </a
+      ><a name="2103" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="2104"
+      > </a
+      ><a name="2105" href="lib.Equivalences.html#3786" class="Function"
+      >idf-is-equiv</a
+      ><a name="2117"
+      > </a
+      ><a name="2118" class="Symbol"
+      >_))</a
+      ><a name="2121"
+      >
+  </a
+      ><a name="2124" href="Universe.Hierarchy.html#2006" class="Function"
+      >&#937;-Type</a
+      ><a name="2130"
+      > </a
+      ><a name="2131" class="Symbol"
+      >=</a
+      ><a name="2132"
+      >
+      </a
+      ><a name="2139" href="Universe.Utility.Pointed.html#2690" class="Function"
+      >&#937;</a
+      ><a name="2140"
+      > </a
+      ><a name="2141" class="Symbol"
+      >(</a
+      ><a name="2142" href="lib.Base.html#1215" class="Function"
+      >Type</a
+      ><a name="2146"
+      > </a
+      ><a name="2147" href="Universe.Hierarchy.html#1906" class="Bound"
+      >i</a
+      ><a name="2148"
+      > </a
+      ><a name="2149" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="2150"
+      > </a
+      ><a name="2151" href="Universe.Hierarchy.html#1910" class="Bound"
+      >A</a
+      ><a name="2152" class="Symbol"
+      >)</a
+      ><a name="2153"
+      >
+    </a
+      ><a name="2158" href="Universe.Utility.Pointed.html#2486" class="Function Operator"
+      >&#8771;&#8226;&#10216;</a
+      ><a name="2161"
+      > </a
+      ><a name="2162" href="Universe.Utility.Pointed.html#2085" class="Function"
+      >ide&#8226;</a
+      ><a name="2166"
+      > </a
+      ><a name="2167" class="Symbol"
+      >_</a
+      ><a name="2168"
+      > </a
+      ><a name="2169" href="Universe.Utility.Pointed.html#2486" class="Function Operator"
+      >&#10217;</a
+      ><a name="2170"
+      >
+      </a
+      ><a name="2177" class="Symbol"
+      >(</a
+      ><a name="2178" href="Universe.Hierarchy.html#1910" class="Bound"
+      >A</a
+      ><a name="2179"
+      > </a
+      ><a name="2180" href="lib.Base.html#1950" class="Datatype Operator"
+      >==</a
+      ><a name="2182"
+      > </a
+      ><a name="2183" href="Universe.Hierarchy.html#1910" class="Bound"
+      >A</a
+      ><a name="2184"
+      > </a
+      ><a name="2185" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="2186"
+      > </a
+      ><a name="2187" href="lib.Base.html#2001" class="InductiveConstructor"
+      >idp</a
+      ><a name="2190" class="Symbol"
+      >)</a
+      ><a name="2191"
+      >
+    </a
+      ><a name="2196" href="Universe.Utility.Pointed.html#2486" class="Function Operator"
+      >&#8771;&#8226;&#10216;</a
+      ><a name="2199"
+      > </a
+      ><a name="2200" href="Universe.Utility.Pointed.html#5717" class="Function"
+      >ua-equiv&#8226;</a
+      ><a name="2209"
+      > </a
+      ><a name="2210" href="Universe.Utility.Pointed.html#2287" class="Function Operator"
+      >&#8315;&#185;&#8226;</a
+      ><a name="2213"
+      > </a
+      ><a name="2214" href="Universe.Utility.Pointed.html#2486" class="Function Operator"
+      >&#10217;</a
+      ><a name="2215"
+      >
+      </a
+      ><a name="2222" class="Symbol"
+      >(</a
+      ><a name="2223" href="Universe.Hierarchy.html#1910" class="Bound"
+      >A</a
+      ><a name="2224"
+      > </a
+      ><a name="2225" href="lib.Equivalences.html#2994" class="Function Operator"
+      >&#8771;</a
+      ><a name="2226"
+      > </a
+      ><a name="2227" href="Universe.Hierarchy.html#1910" class="Bound"
+      >A</a
+      ><a name="2228"
+      > </a
+      ><a name="2229" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="2230"
+      > </a
+      ><a name="2231" href="lib.Equivalences.html#3897" class="Function"
+      >ide</a
+      ><a name="2234"
+      > </a
+      ><a name="2235" class="Symbol"
+      >_)</a
+      ><a name="2237"
+      >
+    </a
+      ><a name="2242" href="Universe.Utility.Pointed.html#2486" class="Function Operator"
+      >&#8771;&#8226;&#10216;</a
+      ><a name="2245"
+      > </a
+      ><a name="2246" href="Universe.Utility.Pointed.html#2085" class="Function"
+      >ide&#8226;</a
+      ><a name="2250"
+      > </a
+      ><a name="2251" class="Symbol"
+      >_</a
+      ><a name="2252"
+      > </a
+      ><a name="2253" href="Universe.Utility.Pointed.html#2486" class="Function Operator"
+      >&#10217;</a
+      ><a name="2254"
+      >
+      </a
+      ><a name="2261" class="Symbol"
+      >((</a
+      ><a name="2263" href="lib.Base.html#4935" class="Record"
+      >&#931;</a
+      ><a name="2264"
+      > </a
+      ><a name="2265" class="Symbol"
+      >(</a
+      ><a name="2266" href="Universe.Hierarchy.html#1910" class="Bound"
+      >A</a
+      ><a name="2267"
+      > </a
+      ><a name="2268" class="Symbol"
+      >&#8594;</a
+      ><a name="2269"
+      > </a
+      ><a name="2270" href="Universe.Hierarchy.html#1910" class="Bound"
+      >A</a
+      ><a name="2271" class="Symbol"
+      >)</a
+      ><a name="2272"
+      > </a
+      ><a name="2273" href="lib.Equivalences.html#986" class="Record"
+      >is-equiv</a
+      ><a name="2281" class="Symbol"
+      >)</a
+      ><a name="2282"
+      > </a
+      ><a name="2283" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="2284"
+      > </a
+      ><a name="2285" class="Symbol"
+      >(</a
+      ><a name="2286" href="lib.Base.html#7541" class="Function"
+      >idf</a
+      ><a name="2289"
+      > </a
+      ><a name="2290" class="Symbol"
+      >_</a
+      ><a name="2291"
+      > </a
+      ><a name="2292" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="2293"
+      > </a
+      ><a name="2294" href="lib.Equivalences.html#3786" class="Function"
+      >idf-is-equiv</a
+      ><a name="2306"
+      > </a
+      ><a name="2307" class="Symbol"
+      >_))</a
+      ><a name="2310"
+      >
+    </a
+      ><a name="2315" href="Universe.Utility.Pointed.html#2486" class="Function Operator"
+      >&#8771;&#8226;&#10216;</a
+      ><a name="2318"
+      > </a
+      ><a name="2319" href="Universe.Utility.Pointed.html#2085" class="Function"
+      >ide&#8226;</a
+      ><a name="2323"
+      > </a
+      ><a name="2324" class="Symbol"
+      >_</a
+      ><a name="2325"
+      > </a
+      ><a name="2326" href="Universe.Utility.Pointed.html#2486" class="Function Operator"
+      >&#10217;</a
+      ><a name="2327"
+      >
+      </a
+      ><a name="2334" href="Universe.Utility.Pointed.html#6955" class="Function"
+      >&#931;&#8226;</a
+      ><a name="2336"
+      > </a
+      ><a name="2337" class="Symbol"
+      >(</a
+      ><a name="2338" href="Universe.Utility.Pointed.html#7787" class="Function"
+      >&#928;&#8226;</a
+      ><a name="2340"
+      > </a
+      ><a name="2341" class="Symbol"
+      >(</a
+      ><a name="2342" href="Universe.Hierarchy.html#1910" class="Bound"
+      >A</a
+      ><a name="2343"
+      > </a
+      ><a name="2344" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="2345"
+      > </a
+      ><a name="2346" class="Symbol"
+      >&#955;</a
+      ><a name="2347"
+      > </a
+      ><a name="2348" href="Universe.Hierarchy.html#2348" class="Bound"
+      >a</a
+      ><a name="2349"
+      > </a
+      ><a name="2350" class="Symbol"
+      >&#8594;</a
+      ><a name="2351"
+      > </a
+      ><a name="2352" class="Symbol"
+      >(</a
+      ><a name="2353" href="Universe.Hierarchy.html#1910" class="Bound"
+      >A</a
+      ><a name="2354"
+      > </a
+      ><a name="2355" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="2356"
+      > </a
+      ><a name="2357" href="Universe.Hierarchy.html#2348" class="Bound"
+      >a</a
+      ><a name="2358" class="Symbol"
+      >))</a
+      ><a name="2360"
+      > </a
+      ><a name="2361" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="2362"
+      > </a
+      ><a name="2363" class="Symbol"
+      >(</a
+      ><a name="2364" href="lib.Equivalences.html#986" class="Record"
+      >is-equiv</a
+      ><a name="2372"
+      > </a
+      ><a name="2373" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="2374"
+      > </a
+      ><a name="2375" href="lib.Equivalences.html#3786" class="Function"
+      >idf-is-equiv</a
+      ><a name="2387"
+      > </a
+      ><a name="2388" class="Symbol"
+      >_))</a
+      ><a name="2391"
+      >
+    </a
+      ><a name="2396" href="Universe.Utility.Pointed.html#2608" class="Function Operator"
+      >&#8771;&#8226;&#8718;</a
+      ><a name="2399"
+      >
+
+  </a
+      ><a name="2403" class="Comment"
+      >-- The base case.</a
+      ><a name="2420"
+      >
+  </a
+      ><a name="2423" href="Universe.Hierarchy.html#2423" class="Function"
+      >&#937;&#178;-Type</a
+      ><a name="2430"
+      > </a
+      ><a name="2431" class="Symbol"
+      >:</a
+      ><a name="2432"
+      > </a
+      ><a name="2433" class="Symbol"
+      >(</a
+      ><a name="2434" href="Universe.Utility.Pointed.html#2690" class="Function"
+      >&#937;</a
+      ><a name="2435"
+      > </a
+      ><a name="2436" href="Universe.Utility.General.html#843" class="Function Operator"
+      >^</a
+      ><a name="2437"
+      > </a
+      ><a name="2438" class="Number"
+      >2</a
+      ><a name="2439" class="Symbol"
+      >)</a
+      ><a name="2440"
+      > </a
+      ><a name="2441" class="Symbol"
+      >(</a
+      ><a name="2442" href="lib.Base.html#1215" class="Function"
+      >Type</a
+      ><a name="2446"
+      > </a
+      ><a name="2447" href="Universe.Hierarchy.html#1906" class="Bound"
+      >i</a
+      ><a name="2448"
+      > </a
+      ><a name="2449" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="2450"
+      > </a
+      ><a name="2451" href="Universe.Hierarchy.html#1910" class="Bound"
+      >A</a
+      ><a name="2452" class="Symbol"
+      >)</a
+      ><a name="2453"
+      > </a
+      ><a name="2454" href="Universe.Utility.Pointed.html#1978" class="Function Operator"
+      >&#8771;&#8226;</a
+      ><a name="2456"
+      > </a
+      ><a name="2457" href="Universe.Utility.Pointed.html#7787" class="Function"
+      >&#928;&#8226;</a
+      ><a name="2459"
+      > </a
+      ><a name="2460" class="Symbol"
+      >(</a
+      ><a name="2461" href="Universe.Hierarchy.html#1910" class="Bound"
+      >A</a
+      ><a name="2462"
+      > </a
+      ><a name="2463" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="2464"
+      > </a
+      ><a name="2465" class="Symbol"
+      >&#955;</a
+      ><a name="2466"
+      > </a
+      ><a name="2467" href="Universe.Hierarchy.html#2467" class="Bound"
+      >a</a
+      ><a name="2468"
+      > </a
+      ><a name="2469" class="Symbol"
+      >&#8594;</a
+      ><a name="2470"
+      > </a
+      ><a name="2471" href="Universe.Utility.Pointed.html#2690" class="Function"
+      >&#937;</a
+      ><a name="2472"
+      > </a
+      ><a name="2473" class="Symbol"
+      >(</a
+      ><a name="2474" href="Universe.Hierarchy.html#1910" class="Bound"
+      >A</a
+      ><a name="2475"
+      > </a
+      ><a name="2476" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="2477"
+      > </a
+      ><a name="2478" href="Universe.Hierarchy.html#2467" class="Bound"
+      >a</a
+      ><a name="2479" class="Symbol"
+      >))</a
+      ><a name="2481"
+      >
+  </a
+      ><a name="2484" href="Universe.Hierarchy.html#2423" class="Function"
+      >&#937;&#178;-Type</a
+      ><a name="2491"
+      > </a
+      ><a name="2492" class="Symbol"
+      >=</a
+      ><a name="2493"
+      >
+      </a
+      ><a name="2500" class="Symbol"
+      >(</a
+      ><a name="2501" href="Universe.Utility.Pointed.html#2690" class="Function"
+      >&#937;</a
+      ><a name="2502"
+      > </a
+      ><a name="2503" href="Universe.Utility.General.html#843" class="Function Operator"
+      >^</a
+      ><a name="2504"
+      > </a
+      ><a name="2505" class="Number"
+      >2</a
+      ><a name="2506" class="Symbol"
+      >)</a
+      ><a name="2507"
+      > </a
+      ><a name="2508" class="Symbol"
+      >(</a
+      ><a name="2509" href="lib.Base.html#1215" class="Function"
+      >Type</a
+      ><a name="2513"
+      > </a
+      ><a name="2514" href="Universe.Hierarchy.html#1906" class="Bound"
+      >i</a
+      ><a name="2515"
+      > </a
+      ><a name="2516" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="2517"
+      > </a
+      ><a name="2518" href="Universe.Hierarchy.html#1910" class="Bound"
+      >A</a
+      ><a name="2519" class="Symbol"
+      >)</a
+      ><a name="2520"
+      >
+    </a
+      ><a name="2525" href="Universe.Utility.Pointed.html#2486" class="Function Operator"
+      >&#8771;&#8226;&#10216;</a
+      ><a name="2528"
+      > </a
+      ><a name="2529" href="Universe.Utility.Pointed.html#2895" class="Function"
+      >equiv-&#937;</a
+      ><a name="2536"
+      > </a
+      ><a name="2537" href="Universe.Hierarchy.html#2006" class="Function"
+      >&#937;-Type</a
+      ><a name="2543"
+      > </a
+      ><a name="2544" href="Universe.Utility.Pointed.html#2486" class="Function Operator"
+      >&#10217;</a
+      ><a name="2545"
+      >
+      </a
+      ><a name="2552" href="Universe.Utility.Pointed.html#2690" class="Function"
+      >&#937;</a
+      ><a name="2553"
+      > </a
+      ><a name="2554" class="Symbol"
+      >(</a
+      ><a name="2555" href="Universe.Utility.Pointed.html#6955" class="Function"
+      >&#931;&#8226;</a
+      ><a name="2557"
+      > </a
+      ><a name="2558" class="Symbol"
+      >(</a
+      ><a name="2559" href="Universe.Utility.Pointed.html#7787" class="Function"
+      >&#928;&#8226;</a
+      ><a name="2561"
+      > </a
+      ><a name="2562" class="Symbol"
+      >(</a
+      ><a name="2563" href="Universe.Hierarchy.html#1910" class="Bound"
+      >A</a
+      ><a name="2564"
+      > </a
+      ><a name="2565" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="2566"
+      > </a
+      ><a name="2567" class="Symbol"
+      >&#955;</a
+      ><a name="2568"
+      > </a
+      ><a name="2569" href="Universe.Hierarchy.html#2569" class="Bound"
+      >a</a
+      ><a name="2570"
+      > </a
+      ><a name="2571" class="Symbol"
+      >&#8594;</a
+      ><a name="2572"
+      > </a
+      ><a name="2573" class="Symbol"
+      >(</a
+      ><a name="2574" href="Universe.Hierarchy.html#1910" class="Bound"
+      >A</a
+      ><a name="2575"
+      > </a
+      ><a name="2576" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="2577"
+      > </a
+      ><a name="2578" href="Universe.Hierarchy.html#2569" class="Bound"
+      >a</a
+      ><a name="2579" class="Symbol"
+      >))</a
+      ><a name="2581"
+      > </a
+      ><a name="2582" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="2583"
+      > </a
+      ><a name="2584" class="Symbol"
+      >(</a
+      ><a name="2585" href="lib.Equivalences.html#986" class="Record"
+      >is-equiv</a
+      ><a name="2593"
+      > </a
+      ><a name="2594" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="2595"
+      > </a
+      ><a name="2596" href="lib.Equivalences.html#3786" class="Function"
+      >idf-is-equiv</a
+      ><a name="2608"
+      > </a
+      ><a name="2609" class="Symbol"
+      >_)))</a
+      ><a name="2613"
+      >
+    </a
+      ><a name="2618" href="Universe.Utility.Pointed.html#2486" class="Function Operator"
+      >&#8771;&#8226;&#10216;</a
+      ><a name="2621"
+      > </a
+      ><a name="2622" href="Universe.Utility.Pointed.html#8597" class="Function"
+      >forget-&#937;^-&#931;&#8226;&#8322;</a
+      ><a name="2635"
+      > </a
+      ><a name="2636" class="Symbol"
+      >{</a
+      ><a name="2637" href="Universe.Hierarchy.html#1906" class="Bound"
+      >i</a
+      ><a name="2638" class="Symbol"
+      >}</a
+      ><a name="2639"
+      > </a
+      ><a name="2640" class="Symbol"
+      >_</a
+      ><a name="2641"
+      > </a
+      ><a name="2642" class="Number"
+      >1</a
+      ><a name="2643"
+      > </a
+      ><a name="2644" class="Symbol"
+      >(</a
+      ><a name="2645" href="lib.Equivalences2.html#4213" class="Function"
+      >is-equiv-is-prop</a
+      ><a name="2661"
+      > </a
+      ><a name="2662" href="lib.Base.html#7682" class="Function Operator"
+      >&#8728;</a
+      ><a name="2663"
+      > </a
+      ><a name="2664" class="Symbol"
+      >_)</a
+      ><a name="2666"
+      > </a
+      ><a name="2667" href="Universe.Utility.Pointed.html#2486" class="Function Operator"
+      >&#10217;</a
+      ><a name="2668"
+      >
+      </a
+      ><a name="2675" href="Universe.Utility.Pointed.html#2690" class="Function"
+      >&#937;</a
+      ><a name="2676"
+      > </a
+      ><a name="2677" class="Symbol"
+      >(</a
+      ><a name="2678" href="Universe.Utility.Pointed.html#7787" class="Function"
+      >&#928;&#8226;</a
+      ><a name="2680"
+      > </a
+      ><a name="2681" class="Symbol"
+      >(</a
+      ><a name="2682" href="Universe.Hierarchy.html#1910" class="Bound"
+      >A</a
+      ><a name="2683"
+      > </a
+      ><a name="2684" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="2685"
+      > </a
+      ><a name="2686" class="Symbol"
+      >&#955;</a
+      ><a name="2687"
+      > </a
+      ><a name="2688" href="Universe.Hierarchy.html#2688" class="Bound"
+      >a</a
+      ><a name="2689"
+      > </a
+      ><a name="2690" class="Symbol"
+      >&#8594;</a
+      ><a name="2691"
+      > </a
+      ><a name="2692" class="Symbol"
+      >(</a
+      ><a name="2693" href="Universe.Hierarchy.html#1910" class="Bound"
+      >A</a
+      ><a name="2694"
+      > </a
+      ><a name="2695" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="2696"
+      > </a
+      ><a name="2697" href="Universe.Hierarchy.html#2688" class="Bound"
+      >a</a
+      ><a name="2698" class="Symbol"
+      >)))</a
+      ><a name="2701"
+      >
+    </a
+      ><a name="2706" href="Universe.Utility.Pointed.html#2486" class="Function Operator"
+      >&#8771;&#8226;&#10216;</a
+      ><a name="2709"
+      > </a
+      ><a name="2710" href="Universe.Utility.Pointed.html#7976" class="Function"
+      >&#937;-&#928;&#8226;-comm</a
+      ><a name="2719"
+      > </a
+      ><a name="2720" class="Symbol"
+      >_</a
+      ><a name="2721"
+      > </a
+      ><a name="2722" href="Universe.Utility.Pointed.html#2486" class="Function Operator"
+      >&#10217;</a
+      ><a name="2723"
+      >
+      </a
+      ><a name="2730" href="Universe.Utility.Pointed.html#7787" class="Function"
+      >&#928;&#8226;</a
+      ><a name="2732"
+      > </a
+      ><a name="2733" class="Symbol"
+      >(</a
+      ><a name="2734" href="Universe.Hierarchy.html#1910" class="Bound"
+      >A</a
+      ><a name="2735"
+      > </a
+      ><a name="2736" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="2737"
+      > </a
+      ><a name="2738" class="Symbol"
+      >&#955;</a
+      ><a name="2739"
+      > </a
+      ><a name="2740" href="Universe.Hierarchy.html#2740" class="Bound"
+      >a</a
+      ><a name="2741"
+      > </a
+      ><a name="2742" class="Symbol"
+      >&#8594;</a
+      ><a name="2743"
+      > </a
+      ><a name="2744" href="Universe.Utility.Pointed.html#2690" class="Function"
+      >&#937;</a
+      ><a name="2745"
+      > </a
+      ><a name="2746" class="Symbol"
+      >(</a
+      ><a name="2747" href="Universe.Hierarchy.html#1910" class="Bound"
+      >A</a
+      ><a name="2748"
+      > </a
+      ><a name="2749" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="2750"
+      > </a
+      ><a name="2751" href="Universe.Hierarchy.html#2740" class="Bound"
+      >a</a
+      ><a name="2752" class="Symbol"
+      >))</a
+      ><a name="2754"
+      >
+    </a
+      ><a name="2759" href="Universe.Utility.Pointed.html#2608" class="Function Operator"
+      >&#8771;&#8226;&#8718;</a
+      ><a name="2762"
+      >
+
+  </a
+      ><a name="2766" class="Comment"
+      >-- The general case follows by permuting &#937; and &#928;&#8226; repeatedly.</a
+      ><a name="2827"
+      >
+  </a
+      ><a name="2830" href="Universe.Hierarchy.html#2830" class="Function"
+      >&#937;^-Type</a
+      ><a name="2837"
+      > </a
+      ><a name="2838" class="Symbol"
+      >:</a
+      ><a name="2839"
+      > </a
+      ><a name="2840" class="Symbol"
+      >(</a
+      ><a name="2841" href="Universe.Hierarchy.html#2841" class="Bound"
+      >n</a
+      ><a name="2842"
+      > </a
+      ><a name="2843" class="Symbol"
+      >:</a
+      ><a name="2844"
+      > </a
+      ><a name="2845" href="lib.types.Nat.html#136" class="Datatype"
+      >&#8469;</a
+      ><a name="2846" class="Symbol"
+      >)</a
+      ><a name="2847"
+      > </a
+      ><a name="2848" class="Symbol"
+      >&#8594;</a
+      ><a name="2849"
+      > </a
+      ><a name="2850" class="Symbol"
+      >(</a
+      ><a name="2851" href="Universe.Utility.Pointed.html#2690" class="Function"
+      >&#937;</a
+      ><a name="2852"
+      > </a
+      ><a name="2853" href="Universe.Utility.General.html#843" class="Function Operator"
+      >^</a
+      ><a name="2854"
+      > </a
+      ><a name="2855" class="Symbol"
+      >(</a
+      ><a name="2856" href="Universe.Hierarchy.html#2841" class="Bound"
+      >n</a
+      ><a name="2857"
+      > </a
+      ><a name="2858" href="Universe.Utility.General.html#439" class="Function Operator"
+      >+</a
+      ><a name="2859"
+      > </a
+      ><a name="2860" class="Number"
+      >2</a
+      ><a name="2861" class="Symbol"
+      >))</a
+      ><a name="2863"
+      > </a
+      ><a name="2864" class="Symbol"
+      >(</a
+      ><a name="2865" href="lib.Base.html#1215" class="Function"
+      >Type</a
+      ><a name="2869"
+      > </a
+      ><a name="2870" href="Universe.Hierarchy.html#1906" class="Bound"
+      >i</a
+      ><a name="2871"
+      > </a
+      ><a name="2872" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="2873"
+      > </a
+      ><a name="2874" href="Universe.Hierarchy.html#1910" class="Bound"
+      >A</a
+      ><a name="2875" class="Symbol"
+      >)</a
+      ><a name="2876"
+      >
+                   </a
+      ><a name="2896" href="Universe.Utility.Pointed.html#1978" class="Function Operator"
+      >&#8771;&#8226;</a
+      ><a name="2898"
+      > </a
+      ><a name="2899" href="Universe.Utility.Pointed.html#7787" class="Function"
+      >&#928;&#8226;</a
+      ><a name="2901"
+      > </a
+      ><a name="2902" class="Symbol"
+      >(</a
+      ><a name="2903" href="Universe.Hierarchy.html#1910" class="Bound"
+      >A</a
+      ><a name="2904"
+      > </a
+      ><a name="2905" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="2906"
+      > </a
+      ><a name="2907" class="Symbol"
+      >&#955;</a
+      ><a name="2908"
+      > </a
+      ><a name="2909" href="Universe.Hierarchy.html#2909" class="Bound"
+      >a</a
+      ><a name="2910"
+      > </a
+      ><a name="2911" class="Symbol"
+      >&#8594;</a
+      ><a name="2912"
+      > </a
+      ><a name="2913" class="Symbol"
+      >(</a
+      ><a name="2914" href="Universe.Utility.Pointed.html#2690" class="Function"
+      >&#937;</a
+      ><a name="2915"
+      > </a
+      ><a name="2916" href="Universe.Utility.General.html#843" class="Function Operator"
+      >^</a
+      ><a name="2917"
+      > </a
+      ><a name="2918" class="Symbol"
+      >(</a
+      ><a name="2919" href="Universe.Hierarchy.html#2841" class="Bound"
+      >n</a
+      ><a name="2920"
+      > </a
+      ><a name="2921" href="Universe.Utility.General.html#439" class="Function Operator"
+      >+</a
+      ><a name="2922"
+      > </a
+      ><a name="2923" class="Number"
+      >1</a
+      ><a name="2924" class="Symbol"
+      >))</a
+      ><a name="2926"
+      > </a
+      ><a name="2927" class="Symbol"
+      >(</a
+      ><a name="2928" href="Universe.Hierarchy.html#1910" class="Bound"
+      >A</a
+      ><a name="2929"
+      > </a
+      ><a name="2930" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="2931"
+      > </a
+      ><a name="2932" href="Universe.Hierarchy.html#2909" class="Bound"
+      >a</a
+      ><a name="2933" class="Symbol"
+      >))</a
+      ><a name="2935"
+      >
+  </a
+      ><a name="2938" href="Universe.Hierarchy.html#2830" class="Function"
+      >&#937;^-Type</a
+      ><a name="2945"
+      > </a
+      ><a name="2946" href="Universe.Hierarchy.html#2946" class="Bound"
+      >n</a
+      ><a name="2947"
+      > </a
+      ><a name="2948" class="Symbol"
+      >=</a
+      ><a name="2949"
+      > </a
+      ><a name="2950" href="Universe.Utility.Pointed.html#8077" class="Function"
+      >&#937;^-&#928;&#8226;-comm</a
+      ><a name="2960"
+      > </a
+      ><a name="2961" class="Symbol"
+      >_</a
+      ><a name="2962"
+      > </a
+      ><a name="2963" class="Symbol"
+      >_</a
+      ><a name="2964"
+      > </a
+      ><a name="2965" href="Universe.Hierarchy.html#2946" class="Bound"
+      >n</a
+      ><a name="2966"
+      > </a
+      ><a name="2967" href="Universe.Utility.Pointed.html#2143" class="Function Operator"
+      >&#8728;e&#8226;</a
+      ><a name="2970"
+      > </a
+      ><a name="2971" href="Universe.Utility.Pointed.html#3098" class="Function"
+      >equiv-&#937;^</a
+      ><a name="2979"
+      > </a
+      ><a name="2980" href="Universe.Hierarchy.html#2946" class="Bound"
+      >n</a
+      ><a name="2981"
+      > </a
+      ><a name="2982" href="Universe.Hierarchy.html#2423" class="Function"
+      >&#937;&#178;-Type</a
+      ><a name="2989"
+      >
+
+
+</a
+      ><a name="2992" class="Comment"
+      >{- The predicate named P in the article.
+   It takes an n-type A and returns the space of (n+1)-loops
+   with basepoint A in U_n^n (the n-th universe restricted to n-types).
+   This crucial restriction to n-types implies it is just a set. -}</a
+      ><a name="3233"
+      >
+</a
+      ><a name="3234" class="Keyword"
+      >module</a
+      ><a name="3240"
+      > </a
+      ><a name="3241" href="Universe.Hierarchy.html#3241" class="Module"
+      >_</a
+      ><a name="3242"
+      > </a
+      ><a name="3243" class="Symbol"
+      >(</a
+      ><a name="3244" href="Universe.Hierarchy.html#3244" class="Bound"
+      >n</a
+      ><a name="3245"
+      > </a
+      ><a name="3246" class="Symbol"
+      >:</a
+      ><a name="3247"
+      > </a
+      ><a name="3248" href="lib.types.Nat.html#136" class="Datatype"
+      >&#8469;</a
+      ><a name="3249" class="Symbol"
+      >)</a
+      ><a name="3250"
+      > </a
+      ><a name="3251" class="Symbol"
+      >(</a
+      ><a name="3252" href="Universe.Hierarchy.html#3252" class="Bound"
+      >A</a
+      ><a name="3253"
+      > </a
+      ><a name="3254" class="Symbol"
+      >:</a
+      ><a name="3255"
+      > </a
+      ><a name="3256" href="lib.types.TLevel.html#269" class="Function Operator"
+      >&#10216;</a
+      ><a name="3257"
+      > </a
+      ><a name="3258" href="Universe.Hierarchy.html#3244" class="Bound"
+      >n</a
+      ><a name="3259"
+      > </a
+      ><a name="3260" href="lib.types.TLevel.html#269" class="Function Operator"
+      >&#10217;</a
+      ><a name="3261"
+      > </a
+      ><a name="3262" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="3267"
+      > </a
+      ><a name="3268" href="Universe.Utility.General.html#639" class="Function Operator"
+      >&#65378;</a
+      ><a name="3269"
+      > </a
+      ><a name="3270" href="Universe.Hierarchy.html#3244" class="Bound"
+      >n</a
+      ><a name="3271"
+      > </a
+      ><a name="3272" href="Universe.Utility.General.html#639" class="Function Operator"
+      >&#65379;</a
+      ><a name="3273" class="Symbol"
+      >)</a
+      ><a name="3274"
+      > </a
+      ><a name="3275" class="Keyword"
+      >where</a
+      ><a name="3280"
+      >
+  </a
+      ><a name="3283" href="Universe.Hierarchy.html#3283" class="Function"
+      >P</a
+      ><a name="3284"
+      > </a
+      ><a name="3285" class="Symbol"
+      >:</a
+      ><a name="3286"
+      > </a
+      ><a name="3287" href="lib.Base.html#8850" class="Function"
+      >&#10216;0&#10217;</a
+      ><a name="3290"
+      > </a
+      ><a name="3291" href="Universe.Utility.Pointed.html#1499" class="Function Operator"
+      >-Type&#8226;</a
+      ><a name="3297"
+      > </a
+      ><a name="3298" href="Universe.Utility.General.html#639" class="Function Operator"
+      >&#65378;</a
+      ><a name="3299"
+      > </a
+      ><a name="3300" href="Universe.Hierarchy.html#3244" class="Bound"
+      >n</a
+      ><a name="3301"
+      > </a
+      ><a name="3302" href="Universe.Utility.General.html#439" class="Function Operator"
+      >+</a
+      ><a name="3303"
+      > </a
+      ><a name="3304" class="Number"
+      >1</a
+      ><a name="3305"
+      > </a
+      ><a name="3306" href="Universe.Utility.General.html#639" class="Function Operator"
+      >&#65379;</a
+      ><a name="3307"
+      >
+  </a
+      ><a name="3310" href="Universe.Hierarchy.html#3283" class="Function"
+      >P</a
+      ><a name="3311"
+      > </a
+      ><a name="3312" class="Symbol"
+      >=</a
+      ><a name="3313"
+      > </a
+      ><a name="3314" href="Universe.Utility.Pointed.html#3914" class="Function"
+      >&#937;^-&#8804;'</a
+      ><a name="3319"
+      > </a
+      ><a name="3320" class="Symbol"
+      >(</a
+      ><a name="3321" href="Universe.Hierarchy.html#3244" class="Bound"
+      >n</a
+      ><a name="3322"
+      > </a
+      ><a name="3323" href="Universe.Utility.General.html#439" class="Function Operator"
+      >+</a
+      ><a name="3324"
+      > </a
+      ><a name="3325" class="Number"
+      >1</a
+      ><a name="3326" class="Symbol"
+      >)</a
+      ><a name="3327"
+      > </a
+      ><a name="3328" href="Universe.Hierarchy.html#3340" class="Function"
+      >q</a
+      ><a name="3329"
+      > </a
+      ><a name="3330" class="Keyword"
+      >where</a
+      ><a name="3335"
+      >
+    </a
+      ><a name="3340" href="Universe.Hierarchy.html#3340" class="Function"
+      >q</a
+      ><a name="3341"
+      > </a
+      ><a name="3342" class="Symbol"
+      >:</a
+      ><a name="3343"
+      > </a
+      ><a name="3344" href="lib.types.TLevel.html#269" class="Function Operator"
+      >&#10216;</a
+      ><a name="3345"
+      > </a
+      ><a name="3346" href="Universe.Hierarchy.html#3244" class="Bound"
+      >n</a
+      ><a name="3347"
+      > </a
+      ><a name="3348" href="Universe.Utility.General.html#439" class="Function Operator"
+      >+</a
+      ><a name="3349"
+      > </a
+      ><a name="3350" class="Number"
+      >1</a
+      ><a name="3351"
+      > </a
+      ><a name="3352" href="lib.types.TLevel.html#269" class="Function Operator"
+      >&#10217;</a
+      ><a name="3353"
+      > </a
+      ><a name="3354" href="Universe.Utility.Pointed.html#1499" class="Function Operator"
+      >-Type&#8226;</a
+      ><a name="3360"
+      > </a
+      ><a name="3361" href="Universe.Utility.General.html#639" class="Function Operator"
+      >&#65378;</a
+      ><a name="3362"
+      > </a
+      ><a name="3363" href="Universe.Hierarchy.html#3244" class="Bound"
+      >n</a
+      ><a name="3364"
+      > </a
+      ><a name="3365" href="Universe.Utility.General.html#439" class="Function Operator"
+      >+</a
+      ><a name="3366"
+      > </a
+      ><a name="3367" class="Number"
+      >1</a
+      ><a name="3368"
+      > </a
+      ><a name="3369" href="Universe.Utility.General.html#639" class="Function Operator"
+      >&#65379;</a
+      ><a name="3370"
+      >
+    </a
+      ><a name="3375" href="Universe.Hierarchy.html#3340" class="Function"
+      >q</a
+      ><a name="3376"
+      > </a
+      ><a name="3377" class="Symbol"
+      >=</a
+      ><a name="3378"
+      > </a
+      ><a name="3379" href="lib.Equivalences.html#3306" class="Function"
+      >&#8211;&gt;</a
+      ><a name="3381"
+      > </a
+      ><a name="3382" href="Universe.Utility.General.html#1822" class="Function"
+      >&#931;-comm-snd</a
+      ><a name="3392"
+      > </a
+      ><a name="3393" class="Symbol"
+      >((</a
+      ><a name="3395" href="lib.types.TLevel.html#269" class="Function Operator"
+      >&#10216;</a
+      ><a name="3396"
+      > </a
+      ><a name="3397" href="Universe.Hierarchy.html#3244" class="Bound"
+      >n</a
+      ><a name="3398"
+      > </a
+      ><a name="3399" href="lib.types.TLevel.html#269" class="Function Operator"
+      >&#10217;</a
+      ><a name="3400"
+      > </a
+      ><a name="3401" href="Universe.Utility.TruncUniverse.html#1863" class="Function Operator"
+      >-Type-&#8804;</a
+      ><a name="3408"
+      > </a
+      ><a name="3409" href="Universe.Utility.General.html#639" class="Function Operator"
+      >&#65378;</a
+      ><a name="3410"
+      > </a
+      ><a name="3411" href="Universe.Hierarchy.html#3244" class="Bound"
+      >n</a
+      ><a name="3412"
+      > </a
+      ><a name="3413" href="Universe.Utility.General.html#639" class="Function Operator"
+      >&#65379;</a
+      ><a name="3414"
+      > </a
+      ><a name="3415" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="3416"
+      > </a
+      ><a name="3417" href="Universe.Hierarchy.html#3252" class="Bound"
+      >A</a
+      ><a name="3418" class="Symbol"
+      >))</a
+      ><a name="3420"
+      >
+
+  </a
+      ><a name="3424" class="Comment"
+      >-- Forgetting about the truncation level, we may present P as follows:</a
+      ><a name="3494"
+      >
+  </a
+      ><a name="3497" href="Universe.Hierarchy.html#3497" class="Function"
+      >Q</a
+      ><a name="3498"
+      > </a
+      ><a name="3499" class="Symbol"
+      >:</a
+      ><a name="3500"
+      > </a
+      ><a name="3501" href="Universe.Utility.Pointed.html#1324" class="Function"
+      >Type&#8226;</a
+      ><a name="3506"
+      > </a
+      ><a name="3507" href="Universe.Utility.General.html#639" class="Function Operator"
+      >&#65378;</a
+      ><a name="3508"
+      > </a
+      ><a name="3509" href="Universe.Hierarchy.html#3244" class="Bound"
+      >n</a
+      ><a name="3510"
+      > </a
+      ><a name="3511" href="Universe.Utility.General.html#439" class="Function Operator"
+      >+</a
+      ><a name="3512"
+      > </a
+      ><a name="3513" class="Number"
+      >1</a
+      ><a name="3514"
+      > </a
+      ><a name="3515" href="Universe.Utility.General.html#639" class="Function Operator"
+      >&#65379;</a
+      ><a name="3516"
+      >
+  </a
+      ><a name="3519" href="Universe.Hierarchy.html#3497" class="Function"
+      >Q</a
+      ><a name="3520"
+      > </a
+      ><a name="3521" class="Symbol"
+      >=</a
+      ><a name="3522"
+      > </a
+      ><a name="3523" class="Symbol"
+      >(</a
+      ><a name="3524" href="Universe.Utility.Pointed.html#2690" class="Function"
+      >&#937;</a
+      ><a name="3525"
+      > </a
+      ><a name="3526" href="Universe.Utility.General.html#843" class="Function Operator"
+      >^</a
+      ><a name="3527"
+      > </a
+      ><a name="3528" class="Symbol"
+      >(</a
+      ><a name="3529" href="Universe.Hierarchy.html#3244" class="Bound"
+      >n</a
+      ><a name="3530"
+      > </a
+      ><a name="3531" href="Universe.Utility.General.html#439" class="Function Operator"
+      >+</a
+      ><a name="3532"
+      > </a
+      ><a name="3533" class="Number"
+      >1</a
+      ><a name="3534" class="Symbol"
+      >))</a
+      ><a name="3536"
+      > </a
+      ><a name="3537" class="Symbol"
+      >(</a
+      ><a name="3538" href="lib.Base.html#1215" class="Function"
+      >Type</a
+      ><a name="3542"
+      > </a
+      ><a name="3543" href="Universe.Utility.General.html#639" class="Function Operator"
+      >&#65378;</a
+      ><a name="3544"
+      > </a
+      ><a name="3545" href="Universe.Hierarchy.html#3244" class="Bound"
+      >n</a
+      ><a name="3546"
+      > </a
+      ><a name="3547" href="Universe.Utility.General.html#639" class="Function Operator"
+      >&#65379;</a
+      ><a name="3548"
+      > </a
+      ><a name="3549" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="3550"
+      > </a
+      ><a name="3551" href="lib.Base.html#5027" class="Field"
+      >fst</a
+      ><a name="3554"
+      > </a
+      ><a name="3555" href="Universe.Hierarchy.html#3252" class="Bound"
+      >A</a
+      ><a name="3556" class="Symbol"
+      >)</a
+      ><a name="3557"
+      >
+
+  </a
+      ><a name="3561" href="Universe.Hierarchy.html#3561" class="Function"
+      >P-is-Q</a
+      ><a name="3567"
+      > </a
+      ><a name="3568" class="Symbol"
+      >:</a
+      ><a name="3569"
+      > </a
+      ><a name="3570" href="lib.Base.html#5027" class="Field"
+      >fst</a
+      ><a name="3573"
+      > </a
+      ><a name="3574" href="Universe.Hierarchy.html#3283" class="Function"
+      >P</a
+      ><a name="3575"
+      > </a
+      ><a name="3576" href="Universe.Utility.Pointed.html#1978" class="Function Operator"
+      >&#8771;&#8226;</a
+      ><a name="3578"
+      > </a
+      ><a name="3579" href="Universe.Hierarchy.html#3497" class="Function"
+      >Q</a
+      ><a name="3580"
+      >
+  </a
+      ><a name="3583" href="Universe.Hierarchy.html#3561" class="Function"
+      >P-is-Q</a
+      ><a name="3589"
+      > </a
+      ><a name="3590" class="Symbol"
+      >=</a
+      ><a name="3591"
+      > </a
+      ><a name="3592" href="Universe.Utility.Pointed.html#3098" class="Function"
+      >equiv-&#937;^</a
+      ><a name="3600"
+      > </a
+      ><a name="3601" href="Universe.Hierarchy.html#3244" class="Bound"
+      >n</a
+      ><a name="3602"
+      > </a
+      ><a name="3603" class="Symbol"
+      >(</a
+      ><a name="3604" href="Universe.Utility.Pointed.html#8597" class="Function"
+      >forget-&#937;^-&#931;&#8226;&#8322;</a
+      ><a name="3617"
+      > </a
+      ><a name="3618" class="Symbol"
+      >_</a
+      ><a name="3619"
+      > </a
+      ><a name="3620" class="Number"
+      >1</a
+      ><a name="3621"
+      > </a
+      ><a name="3622" class="Symbol"
+      >(&#955;</a
+      ><a name="3624"
+      > </a
+      ><a name="3625" href="Universe.Hierarchy.html#3625" class="Bound"
+      >_</a
+      ><a name="3626"
+      > </a
+      ><a name="3627" class="Symbol"
+      >&#8594;</a
+      ><a name="3628"
+      > </a
+      ><a name="3629" href="lib.NType2.html#2016" class="Function"
+      >has-level-is-prop</a
+      ><a name="3646" class="Symbol"
+      >))</a
+      ><a name="3648"
+      >
+
+</a
+      ><a name="3650" class="Comment"
+      >{- The type Loop of (images of) n-loops in U_(n-1)^(n-1) is
+   just the dependent sum over P except for the special case n &#8801; 0,
+   where we take U_(-1)^(-1) (and hence Loop) to be the booleans.
+
+   The boilerplate with raise-&#8804;T is just to verify Loop n is n-truncated.
+   The bulk of the rest of this module consists of showing
+   the n-th universe is not n-truncated at basepoint Loop n,
+   i.e. that Q n (Loop n) is not contractible.
+
+   Warning: The indexing of Loop starts at -1 in the article,
+            but we use natural numbers here (starting at 0),
+            thus everything is shifted by one. -}</a
+      ><a name="4259"
+      >
+</a
+      ><a name="4260" href="Universe.Hierarchy.html#4260" class="Function"
+      >Loop</a
+      ><a name="4264"
+      > </a
+      ><a name="4265" class="Symbol"
+      >:</a
+      ><a name="4266"
+      > </a
+      ><a name="4267" class="Symbol"
+      >(</a
+      ><a name="4268" href="Universe.Hierarchy.html#4268" class="Bound"
+      >n</a
+      ><a name="4269"
+      > </a
+      ><a name="4270" class="Symbol"
+      >:</a
+      ><a name="4271"
+      > </a
+      ><a name="4272" href="lib.types.Nat.html#136" class="Datatype"
+      >&#8469;</a
+      ><a name="4273" class="Symbol"
+      >)</a
+      ><a name="4274"
+      > </a
+      ><a name="4275" class="Symbol"
+      >&#8594;</a
+      ><a name="4276"
+      > </a
+      ><a name="4277" href="lib.types.TLevel.html#269" class="Function Operator"
+      >&#10216;</a
+      ><a name="4278"
+      > </a
+      ><a name="4279" href="Universe.Hierarchy.html#4268" class="Bound"
+      >n</a
+      ><a name="4280"
+      > </a
+      ><a name="4281" href="lib.types.TLevel.html#269" class="Function Operator"
+      >&#10217;</a
+      ><a name="4282"
+      > </a
+      ><a name="4283" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="4288"
+      > </a
+      ><a name="4289" href="Universe.Utility.General.html#639" class="Function Operator"
+      >&#65378;</a
+      ><a name="4290"
+      > </a
+      ><a name="4291" href="Universe.Hierarchy.html#4268" class="Bound"
+      >n</a
+      ><a name="4292"
+      > </a
+      ><a name="4293" href="Universe.Utility.General.html#639" class="Function Operator"
+      >&#65379;</a
+      ><a name="4294"
+      >
+</a
+      ><a name="4295" href="Universe.Hierarchy.html#4260" class="Function"
+      >Loop</a
+      ><a name="4299"
+      > </a
+      ><a name="4300" href="lib.types.Nat.html#154" class="InductiveConstructor"
+      >0</a
+      ><a name="4301"
+      >     </a
+      ><a name="4306" class="Symbol"
+      >=</a
+      ><a name="4307"
+      > </a
+      ><a name="4308" class="Symbol"
+      >(</a
+      ><a name="4309" href="lib.types.Bool.html#88" class="Datatype"
+      >Bool</a
+      ><a name="4313"
+      > </a
+      ><a name="4314" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="4315"
+      > </a
+      ><a name="4316" href="lib.types.Bool.html#821" class="Function"
+      >Bool-is-set</a
+      ><a name="4327" class="Symbol"
+      >)</a
+      ><a name="4328"
+      >
+</a
+      ><a name="4329" href="Universe.Hierarchy.html#4260" class="Function"
+      >Loop</a
+      ><a name="4333"
+      > </a
+      ><a name="4334" class="Symbol"
+      >(</a
+      ><a name="4335" href="lib.types.Nat.html#162" class="InductiveConstructor"
+      >S</a
+      ><a name="4336"
+      > </a
+      ><a name="4337" href="Universe.Hierarchy.html#4337" class="Bound"
+      >n</a
+      ><a name="4338" class="Symbol"
+      >)</a
+      ><a name="4339"
+      > </a
+      ><a name="4340" class="Symbol"
+      >=</a
+      ><a name="4341"
+      > </a
+      ><a name="4342" href="Universe.Utility.TruncUniverse.html#1298" class="Function"
+      >&#931;-&#8804;</a
+      ><a name="4345"
+      > </a
+      ><a name="4346" class="Symbol"
+      >(</a
+      ><a name="4347" href="lib.types.TLevel.html#269" class="Function Operator"
+      >&#10216;</a
+      ><a name="4348"
+      > </a
+      ><a name="4349" href="Universe.Hierarchy.html#4337" class="Bound"
+      >n</a
+      ><a name="4350"
+      > </a
+      ><a name="4351" href="lib.types.TLevel.html#269" class="Function Operator"
+      >&#10217;</a
+      ><a name="4352"
+      > </a
+      ><a name="4353" href="Universe.Utility.TruncUniverse.html#1863" class="Function Operator"
+      >-Type-&#8804;</a
+      ><a name="4360"
+      > </a
+      ><a name="4361" href="Universe.Utility.General.html#639" class="Function Operator"
+      >&#65378;</a
+      ><a name="4362"
+      > </a
+      ><a name="4363" href="Universe.Hierarchy.html#4337" class="Bound"
+      >n</a
+      ><a name="4364"
+      > </a
+      ><a name="4365" href="Universe.Utility.General.html#639" class="Function Operator"
+      >&#65379;</a
+      ><a name="4366" class="Symbol"
+      >)</a
+      ><a name="4367"
+      > </a
+      ><a name="4368" class="Symbol"
+      >(&#955;</a
+      ><a name="4370"
+      > </a
+      ><a name="4371" href="Universe.Hierarchy.html#4371" class="Bound"
+      >A</a
+      ><a name="4372"
+      > </a
+      ><a name="4373" class="Symbol"
+      >&#8594;</a
+      ><a name="4374"
+      >
+               </a
+      ><a name="4390" href="Universe.Utility.TruncUniverse.html#892" class="Function"
+      >raise-&#8804;T</a
+      ><a name="4398"
+      > </a
+      ><a name="4399" class="Symbol"
+      >{</a
+      ><a name="4400"
+      >n </a
+      ><a name="4402" class="Symbol"
+      >=</a
+      ><a name="4403"
+      > </a
+      ><a name="4404" href="lib.types.TLevel.html#269" class="Function Operator"
+      >&#10216;</a
+      ><a name="4405"
+      > </a
+      ><a name="4406" href="Universe.Hierarchy.html#4337" class="Bound"
+      >n</a
+      ><a name="4407"
+      > </a
+      ><a name="4408" href="Universe.Utility.General.html#439" class="Function Operator"
+      >+</a
+      ><a name="4409"
+      > </a
+      ><a name="4410" class="Number"
+      >1</a
+      ><a name="4411"
+      > </a
+      ><a name="4412" href="lib.types.TLevel.html#269" class="Function Operator"
+      >&#10217;</a
+      ><a name="4413" class="Symbol"
+      >}</a
+      ><a name="4414"
+      > </a
+      ><a name="4415" class="Symbol"
+      >(</a
+      ><a name="4416" href="lib.types.TLevel.html#1928" class="Function"
+      >&#8804;T-+2+-l</a
+      ><a name="4424"
+      > </a
+      ><a name="4425" href="lib.Base.html#8850" class="Function"
+      >&#10216;0&#10217;</a
+      ><a name="4428"
+      > </a
+      ><a name="4429" class="Symbol"
+      >(</a
+      ><a name="4430" href="lib.types.TLevel.html#1020" class="Function"
+      >-2&#8804;T</a
+      ><a name="4434"
+      > </a
+      ><a name="4435" class="Symbol"
+      >_))</a
+      ><a name="4438"
+      >
+                                        </a
+      ><a name="4479" class="Symbol"
+      >(</a
+      ><a name="4480" href="lib.Base.html#5027" class="Field"
+      >fst</a
+      ><a name="4483"
+      > </a
+      ><a name="4484" class="Symbol"
+      >(</a
+      ><a name="4485" href="lib.Equivalences.html#3351" class="Function"
+      >&lt;&#8211;</a
+      ><a name="4487"
+      > </a
+      ><a name="4488" href="Universe.Utility.General.html#1822" class="Function"
+      >&#931;-comm-snd</a
+      ><a name="4498"
+      > </a
+      ><a name="4499" class="Symbol"
+      >(</a
+      ><a name="4500" href="Universe.Hierarchy.html#3283" class="Function"
+      >P</a
+      ><a name="4501"
+      > </a
+      ><a name="4502" href="Universe.Hierarchy.html#4337" class="Bound"
+      >n</a
+      ><a name="4503"
+      > </a
+      ><a name="4504" href="Universe.Hierarchy.html#4371" class="Bound"
+      >A</a
+      ><a name="4505" class="Symbol"
+      >))))</a
+      ><a name="4509"
+      >
+
+</a
+      ><a name="4511" class="Comment"
+      >-- The base case is as usual (there is a non-trivial automorphism on booleans).</a
+      ><a name="4590"
+      >
+</a
+      ><a name="4591" href="Universe.Hierarchy.html#4591" class="Function"
+      >base-case</a
+      ><a name="4600"
+      > </a
+      ><a name="4601" class="Symbol"
+      >:</a
+      ><a name="4602"
+      > </a
+      ><a name="4603" href="lib.Base.html#5719" class="Function"
+      >&#172;</a
+      ><a name="4604"
+      > </a
+      ><a name="4605" class="Symbol"
+      >(</a
+      ><a name="4606" href="Universe.Utility.Pointed.html#4332" class="Function"
+      >is-contr&#8226;</a
+      ><a name="4615"
+      > </a
+      ><a name="4616" class="Symbol"
+      >(</a
+      ><a name="4617" href="Universe.Hierarchy.html#3497" class="Function"
+      >Q</a
+      ><a name="4618"
+      > </a
+      ><a name="4619" class="Number"
+      >0</a
+      ><a name="4620"
+      > </a
+      ><a name="4621" class="Symbol"
+      >(</a
+      ><a name="4622" href="Universe.Hierarchy.html#4260" class="Function"
+      >Loop</a
+      ><a name="4626"
+      > </a
+      ><a name="4627" class="Number"
+      >0</a
+      ><a name="4628" class="Symbol"
+      >)))</a
+      ><a name="4631"
+      >
+</a
+      ><a name="4632" href="Universe.Hierarchy.html#4591" class="Function"
+      >base-case</a
+      ><a name="4641"
+      > </a
+      ><a name="4642" href="Universe.Hierarchy.html#4642" class="Bound"
+      >c</a
+      ><a name="4643"
+      > </a
+      ><a name="4644" class="Symbol"
+      >=</a
+      ><a name="4645"
+      > </a
+      ><a name="4646" href="lib.types.Bool.html#506" class="Function"
+      >Bool-false&#8800;true</a
+      ><a name="4661"
+      > </a
+      ><a name="4662" href="Universe.Hierarchy.html#4941" class="Function"
+      >false-is-true</a
+      ><a name="4675"
+      > </a
+      ><a name="4676" class="Keyword"
+      >where</a
+      ><a name="4681"
+      >
+  </a
+      ><a name="4684" class="Comment"
+      >-- Negation.</a
+      ><a name="4696"
+      >
+  </a
+      ><a name="4699" href="Universe.Hierarchy.html#4699" class="Function"
+      >~</a
+      ><a name="4700"
+      > </a
+      ><a name="4701" class="Symbol"
+      >:</a
+      ><a name="4702"
+      > </a
+      ><a name="4703" href="lib.types.Bool.html#88" class="Datatype"
+      >Bool</a
+      ><a name="4707"
+      > </a
+      ><a name="4708" class="Symbol"
+      >&#8594;</a
+      ><a name="4709"
+      > </a
+      ><a name="4710" href="lib.types.Bool.html#88" class="Datatype"
+      >Bool</a
+      ><a name="4714"
+      >
+  </a
+      ><a name="4717" href="Universe.Hierarchy.html#4699" class="Function"
+      >~</a
+      ><a name="4718"
+      > </a
+      ><a name="4719" class="Symbol"
+      >=</a
+      ><a name="4720"
+      > </a
+      ><a name="4721" class="Symbol"
+      >&#955;</a
+      ><a name="4722"
+      > </a
+      ><a name="4723" class="Symbol"
+      >{</a
+      ><a name="4724" href="lib.types.Bool.html#109" class="InductiveConstructor"
+      >true</a
+      ><a name="4728"
+      > </a
+      ><a name="4729" class="Symbol"
+      >&#8594;</a
+      ><a name="4730"
+      > </a
+      ><a name="4731" href="lib.types.Bool.html#123" class="InductiveConstructor"
+      >false</a
+      ><a name="4736" class="Symbol"
+      >;</a
+      ><a name="4737"
+      > </a
+      ><a name="4738" href="lib.types.Bool.html#123" class="InductiveConstructor"
+      >false</a
+      ><a name="4743"
+      > </a
+      ><a name="4744" class="Symbol"
+      >&#8594;</a
+      ><a name="4745"
+      > </a
+      ><a name="4746" href="lib.types.Bool.html#109" class="InductiveConstructor"
+      >true</a
+      ><a name="4750" class="Symbol"
+      >}</a
+      ><a name="4751"
+      >
+
+  </a
+      ><a name="4755" class="Comment"
+      >-- Negation is an equivalence.</a
+      ><a name="4785"
+      >
+  </a
+      ><a name="4788" href="Universe.Hierarchy.html#4788" class="Function"
+      >e</a
+      ><a name="4789"
+      > </a
+      ><a name="4790" class="Symbol"
+      >:</a
+      ><a name="4791"
+      > </a
+      ><a name="4792" href="lib.types.Bool.html#88" class="Datatype"
+      >Bool</a
+      ><a name="4796"
+      > </a
+      ><a name="4797" href="lib.Equivalences.html#2994" class="Function Operator"
+      >&#8771;</a
+      ><a name="4798"
+      > </a
+      ><a name="4799" href="lib.types.Bool.html#88" class="Datatype"
+      >Bool</a
+      ><a name="4803"
+      >
+  </a
+      ><a name="4806" href="Universe.Hierarchy.html#4788" class="Function"
+      >e</a
+      ><a name="4807"
+      > </a
+      ><a name="4808" class="Symbol"
+      >=</a
+      ><a name="4809"
+      > </a
+      ><a name="4810" href="lib.Equivalences.html#3145" class="Function"
+      >equiv</a
+      ><a name="4815"
+      > </a
+      ><a name="4816" href="Universe.Hierarchy.html#4699" class="Function"
+      >~</a
+      ><a name="4817"
+      > </a
+      ><a name="4818" href="Universe.Hierarchy.html#4699" class="Function"
+      >~</a
+      ><a name="4819"
+      > </a
+      ><a name="4820" href="Universe.Hierarchy.html#4838" class="Function"
+      >inv</a
+      ><a name="4823"
+      > </a
+      ><a name="4824" href="Universe.Hierarchy.html#4838" class="Function"
+      >inv</a
+      ><a name="4827"
+      > </a
+      ><a name="4828" class="Keyword"
+      >where</a
+      ><a name="4833"
+      >
+    </a
+      ><a name="4838" href="Universe.Hierarchy.html#4838" class="Function"
+      >inv</a
+      ><a name="4841"
+      > </a
+      ><a name="4842" class="Symbol"
+      >=</a
+      ><a name="4843"
+      > </a
+      ><a name="4844" class="Symbol"
+      >&#955;</a
+      ><a name="4845"
+      > </a
+      ><a name="4846" class="Symbol"
+      >{</a
+      ><a name="4847" href="lib.types.Bool.html#109" class="InductiveConstructor"
+      >true</a
+      ><a name="4851"
+      > </a
+      ><a name="4852" class="Symbol"
+      >&#8594;</a
+      ><a name="4853"
+      > </a
+      ><a name="4854" href="lib.Base.html#2001" class="InductiveConstructor"
+      >idp</a
+      ><a name="4857" class="Symbol"
+      >;</a
+      ><a name="4858"
+      > </a
+      ><a name="4859" href="lib.types.Bool.html#123" class="InductiveConstructor"
+      >false</a
+      ><a name="4864"
+      > </a
+      ><a name="4865" class="Symbol"
+      >&#8594;</a
+      ><a name="4866"
+      > </a
+      ><a name="4867" href="lib.Base.html#2001" class="InductiveConstructor"
+      >idp</a
+      ><a name="4870" class="Symbol"
+      >}</a
+      ><a name="4871"
+      >
+
+  </a
+      ><a name="4875" class="Comment"
+      >-- Negation being equal to the identity yields a contradiction.</a
+      ><a name="4938"
+      >
+  </a
+      ><a name="4941" href="Universe.Hierarchy.html#4941" class="Function"
+      >false-is-true</a
+      ><a name="4954"
+      > </a
+      ><a name="4955" class="Symbol"
+      >=</a
+      ><a name="4956"
+      >
+    </a
+      ><a name="4961" href="lib.types.Bool.html#123" class="InductiveConstructor"
+      >false</a
+      ><a name="4966"
+      >             </a
+      ><a name="4979" href="lib.Base.html#7140" class="Function Operator"
+      >=&#10216;</a
+      ><a name="4981"
+      > </a
+      ><a name="4982" href="lib.PathGroupoid.html#1079" class="Function"
+      >!</a
+      ><a name="4983"
+      > </a
+      ><a name="4984" class="Symbol"
+      >(</a
+      ><a name="4985" href="lib.Univalence.html#1066" class="Function"
+      >coe-&#946;</a
+      ><a name="4990"
+      > </a
+      ><a name="4991" href="Universe.Hierarchy.html#4788" class="Function"
+      >e</a
+      ><a name="4992"
+      > </a
+      ><a name="4993" href="lib.types.Bool.html#109" class="InductiveConstructor"
+      >true</a
+      ><a name="4997" class="Symbol"
+      >)</a
+      ><a name="4998"
+      > </a
+      ><a name="4999" href="lib.Base.html#7140" class="Function Operator"
+      >&#10217;</a
+      ><a name="5000"
+      >
+    </a
+      ><a name="5005" href="lib.Base.html#4194" class="Function"
+      >coe</a
+      ><a name="5008"
+      > </a
+      ><a name="5009" class="Symbol"
+      >(</a
+      ><a name="5010" href="lib.Univalence.html#696" class="Postulate"
+      >ua</a
+      ><a name="5012"
+      > </a
+      ><a name="5013" href="Universe.Hierarchy.html#4788" class="Function"
+      >e</a
+      ><a name="5014" class="Symbol"
+      >)</a
+      ><a name="5015"
+      > </a
+      ><a name="5016" href="lib.types.Bool.html#109" class="InductiveConstructor"
+      >true</a
+      ><a name="5020"
+      >   </a
+      ><a name="5023" href="lib.Base.html#7140" class="Function Operator"
+      >=&#10216;</a
+      ><a name="5025"
+      > </a
+      ><a name="5026" href="lib.Base.html#3569" class="Function"
+      >ap</a
+      ><a name="5028"
+      > </a
+      ><a name="5029" class="Symbol"
+      >(&#955;</a
+      ><a name="5031"
+      > </a
+      ><a name="5032" href="Universe.Hierarchy.html#5032" class="Bound"
+      >p</a
+      ><a name="5033"
+      > </a
+      ><a name="5034" class="Symbol"
+      >&#8594;</a
+      ><a name="5035"
+      > </a
+      ><a name="5036" href="lib.Base.html#4194" class="Function"
+      >coe</a
+      ><a name="5039"
+      > </a
+      ><a name="5040" href="Universe.Hierarchy.html#5032" class="Bound"
+      >p</a
+      ><a name="5041"
+      > </a
+      ><a name="5042" href="lib.types.Bool.html#109" class="InductiveConstructor"
+      >true</a
+      ><a name="5046" class="Symbol"
+      >)</a
+      ><a name="5047"
+      > </a
+      ><a name="5048" class="Symbol"
+      >(</a
+      ><a name="5049" href="Universe.Hierarchy.html#4642" class="Bound"
+      >c</a
+      ><a name="5050"
+      > </a
+      ><a name="5051" class="Symbol"
+      >(</a
+      ><a name="5052" href="lib.Univalence.html#696" class="Postulate"
+      >ua</a
+      ><a name="5054"
+      > </a
+      ><a name="5055" href="Universe.Hierarchy.html#4788" class="Function"
+      >e</a
+      ><a name="5056" class="Symbol"
+      >))</a
+      ><a name="5058"
+      > </a
+      ><a name="5059" href="lib.Base.html#7140" class="Function Operator"
+      >&#10217;</a
+      ><a name="5060"
+      >
+    </a
+      ><a name="5065" href="lib.Base.html#4194" class="Function"
+      >coe</a
+      ><a name="5068"
+      > </a
+      ><a name="5069" href="lib.Base.html#2001" class="InductiveConstructor"
+      >idp</a
+      ><a name="5072"
+      > </a
+      ><a name="5073" href="lib.types.Bool.html#109" class="InductiveConstructor"
+      >true</a
+      ><a name="5077"
+      >      </a
+      ><a name="5083" href="lib.Base.html#7140" class="Function Operator"
+      >=&#10216;</a
+      ><a name="5085"
+      > </a
+      ><a name="5086" href="lib.Base.html#2001" class="InductiveConstructor"
+      >idp</a
+      ><a name="5089"
+      > </a
+      ><a name="5090" href="lib.Base.html#7140" class="Function Operator"
+      >&#10217;</a
+      ><a name="5091"
+      >
+    </a
+      ><a name="5096" href="lib.types.Bool.html#109" class="InductiveConstructor"
+      >true</a
+      ><a name="5100"
+      >              </a
+      ><a name="5114" href="lib.Base.html#7235" class="Function Operator"
+      >&#8718;</a
+      ><a name="5115"
+      >
+
+</a
+      ><a name="5117" class="Comment"
+      >-- Let us now turn towards the successor case.</a
+      ><a name="5163"
+      >
+</a
+      ><a name="5164" class="Keyword"
+      >module</a
+      ><a name="5170"
+      > </a
+      ><a name="5171" href="Universe.Hierarchy.html#5171" class="Module"
+      >_</a
+      ><a name="5172"
+      > </a
+      ><a name="5173" class="Symbol"
+      >(</a
+      ><a name="5174" href="Universe.Hierarchy.html#5174" class="Bound"
+      >m</a
+      ><a name="5175"
+      > </a
+      ><a name="5176" class="Symbol"
+      >:</a
+      ><a name="5177"
+      > </a
+      ><a name="5178" href="lib.types.Nat.html#136" class="Datatype"
+      >&#8469;</a
+      ><a name="5179" class="Symbol"
+      >)</a
+      ><a name="5180"
+      > </a
+      ><a name="5181" class="Keyword"
+      >where</a
+      ><a name="5186"
+      >
+  
+  </a
+      ><a name="5192" class="Comment"
+      >-- We expand the type we are later going to assume contractible.</a
+      ><a name="5256"
+      >
+  </a
+      ><a name="5259" href="Universe.Hierarchy.html#5259" class="Function"
+      >Q-L-is-&#8230;</a
+      ><a name="5267"
+      > </a
+      ><a name="5268" class="Symbol"
+      >=</a
+      ><a name="5269"
+      >
+      </a
+      ><a name="5276" href="Universe.Hierarchy.html#3497" class="Function"
+      >Q</a
+      ><a name="5277"
+      > </a
+      ><a name="5278" class="Symbol"
+      >(</a
+      ><a name="5279" href="Universe.Hierarchy.html#5174" class="Bound"
+      >m</a
+      ><a name="5280"
+      > </a
+      ><a name="5281" href="Universe.Utility.General.html#439" class="Function Operator"
+      >+</a
+      ><a name="5282"
+      > </a
+      ><a name="5283" class="Number"
+      >1</a
+      ><a name="5284" class="Symbol"
+      >)</a
+      ><a name="5285"
+      > </a
+      ><a name="5286" class="Symbol"
+      >(</a
+      ><a name="5287" href="Universe.Hierarchy.html#4260" class="Function"
+      >Loop</a
+      ><a name="5291"
+      > </a
+      ><a name="5292" class="Symbol"
+      >(</a
+      ><a name="5293" href="Universe.Hierarchy.html#5174" class="Bound"
+      >m</a
+      ><a name="5294"
+      > </a
+      ><a name="5295" href="Universe.Utility.General.html#439" class="Function Operator"
+      >+</a
+      ><a name="5296"
+      > </a
+      ><a name="5297" class="Number"
+      >1</a
+      ><a name="5298" class="Symbol"
+      >))</a
+      ><a name="5300"
+      >
+    </a
+      ><a name="5305" href="Universe.Utility.Pointed.html#2486" class="Function Operator"
+      >&#8771;&#8226;&#10216;</a
+      ><a name="5308"
+      > </a
+      ><a name="5309" href="Universe.Utility.Pointed.html#2085" class="Function"
+      >ide&#8226;</a
+      ><a name="5313"
+      > </a
+      ><a name="5314" class="Symbol"
+      >_</a
+      ><a name="5315"
+      > </a
+      ><a name="5316" href="Universe.Utility.Pointed.html#2486" class="Function Operator"
+      >&#10217;</a
+      ><a name="5317"
+      >
+      </a
+      ><a name="5324" class="Symbol"
+      >(</a
+      ><a name="5325" href="Universe.Utility.Pointed.html#2690" class="Function"
+      >&#937;</a
+      ><a name="5326"
+      > </a
+      ><a name="5327" href="Universe.Utility.General.html#843" class="Function Operator"
+      >^</a
+      ><a name="5328"
+      > </a
+      ><a name="5329" class="Symbol"
+      >(</a
+      ><a name="5330" href="Universe.Hierarchy.html#5174" class="Bound"
+      >m</a
+      ><a name="5331"
+      > </a
+      ><a name="5332" href="Universe.Utility.General.html#439" class="Function Operator"
+      >+</a
+      ><a name="5333"
+      > </a
+      ><a name="5334" class="Number"
+      >2</a
+      ><a name="5335" class="Symbol"
+      >))</a
+      ><a name="5337"
+      > </a
+      ><a name="5338" class="Symbol"
+      >(_</a
+      ><a name="5340"
+      > </a
+      ><a name="5341" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="5342"
+      > </a
+      ><a name="5343" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10214;</a
+      ><a name="5344"
+      > </a
+      ><a name="5345" href="Universe.Hierarchy.html#4260" class="Function"
+      >Loop</a
+      ><a name="5349"
+      > </a
+      ><a name="5350" class="Symbol"
+      >(</a
+      ><a name="5351" href="Universe.Hierarchy.html#5174" class="Bound"
+      >m</a
+      ><a name="5352"
+      > </a
+      ><a name="5353" href="Universe.Utility.General.html#439" class="Function Operator"
+      >+</a
+      ><a name="5354"
+      > </a
+      ><a name="5355" class="Number"
+      >1</a
+      ><a name="5356" class="Symbol"
+      >)</a
+      ><a name="5357"
+      > </a
+      ><a name="5358" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10215;</a
+      ><a name="5359" class="Symbol"
+      >)</a
+      ><a name="5360"
+      >
+    </a
+      ><a name="5365" href="Universe.Utility.Pointed.html#2486" class="Function Operator"
+      >&#8771;&#8226;&#10216;</a
+      ><a name="5368"
+      > </a
+      ><a name="5369" class="Symbol"
+      >(</a
+      ><a name="5370" href="Universe.Hierarchy.html#2830" class="Function"
+      >&#937;^-Type</a
+      ><a name="5377"
+      > </a
+      ><a name="5378" href="Universe.Hierarchy.html#5174" class="Bound"
+      >m</a
+      ><a name="5379" class="Symbol"
+      >)</a
+      ><a name="5380"
+      > </a
+      ><a name="5381" href="Universe.Utility.Pointed.html#2486" class="Function Operator"
+      >&#10217;</a
+      ><a name="5382"
+      >
+      </a
+      ><a name="5389" href="Universe.Utility.Pointed.html#7787" class="Function"
+      >&#928;&#8226;</a
+      ><a name="5391"
+      > </a
+      ><a name="5392" class="Symbol"
+      >(_</a
+      ><a name="5394"
+      > </a
+      ><a name="5395" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="5396"
+      > </a
+      ><a name="5397" class="Symbol"
+      >&#955;</a
+      ><a name="5398"
+      > </a
+      ><a name="5399" class="Symbol"
+      >{(</a
+      ><a name="5401" href="Universe.Hierarchy.html#5401" class="Bound"
+      >A</a
+      ><a name="5402"
+      > </a
+      ><a name="5403" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="5404"
+      > </a
+      ><a name="5405" href="Universe.Hierarchy.html#5405" class="Bound"
+      >q</a
+      ><a name="5406" class="Symbol"
+      >)</a
+      ><a name="5407"
+      > </a
+      ><a name="5408" class="Symbol"
+      >&#8594;</a
+      ><a name="5409"
+      > </a
+      ><a name="5410" href="Universe.Utility.Pointed.html#2690" class="Function"
+      >&#937;</a
+      ><a name="5411"
+      > </a
+      ><a name="5412" href="Universe.Utility.General.html#843" class="Function Operator"
+      >^</a
+      ><a name="5413"
+      > </a
+      ><a name="5414" class="Symbol"
+      >(</a
+      ><a name="5415" href="Universe.Hierarchy.html#5174" class="Bound"
+      >m</a
+      ><a name="5416"
+      > </a
+      ><a name="5417" href="Universe.Utility.General.html#439" class="Function Operator"
+      >+</a
+      ><a name="5418"
+      > </a
+      ><a name="5419" class="Number"
+      >1</a
+      ><a name="5420" class="Symbol"
+      >)</a
+      ><a name="5421"
+      > </a
+      ><a name="5422" href="lib.Base.html#7882" class="Function Operator"
+      >$</a
+      ><a name="5423"
+      > </a
+      ><a name="5424" class="Symbol"
+      >(</a
+      ><a name="5425" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10214;</a
+      ><a name="5426"
+      > </a
+      ><a name="5427" href="Universe.Hierarchy.html#4260" class="Function"
+      >Loop</a
+      ><a name="5431"
+      > </a
+      ><a name="5432" class="Symbol"
+      >(</a
+      ><a name="5433" href="Universe.Hierarchy.html#5174" class="Bound"
+      >m</a
+      ><a name="5434"
+      > </a
+      ><a name="5435" href="Universe.Utility.General.html#439" class="Function Operator"
+      >+</a
+      ><a name="5436"
+      > </a
+      ><a name="5437" class="Number"
+      >1</a
+      ><a name="5438" class="Symbol"
+      >)</a
+      ><a name="5439"
+      > </a
+      ><a name="5440" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10215;</a
+      ><a name="5441"
+      > </a
+      ><a name="5442" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="5443"
+      > </a
+      ><a name="5444" class="Symbol"
+      >(</a
+      ><a name="5445" href="Universe.Hierarchy.html#5401" class="Bound"
+      >A</a
+      ><a name="5446"
+      > </a
+      ><a name="5447" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="5448"
+      > </a
+      ><a name="5449" href="Universe.Hierarchy.html#5405" class="Bound"
+      >q</a
+      ><a name="5450" class="Symbol"
+      >))})</a
+      ><a name="5454"
+      >
+    </a
+      ><a name="5459" href="Universe.Utility.Pointed.html#2486" class="Function Operator"
+      >&#8771;&#8226;&#10216;</a
+      ><a name="5462"
+      > </a
+      ><a name="5463" href="Universe.Utility.Pointed.html#2085" class="Function"
+      >ide&#8226;</a
+      ><a name="5467"
+      > </a
+      ><a name="5468" class="Symbol"
+      >_</a
+      ><a name="5469"
+      > </a
+      ><a name="5470" href="Universe.Utility.Pointed.html#2486" class="Function Operator"
+      >&#10217;</a
+      ><a name="5471"
+      >
+      </a
+      ><a name="5478" href="Universe.Utility.Pointed.html#7787" class="Function"
+      >&#928;&#8226;</a
+      ><a name="5480"
+      > </a
+      ><a name="5481" class="Symbol"
+      >(_</a
+      ><a name="5483"
+      > </a
+      ><a name="5484" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="5485"
+      > </a
+      ><a name="5486" class="Symbol"
+      >&#955;</a
+      ><a name="5487"
+      > </a
+      ><a name="5488" class="Symbol"
+      >{(</a
+      ><a name="5490" href="Universe.Hierarchy.html#5490" class="Bound"
+      >A</a
+      ><a name="5491"
+      > </a
+      ><a name="5492" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="5493"
+      > </a
+      ><a name="5494" href="Universe.Hierarchy.html#5494" class="Bound"
+      >q</a
+      ><a name="5495" class="Symbol"
+      >)</a
+      ><a name="5496"
+      > </a
+      ><a name="5497" class="Symbol"
+      >&#8594;</a
+      ><a name="5498"
+      > </a
+      ><a name="5499" href="Universe.Utility.Pointed.html#2690" class="Function"
+      >&#937;</a
+      ><a name="5500"
+      > </a
+      ><a name="5501" href="Universe.Utility.General.html#843" class="Function Operator"
+      >^</a
+      ><a name="5502"
+      > </a
+      ><a name="5503" class="Symbol"
+      >(</a
+      ><a name="5504" href="Universe.Hierarchy.html#5174" class="Bound"
+      >m</a
+      ><a name="5505"
+      > </a
+      ><a name="5506" href="Universe.Utility.General.html#439" class="Function Operator"
+      >+</a
+      ><a name="5507"
+      > </a
+      ><a name="5508" class="Number"
+      >1</a
+      ><a name="5509" class="Symbol"
+      >)</a
+      ><a name="5510"
+      > </a
+      ><a name="5511" href="lib.Base.html#7882" class="Function Operator"
+      >$</a
+      ><a name="5512"
+      > </a
+      ><a name="5513" href="Universe.Utility.Pointed.html#6955" class="Function"
+      >&#931;&#8226;</a
+      ><a name="5515"
+      > </a
+      ><a name="5516" class="Symbol"
+      >((_</a
+      ><a name="5519"
+      > </a
+      ><a name="5520" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="5521"
+      > </a
+      ><a name="5522" href="Universe.Hierarchy.html#5490" class="Bound"
+      >A</a
+      ><a name="5523" class="Symbol"
+      >)</a
+      ><a name="5524"
+      > </a
+      ><a name="5525" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="5526"
+      > </a
+      ><a name="5527" class="Symbol"
+      >(</a
+      ><a name="5528" href="Universe.Utility.Pointed.html#1427" class="Function"
+      >base</a
+      ><a name="5532"
+      > </a
+      ><a name="5533" href="lib.Base.html#7682" class="Function Operator"
+      >&#8728;</a
+      ><a name="5534"
+      > </a
+      ><a name="5535" href="lib.Base.html#5027" class="Field"
+      >fst</a
+      ><a name="5538"
+      > </a
+      ><a name="5539" href="lib.Base.html#7682" class="Function Operator"
+      >&#8728;</a
+      ><a name="5540"
+      > </a
+      ><a name="5541" href="Universe.Hierarchy.html#3283" class="Function"
+      >P</a
+      ><a name="5542"
+      > </a
+      ><a name="5543" href="Universe.Hierarchy.html#5174" class="Bound"
+      >m</a
+      ><a name="5544"
+      > </a
+      ><a name="5545" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="5546"
+      > </a
+      ><a name="5547" href="Universe.Hierarchy.html#5494" class="Bound"
+      >q</a
+      ><a name="5548" class="Symbol"
+      >))})</a
+      ><a name="5552"
+      >
+    </a
+      ><a name="5557" href="Universe.Utility.Pointed.html#2608" class="Function Operator"
+      >&#8771;&#8226;&#8718;</a
+      ><a name="5560"
+      >
+
+  </a
+      ><a name="5564" class="Comment"
+      >-- What we really want is to arrive at contractibility of E (m &#8805; 1)...</a
+      ><a name="5634"
+      >
+  </a
+      ><a name="5637" href="Universe.Hierarchy.html#5637" class="Function"
+      >E</a
+      ><a name="5638"
+      > </a
+      ><a name="5639" class="Symbol"
+      >=</a
+      ><a name="5640"
+      > </a
+      ><a name="5641" href="Universe.Utility.Pointed.html#7787" class="Function"
+      >&#928;&#8226;</a
+      ><a name="5643"
+      > </a
+      ><a name="5644" class="Symbol"
+      >(</a
+      ><a name="5645" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10214;</a
+      ><a name="5646"
+      > </a
+      ><a name="5647" href="Universe.Hierarchy.html#4260" class="Function"
+      >Loop</a
+      ><a name="5651"
+      > </a
+      ><a name="5652" class="Symbol"
+      >(</a
+      ><a name="5653" href="Universe.Hierarchy.html#5174" class="Bound"
+      >m</a
+      ><a name="5654"
+      > </a
+      ><a name="5655" href="Universe.Utility.General.html#439" class="Function Operator"
+      >+</a
+      ><a name="5656"
+      > </a
+      ><a name="5657" class="Number"
+      >1</a
+      ><a name="5658" class="Symbol"
+      >)</a
+      ><a name="5659"
+      > </a
+      ><a name="5660" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10215;</a
+      ><a name="5661"
+      > </a
+      ><a name="5662" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="5663"
+      > </a
+      ><a name="5664" class="Symbol"
+      >&#955;</a
+      ><a name="5665"
+      > </a
+      ><a name="5666" class="Symbol"
+      >{(</a
+      ><a name="5668" href="Universe.Hierarchy.html#5668" class="Bound"
+      >A</a
+      ><a name="5669"
+      > </a
+      ><a name="5670" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="5671"
+      > </a
+      ><a name="5672" href="Universe.Hierarchy.html#5672" class="Bound"
+      >q</a
+      ><a name="5673" class="Symbol"
+      >)</a
+      ><a name="5674"
+      > </a
+      ><a name="5675" class="Symbol"
+      >&#8594;</a
+      ><a name="5676"
+      > </a
+      ><a name="5677" href="Universe.Utility.Pointed.html#2690" class="Function"
+      >&#937;</a
+      ><a name="5678"
+      > </a
+      ><a name="5679" href="Universe.Utility.General.html#843" class="Function Operator"
+      >^</a
+      ><a name="5680"
+      > </a
+      ><a name="5681" class="Symbol"
+      >(</a
+      ><a name="5682" href="Universe.Hierarchy.html#5174" class="Bound"
+      >m</a
+      ><a name="5683"
+      > </a
+      ><a name="5684" href="Universe.Utility.General.html#439" class="Function Operator"
+      >+</a
+      ><a name="5685"
+      > </a
+      ><a name="5686" class="Number"
+      >1</a
+      ><a name="5687" class="Symbol"
+      >)</a
+      ><a name="5688"
+      > </a
+      ><a name="5689" href="lib.Base.html#7882" class="Function Operator"
+      >$</a
+      ><a name="5690"
+      > </a
+      ><a name="5691" class="Symbol"
+      >(</a
+      ><a name="5692" href="lib.types.TLevel.html#269" class="Function Operator"
+      >&#10216;</a
+      ><a name="5693"
+      > </a
+      ><a name="5694" href="Universe.Hierarchy.html#5174" class="Bound"
+      >m</a
+      ><a name="5695"
+      > </a
+      ><a name="5696" href="lib.types.TLevel.html#269" class="Function Operator"
+      >&#10217;</a
+      ><a name="5697"
+      > </a
+      ><a name="5698" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="5703"
+      > </a
+      ><a name="5704" href="Universe.Utility.General.html#639" class="Function Operator"
+      >&#65378;</a
+      ><a name="5705"
+      > </a
+      ><a name="5706" href="Universe.Hierarchy.html#5174" class="Bound"
+      >m</a
+      ><a name="5707"
+      > </a
+      ><a name="5708" href="Universe.Utility.General.html#639" class="Function Operator"
+      >&#65379;</a
+      ><a name="5709"
+      > </a
+      ><a name="5710" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="5711"
+      > </a
+      ><a name="5712" href="Universe.Hierarchy.html#5668" class="Bound"
+      >A</a
+      ><a name="5713" class="Symbol"
+      >)})</a
+      ><a name="5716"
+      >
+
+  </a
+      ><a name="5720" class="Comment"
+      >-- ...or at least show that the following element f of E is trivial (m &#8801; 0).</a
+      ><a name="5796"
+      >
+  </a
+      ><a name="5799" href="Universe.Hierarchy.html#5799" class="Function"
+      >f</a
+      ><a name="5800"
+      > </a
+      ><a name="5801" class="Symbol"
+      >:</a
+      ><a name="5802"
+      > </a
+      ><a name="5803" href="Universe.Utility.Pointed.html#1427" class="Function"
+      >base</a
+      ><a name="5807"
+      > </a
+      ><a name="5808" href="Universe.Hierarchy.html#5637" class="Function"
+      >E</a
+      ><a name="5809"
+      >
+  </a
+      ><a name="5812" href="Universe.Hierarchy.html#5799" class="Function"
+      >f</a
+      ><a name="5813"
+      > </a
+      ><a name="5814" class="Symbol"
+      >(_</a
+      ><a name="5816"
+      > </a
+      ><a name="5817" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="5818"
+      > </a
+      ><a name="5819" href="Universe.Hierarchy.html#5819" class="Bound"
+      >q</a
+      ><a name="5820" class="Symbol"
+      >)</a
+      ><a name="5821"
+      > </a
+      ><a name="5822" class="Symbol"
+      >=</a
+      ><a name="5823"
+      > </a
+      ><a name="5824" href="Universe.Hierarchy.html#5819" class="Bound"
+      >q</a
+      ><a name="5825"
+      >
+
+</a
+      ><a name="5827" class="Comment"
+      >{- We want to use our assumption of contractibility of Q (n + 1) (Loop (n + 1))
+   to show that f is trivial, i.e. constant with value the basepoint. -}</a
+      ><a name="5979"
+      >
+</a
+      ><a name="5980" href="Universe.Hierarchy.html#5980" class="Function"
+      >f-is-trivial</a
+      ><a name="5992"
+      > </a
+      ><a name="5993" class="Symbol"
+      >:</a
+      ><a name="5994"
+      > </a
+      ><a name="5995" class="Symbol"
+      >(</a
+      ><a name="5996" href="Universe.Hierarchy.html#5996" class="Bound"
+      >m</a
+      ><a name="5997"
+      > </a
+      ><a name="5998" class="Symbol"
+      >:</a
+      ><a name="5999"
+      > </a
+      ><a name="6000" href="lib.types.Nat.html#136" class="Datatype"
+      >&#8469;</a
+      ><a name="6001" class="Symbol"
+      >)</a
+      ><a name="6002"
+      > </a
+      ><a name="6003" class="Symbol"
+      >&#8594;</a
+      ><a name="6004"
+      > </a
+      ><a name="6005" href="Universe.Utility.Pointed.html#4332" class="Function"
+      >is-contr&#8226;</a
+      ><a name="6014"
+      > </a
+      ><a name="6015" class="Symbol"
+      >(</a
+      ><a name="6016" href="Universe.Hierarchy.html#3497" class="Function"
+      >Q</a
+      ><a name="6017"
+      > </a
+      ><a name="6018" class="Symbol"
+      >(</a
+      ><a name="6019" href="Universe.Hierarchy.html#5996" class="Bound"
+      >m</a
+      ><a name="6020"
+      > </a
+      ><a name="6021" href="Universe.Utility.General.html#439" class="Function Operator"
+      >+</a
+      ><a name="6022"
+      > </a
+      ><a name="6023" class="Number"
+      >1</a
+      ><a name="6024" class="Symbol"
+      >)</a
+      ><a name="6025"
+      > </a
+      ><a name="6026" class="Symbol"
+      >(</a
+      ><a name="6027" href="Universe.Hierarchy.html#4260" class="Function"
+      >Loop</a
+      ><a name="6031"
+      > </a
+      ><a name="6032" class="Symbol"
+      >(</a
+      ><a name="6033" href="Universe.Hierarchy.html#5996" class="Bound"
+      >m</a
+      ><a name="6034"
+      > </a
+      ><a name="6035" href="Universe.Utility.General.html#439" class="Function Operator"
+      >+</a
+      ><a name="6036"
+      > </a
+      ><a name="6037" class="Number"
+      >1</a
+      ><a name="6038" class="Symbol"
+      >)))</a
+      ><a name="6041"
+      > </a
+      ><a name="6042" class="Symbol"
+      >&#8594;</a
+      ><a name="6043"
+      > </a
+      ><a name="6044" href="Universe.Hierarchy.html#5799" class="Function"
+      >f</a
+      ><a name="6045"
+      > </a
+      ><a name="6046" href="Universe.Hierarchy.html#5996" class="Bound"
+      >m</a
+      ><a name="6047"
+      > </a
+      ><a name="6048" href="lib.Base.html#1950" class="Datatype Operator"
+      >==</a
+      ><a name="6050"
+      > </a
+      ><a name="6051" href="Universe.Utility.Pointed.html#1442" class="Function"
+      >pt</a
+      ><a name="6053"
+      > </a
+      ><a name="6054" class="Symbol"
+      >(</a
+      ><a name="6055" href="Universe.Hierarchy.html#5637" class="Function"
+      >E</a
+      ><a name="6056"
+      > </a
+      ><a name="6057" href="Universe.Hierarchy.html#5996" class="Bound"
+      >m</a
+      ><a name="6058" class="Symbol"
+      >)</a
+      ><a name="6059"
+      >
+
+</a
+      ><a name="6061" class="Comment"
+      >-- m &#8801; 0</a
+      ><a name="6069"
+      >
+</a
+      ><a name="6070" href="Universe.Hierarchy.html#5980" class="Function"
+      >f-is-trivial</a
+      ><a name="6082"
+      > </a
+      ><a name="6083" href="lib.types.Nat.html#154" class="InductiveConstructor"
+      >0</a
+      ><a name="6084"
+      > </a
+      ><a name="6085" href="Universe.Hierarchy.html#6085" class="Bound"
+      >c</a
+      ><a name="6086"
+      > </a
+      ><a name="6087" class="Symbol"
+      >=</a
+      ><a name="6088"
+      > </a
+      ><a name="6089" href="lib.Base.html#3569" class="Function"
+      >ap</a
+      ><a name="6091"
+      > </a
+      ><a name="6092" class="Symbol"
+      >(&#955;</a
+      ><a name="6094"
+      > </a
+      ><a name="6095" href="Universe.Hierarchy.html#6095" class="Bound"
+      >f'</a
+      ><a name="6097"
+      > </a
+      ><a name="6098" class="Symbol"
+      >&#8594;</a
+      ><a name="6099"
+      > </a
+      ><a name="6100" href="lib.Base.html#5027" class="Field"
+      >fst</a
+      ><a name="6103"
+      > </a
+      ><a name="6104" href="lib.Base.html#7682" class="Function Operator"
+      >&#8728;</a
+      ><a name="6105"
+      > </a
+      ><a name="6106" href="Universe.Hierarchy.html#6095" class="Bound"
+      >f'</a
+      ><a name="6108" class="Symbol"
+      >)</a
+      ><a name="6109"
+      >
+                      </a
+      ><a name="6132" class="Symbol"
+      >(</a
+      ><a name="6133" href="lib.Equivalences.html#3306" class="Function"
+      >&#8211;&gt;</a
+      ><a name="6135"
+      > </a
+      ><a name="6136" class="Symbol"
+      >(</a
+      ><a name="6137" href="Universe.Utility.Pointed.html#4540" class="Function"
+      >equiv-is-contr&#8226;</a
+      ><a name="6152"
+      > </a
+      ><a name="6153" href="Universe.Hierarchy.html#6518" class="Function"
+      >&#8230;-is-E'</a
+      ><a name="6160" class="Symbol"
+      >)</a
+      ><a name="6161"
+      > </a
+      ><a name="6162" href="Universe.Hierarchy.html#6085" class="Bound"
+      >c</a
+      ><a name="6163"
+      > </a
+      ><a name="6164" href="Universe.Hierarchy.html#6726" class="Function"
+      >f'</a
+      ><a name="6166" class="Symbol"
+      >)</a
+      ><a name="6167"
+      > </a
+      ><a name="6168" class="Keyword"
+      >where</a
+      ><a name="6173"
+      >
+  </a
+      ><a name="6176" class="Comment"
+      >{- This is almost E, except for the additional component
+     specifying that the first component p should commute with q. -}</a
+      ><a name="6301"
+      >
+  </a
+      ><a name="6304" href="Universe.Hierarchy.html#6304" class="Function"
+      >E'</a
+      ><a name="6306"
+      > </a
+      ><a name="6307" class="Symbol"
+      >=</a
+      ><a name="6308"
+      > </a
+      ><a name="6309" href="Universe.Utility.Pointed.html#7787" class="Function"
+      >&#928;&#8226;</a
+      ><a name="6311"
+      > </a
+      ><a name="6312" class="Symbol"
+      >(_</a
+      ><a name="6314"
+      > </a
+      ><a name="6315" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="6316"
+      > </a
+      ><a name="6317" class="Symbol"
+      >&#955;</a
+      ><a name="6318"
+      > </a
+      ><a name="6319" class="Symbol"
+      >{(</a
+      ><a name="6321" href="Universe.Hierarchy.html#6321" class="Bound"
+      >A</a
+      ><a name="6322"
+      > </a
+      ><a name="6323" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="6324"
+      > </a
+      ><a name="6325" href="Universe.Hierarchy.html#6325" class="Bound"
+      >q</a
+      ><a name="6326" class="Symbol"
+      >)</a
+      ><a name="6327"
+      > </a
+      ><a name="6328" class="Symbol"
+      >&#8594;</a
+      ><a name="6329"
+      > </a
+      ><a name="6330" class="Symbol"
+      >(</a
+      ><a name="6331" href="lib.Base.html#4935" class="Record"
+      >&#931;</a
+      ><a name="6332"
+      > </a
+      ><a name="6333" class="Symbol"
+      >(</a
+      ><a name="6334" href="Universe.Hierarchy.html#6321" class="Bound"
+      >A</a
+      ><a name="6335"
+      > </a
+      ><a name="6336" href="lib.Base.html#1950" class="Datatype Operator"
+      >==</a
+      ><a name="6338"
+      > </a
+      ><a name="6339" href="Universe.Hierarchy.html#6321" class="Bound"
+      >A</a
+      ><a name="6340" class="Symbol"
+      >)</a
+      ><a name="6341"
+      > </a
+      ><a name="6342" class="Symbol"
+      >(&#955;</a
+      ><a name="6344"
+      > </a
+      ><a name="6345" href="Universe.Hierarchy.html#6345" class="Bound"
+      >p</a
+      ><a name="6346"
+      > </a
+      ><a name="6347" class="Symbol"
+      >&#8594;</a
+      ><a name="6348"
+      > </a
+      ><a name="6349" href="Universe.Hierarchy.html#6325" class="Bound"
+      >q</a
+      ><a name="6350"
+      > </a
+      ><a name="6351" href="lib.Base.html#3019" class="Function"
+      >==</a
+      ><a name="6353"
+      > </a
+      ><a name="6354" href="Universe.Hierarchy.html#6325" class="Bound"
+      >q</a
+      ><a name="6355"
+      > </a
+      ><a name="6356" href="lib.Base.html#3019" class="Function"
+      >[</a
+      ><a name="6357"
+      > </a
+      ><a name="6358" class="Symbol"
+      >(&#955;</a
+      ><a name="6360"
+      > </a
+      ><a name="6361" href="Universe.Hierarchy.html#6361" class="Bound"
+      >x</a
+      ><a name="6362"
+      > </a
+      ><a name="6363" class="Symbol"
+      >&#8594;</a
+      ><a name="6364"
+      > </a
+      ><a name="6365" href="Universe.Hierarchy.html#6361" class="Bound"
+      >x</a
+      ><a name="6366"
+      > </a
+      ><a name="6367" href="lib.Base.html#1950" class="Datatype Operator"
+      >==</a
+      ><a name="6369"
+      > </a
+      ><a name="6370" href="Universe.Hierarchy.html#6361" class="Bound"
+      >x</a
+      ><a name="6371" class="Symbol"
+      >)</a
+      ><a name="6372"
+      > </a
+      ><a name="6373" href="lib.Base.html#3019" class="Function"
+      >&#8595;</a
+      ><a name="6374"
+      > </a
+      ><a name="6375" href="Universe.Hierarchy.html#6345" class="Bound"
+      >p</a
+      ><a name="6376"
+      > </a
+      ><a name="6377" href="lib.Base.html#3019" class="Function"
+      >]</a
+      ><a name="6378" class="Symbol"
+      >)</a
+      ><a name="6379"
+      >
+                                       </a
+      ><a name="6419" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="6420"
+      > </a
+      ><a name="6421" class="Symbol"
+      >(</a
+      ><a name="6422" href="lib.Base.html#2001" class="InductiveConstructor"
+      >idp</a
+      ><a name="6425"
+      > </a
+      ><a name="6426" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="6427"
+      > </a
+      ><a name="6428" href="lib.Base.html#2001" class="InductiveConstructor"
+      >idp</a
+      ><a name="6431" class="Symbol"
+      >))})</a
+      ><a name="6435"
+      >
+
+  </a
+      ><a name="6439" class="Comment"
+      >-- This &quot;almost&quot; E comes from Q 1 (Loop 1), hence can be shown contractible.</a
+      ><a name="6515"
+      >
+  </a
+      ><a name="6518" href="Universe.Hierarchy.html#6518" class="Function"
+      >&#8230;-is-E'</a
+      ><a name="6525"
+      > </a
+      ><a name="6526" class="Symbol"
+      >:</a
+      ><a name="6527"
+      > </a
+      ><a name="6528" href="Universe.Hierarchy.html#3497" class="Function"
+      >Q</a
+      ><a name="6529"
+      > </a
+      ><a name="6530" class="Number"
+      >1</a
+      ><a name="6531"
+      > </a
+      ><a name="6532" class="Symbol"
+      >(</a
+      ><a name="6533" href="Universe.Hierarchy.html#4260" class="Function"
+      >Loop</a
+      ><a name="6537"
+      > </a
+      ><a name="6538" class="Number"
+      >1</a
+      ><a name="6539" class="Symbol"
+      >)</a
+      ><a name="6540"
+      > </a
+      ><a name="6541" href="Universe.Utility.Pointed.html#1978" class="Function Operator"
+      >&#8771;&#8226;</a
+      ><a name="6543"
+      > </a
+      ><a name="6544" href="Universe.Hierarchy.html#6304" class="Function"
+      >E'</a
+      ><a name="6546"
+      >
+  </a
+      ><a name="6549" href="Universe.Hierarchy.html#6518" class="Function"
+      >&#8230;-is-E'</a
+      ><a name="6556"
+      > </a
+      ><a name="6557" class="Symbol"
+      >=</a
+      ><a name="6558"
+      > </a
+      ><a name="6559" href="Universe.Utility.Pointed.html#8291" class="Function"
+      >equiv-&#928;&#8226;</a
+      ><a name="6567"
+      > </a
+      ><a name="6568" class="Symbol"
+      >(</a
+      ><a name="6569" href="lib.Equivalences.html#3897" class="Function"
+      >ide</a
+      ><a name="6572"
+      > </a
+      ><a name="6573" class="Symbol"
+      >_</a
+      ><a name="6574"
+      > </a
+      ><a name="6575" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="6576"
+      > </a
+      ><a name="6577" href="Universe.Utility.Pointed.html#7233" class="Function"
+      >&#937;-&#931;&#8226;-comm</a
+      ><a name="6586"
+      > </a
+      ><a name="6587" href="lib.Base.html#7682" class="Function Operator"
+      >&#8728;</a
+      ><a name="6588"
+      > </a
+      ><a name="6589" class="Symbol"
+      >_)</a
+      ><a name="6591"
+      > </a
+      ><a name="6592" href="Universe.Utility.Pointed.html#2143" class="Function Operator"
+      >&#8728;e&#8226;</a
+      ><a name="6595"
+      > </a
+      ><a name="6596" href="Universe.Hierarchy.html#5259" class="Function"
+      >Q-L-is-&#8230;</a
+      ><a name="6604"
+      > </a
+      ><a name="6605" class="Number"
+      >0</a
+      ><a name="6606"
+      >
+
+  </a
+      ><a name="6610" class="Comment"
+      >{- Fortunately, f can be 'extended' to an element f' of E',
+     and triviality of f' implies triviality of f. -}</a
+      ><a name="6723"
+      >
+  </a
+      ><a name="6726" href="Universe.Hierarchy.html#6726" class="Function"
+      >f'</a
+      ><a name="6728"
+      > </a
+      ><a name="6729" class="Symbol"
+      >=</a
+      ><a name="6730"
+      > </a
+      ><a name="6731" class="Symbol"
+      >&#955;</a
+      ><a name="6732"
+      > </a
+      ><a name="6733" class="Symbol"
+      >{(_</a
+      ><a name="6736"
+      > </a
+      ><a name="6737" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="6738"
+      > </a
+      ><a name="6739" href="Universe.Hierarchy.html#6739" class="Bound"
+      >q</a
+      ><a name="6740" class="Symbol"
+      >)</a
+      ><a name="6741"
+      > </a
+      ><a name="6742" class="Symbol"
+      >&#8594;</a
+      ><a name="6743"
+      > </a
+      ><a name="6744" class="Symbol"
+      >(</a
+      ><a name="6745" href="Universe.Hierarchy.html#6739" class="Bound"
+      >q</a
+      ><a name="6746"
+      > </a
+      ><a name="6747" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="6748"
+      > </a
+      ><a name="6749" href="lib.types.Paths.html#1765" class="Function"
+      >&#8595;-idf=idf-in</a
+      ><a name="6761"
+      > </a
+      ><a name="6762" class="Symbol"
+      >(</a
+      ><a name="6763" href="lib.PathGroupoid.html#544" class="Function"
+      >&#8729;=&#8729;'</a
+      ><a name="6767"
+      > </a
+      ><a name="6768" href="Universe.Hierarchy.html#6739" class="Bound"
+      >q</a
+      ><a name="6769"
+      > </a
+      ><a name="6770" href="Universe.Hierarchy.html#6739" class="Bound"
+      >q</a
+      ><a name="6771" class="Symbol"
+      >))}</a
+      ><a name="6774"
+      >
+
+</a
+      ><a name="6776" class="Comment"
+      >{- m &#8805; 1: We can show Q (k + 2) (Loop (k + 2)) &#8771; E (k + 1),
+          thus E is contractible, hence f trivial. -}</a
+      ><a name="6889"
+      >
+</a
+      ><a name="6890" href="Universe.Hierarchy.html#5980" class="Function"
+      >f-is-trivial</a
+      ><a name="6902"
+      > </a
+      ><a name="6903" class="Symbol"
+      >(</a
+      ><a name="6904" href="lib.types.Nat.html#162" class="InductiveConstructor"
+      >S</a
+      ><a name="6905"
+      > </a
+      ><a name="6906" href="Universe.Hierarchy.html#6906" class="Bound"
+      >k</a
+      ><a name="6907" class="Symbol"
+      >)</a
+      ><a name="6908"
+      > </a
+      ><a name="6909" href="Universe.Hierarchy.html#6909" class="Bound"
+      >c</a
+      ><a name="6910"
+      > </a
+      ><a name="6911" class="Symbol"
+      >=</a
+      ><a name="6912"
+      > </a
+      ><a name="6913" href="lib.Equivalences.html#3306" class="Function"
+      >&#8211;&gt;</a
+      ><a name="6915"
+      > </a
+      ><a name="6916" class="Symbol"
+      >(</a
+      ><a name="6917" href="Universe.Utility.Pointed.html#4540" class="Function"
+      >equiv-is-contr&#8226;</a
+      ><a name="6932"
+      > </a
+      ><a name="6933" class="Symbol"
+      >(</a
+      ><a name="6934" href="Universe.Hierarchy.html#7012" class="Function"
+      >&#8230;-is-E</a
+      ><a name="6940"
+      > </a
+      ><a name="6941" href="Universe.Utility.Pointed.html#2143" class="Function Operator"
+      >&#8728;e&#8226;</a
+      ><a name="6944"
+      > </a
+      ><a name="6945" href="Universe.Hierarchy.html#5259" class="Function"
+      >Q-L-is-&#8230;</a
+      ><a name="6953"
+      > </a
+      ><a name="6954" class="Symbol"
+      >(</a
+      ><a name="6955" href="Universe.Hierarchy.html#6906" class="Bound"
+      >k</a
+      ><a name="6956"
+      > </a
+      ><a name="6957" href="Universe.Utility.General.html#439" class="Function Operator"
+      >+</a
+      ><a name="6958"
+      > </a
+      ><a name="6959" class="Number"
+      >1</a
+      ><a name="6960" class="Symbol"
+      >)))</a
+      ><a name="6963"
+      >
+                          </a
+      ><a name="6990" href="Universe.Hierarchy.html#6909" class="Bound"
+      >c</a
+      ><a name="6991"
+      > </a
+      ><a name="6992" class="Symbol"
+      >(</a
+      ><a name="6993" href="Universe.Hierarchy.html#5799" class="Function"
+      >f</a
+      ><a name="6994"
+      > </a
+      ><a name="6995" class="Symbol"
+      >(</a
+      ><a name="6996" href="Universe.Hierarchy.html#6906" class="Bound"
+      >k</a
+      ><a name="6997"
+      > </a
+      ><a name="6998" href="Universe.Utility.General.html#439" class="Function Operator"
+      >+</a
+      ><a name="6999"
+      > </a
+      ><a name="7000" class="Number"
+      >1</a
+      ><a name="7001" class="Symbol"
+      >))</a
+      ><a name="7003"
+      > </a
+      ><a name="7004" class="Keyword"
+      >where</a
+      ><a name="7009"
+      >
+  </a
+      ><a name="7012" href="Universe.Hierarchy.html#7012" class="Function"
+      >&#8230;-is-E</a
+      ><a name="7018"
+      > </a
+      ><a name="7019" class="Symbol"
+      >:</a
+      ><a name="7020"
+      > </a
+      ><a name="7021" class="Symbol"
+      >_</a
+      ><a name="7022"
+      > </a
+      ><a name="7023" href="Universe.Utility.Pointed.html#1978" class="Function Operator"
+      >&#8771;&#8226;</a
+      ><a name="7025"
+      > </a
+      ><a name="7026" href="Universe.Hierarchy.html#5637" class="Function"
+      >E</a
+      ><a name="7027"
+      > </a
+      ><a name="7028" class="Symbol"
+      >(</a
+      ><a name="7029" href="Universe.Hierarchy.html#6906" class="Bound"
+      >k</a
+      ><a name="7030"
+      > </a
+      ><a name="7031" href="Universe.Utility.General.html#439" class="Function Operator"
+      >+</a
+      ><a name="7032"
+      > </a
+      ><a name="7033" class="Number"
+      >1</a
+      ><a name="7034" class="Symbol"
+      >)</a
+      ><a name="7035"
+      >
+  </a
+      ><a name="7038" href="Universe.Hierarchy.html#7012" class="Function"
+      >&#8230;-is-E</a
+      ><a name="7044"
+      > </a
+      ><a name="7045" class="Symbol"
+      >=</a
+      ><a name="7046"
+      > </a
+      ><a name="7047" href="Universe.Utility.Pointed.html#8291" class="Function"
+      >equiv-&#928;&#8226;</a
+      ><a name="7055"
+      > </a
+      ><a name="7056" class="Symbol"
+      >(</a
+      ><a name="7057" href="lib.Equivalences.html#3897" class="Function"
+      >ide</a
+      ><a name="7060"
+      > </a
+      ><a name="7061" class="Symbol"
+      >_</a
+      ><a name="7062"
+      > </a
+      ><a name="7063" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="7064"
+      > </a
+      ><a name="7065" href="Universe.Utility.Pointed.html#3098" class="Function"
+      >equiv-&#937;^</a
+      ><a name="7073"
+      > </a
+      ><a name="7074" href="Universe.Hierarchy.html#6906" class="Bound"
+      >k</a
+      ><a name="7075"
+      > </a
+      ><a name="7076" href="lib.Base.html#7682" class="Function Operator"
+      >&#8728;</a
+      ><a name="7077"
+      > </a
+      ><a name="7078" class="Symbol"
+      >(&#955;</a
+      ><a name="7080"
+      > </a
+      ><a name="7081" class="Symbol"
+      >{(</a
+      ><a name="7083" href="Universe.Hierarchy.html#7083" class="Bound"
+      >A</a
+      ><a name="7084"
+      > </a
+      ><a name="7085" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="7086"
+      > </a
+      ><a name="7087" href="Universe.Hierarchy.html#7087" class="Bound"
+      >q</a
+      ><a name="7088" class="Symbol"
+      >)</a
+      ><a name="7089"
+      > </a
+      ><a name="7090" class="Symbol"
+      >&#8594;</a
+      ><a name="7091"
+      > </a
+      ><a name="7092" href="Universe.Utility.Pointed.html#8597" class="Function"
+      >forget-&#937;^-&#931;&#8226;&#8322;</a
+      ><a name="7105"
+      >
+             </a
+      ><a name="7119" class="Symbol"
+      >{</a
+      ><a name="7120" href="Universe.Utility.General.html#639" class="Function Operator"
+      >&#65378;</a
+      ><a name="7121"
+      > </a
+      ><a name="7122" href="Universe.Hierarchy.html#6906" class="Bound"
+      >k</a
+      ><a name="7123"
+      > </a
+      ><a name="7124" href="Universe.Utility.General.html#439" class="Function Operator"
+      >+</a
+      ><a name="7125"
+      > </a
+      ><a name="7126" class="Number"
+      >2</a
+      ><a name="7127"
+      > </a
+      ><a name="7128" href="Universe.Utility.General.html#639" class="Function Operator"
+      >&#65379;</a
+      ><a name="7129" class="Symbol"
+      >}</a
+      ><a name="7130"
+      > </a
+      ><a name="7131" class="Symbol"
+      >(</a
+      ><a name="7132" href="Universe.Utility.Pointed.html#1427" class="Function"
+      >base</a
+      ><a name="7136"
+      > </a
+      ><a name="7137" href="lib.Base.html#7682" class="Function Operator"
+      >&#8728;</a
+      ><a name="7138"
+      > </a
+      ><a name="7139" href="lib.Base.html#5027" class="Field"
+      >fst</a
+      ><a name="7142"
+      > </a
+      ><a name="7143" href="lib.Base.html#7682" class="Function Operator"
+      >&#8728;</a
+      ><a name="7144"
+      > </a
+      ><a name="7145" href="Universe.Hierarchy.html#3283" class="Function"
+      >P</a
+      ><a name="7146"
+      > </a
+      ><a name="7147" class="Symbol"
+      >(</a
+      ><a name="7148" href="Universe.Hierarchy.html#6906" class="Bound"
+      >k</a
+      ><a name="7149"
+      > </a
+      ><a name="7150" href="Universe.Utility.General.html#439" class="Function Operator"
+      >+</a
+      ><a name="7151"
+      > </a
+      ><a name="7152" class="Number"
+      >1</a
+      ><a name="7153" class="Symbol"
+      >)</a
+      ><a name="7154"
+      > </a
+      ><a name="7155" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="7156"
+      > </a
+      ><a name="7157" href="Universe.Hierarchy.html#7087" class="Bound"
+      >q</a
+      ><a name="7158" class="Symbol"
+      >)</a
+      ><a name="7159"
+      > </a
+      ><a name="7160" class="Number"
+      >2</a
+      ><a name="7161"
+      >
+             </a
+      ><a name="7175" class="Symbol"
+      >(</a
+      ><a name="7176" href="lib.Base.html#5039" class="Field"
+      >snd</a
+      ><a name="7179"
+      > </a
+      ><a name="7180" href="lib.Base.html#7682" class="Function Operator"
+      >&#8728;</a
+      ><a name="7181"
+      > </a
+      ><a name="7182" href="Universe.Hierarchy.html#3283" class="Function"
+      >P</a
+      ><a name="7183"
+      > </a
+      ><a name="7184" class="Symbol"
+      >(</a
+      ><a name="7185" href="Universe.Hierarchy.html#6906" class="Bound"
+      >k</a
+      ><a name="7186"
+      > </a
+      ><a name="7187" href="Universe.Utility.General.html#439" class="Function Operator"
+      >+</a
+      ><a name="7188"
+      > </a
+      ><a name="7189" class="Number"
+      >1</a
+      ><a name="7190" class="Symbol"
+      >))}))</a
+      ><a name="7195"
+      >
+
+</a
+      ><a name="7197" class="Comment"
+      >-- Our main lemma: like in the article, but in negative form.</a
+      ><a name="7258"
+      >
+</a
+      ><a name="7259" href="Universe.Hierarchy.html#7259" class="Function"
+      >main</a
+      ><a name="7263"
+      > </a
+      ><a name="7264" class="Symbol"
+      >:</a
+      ><a name="7265"
+      > </a
+      ><a name="7266" class="Symbol"
+      >(</a
+      ><a name="7267" href="Universe.Hierarchy.html#7267" class="Bound"
+      >n</a
+      ><a name="7268"
+      > </a
+      ><a name="7269" class="Symbol"
+      >:</a
+      ><a name="7270"
+      > </a
+      ><a name="7271" href="lib.types.Nat.html#136" class="Datatype"
+      >&#8469;</a
+      ><a name="7272" class="Symbol"
+      >)</a
+      ><a name="7273"
+      > </a
+      ><a name="7274" class="Symbol"
+      >&#8594;</a
+      ><a name="7275"
+      > </a
+      ><a name="7276" href="lib.Base.html#5719" class="Function"
+      >&#172;</a
+      ><a name="7277"
+      > </a
+      ><a name="7278" class="Symbol"
+      >(</a
+      ><a name="7279" href="Universe.Utility.Pointed.html#4332" class="Function"
+      >is-contr&#8226;</a
+      ><a name="7288"
+      > </a
+      ><a name="7289" class="Symbol"
+      >(</a
+      ><a name="7290" href="Universe.Hierarchy.html#3497" class="Function"
+      >Q</a
+      ><a name="7291"
+      > </a
+      ><a name="7292" href="Universe.Hierarchy.html#7267" class="Bound"
+      >n</a
+      ><a name="7293"
+      > </a
+      ><a name="7294" class="Symbol"
+      >(</a
+      ><a name="7295" href="Universe.Hierarchy.html#4260" class="Function"
+      >Loop</a
+      ><a name="7299"
+      > </a
+      ><a name="7300" href="Universe.Hierarchy.html#7267" class="Bound"
+      >n</a
+      ><a name="7301" class="Symbol"
+      >)))</a
+      ><a name="7304"
+      >
+</a
+      ><a name="7305" href="Universe.Hierarchy.html#7259" class="Function"
+      >main</a
+      ><a name="7309"
+      > </a
+      ><a name="7310" href="lib.types.Nat.html#154" class="InductiveConstructor"
+      >0</a
+      ><a name="7311"
+      >       </a
+      ><a name="7318" class="Symbol"
+      >=</a
+      ><a name="7319"
+      > </a
+      ><a name="7320" href="Universe.Hierarchy.html#4591" class="Function"
+      >base-case</a
+      ><a name="7329"
+      >
+</a
+      ><a name="7330" href="Universe.Hierarchy.html#7259" class="Function"
+      >main</a
+      ><a name="7334"
+      > </a
+      ><a name="7335" class="Symbol"
+      >(</a
+      ><a name="7336" href="lib.types.Nat.html#162" class="InductiveConstructor"
+      >S</a
+      ><a name="7337"
+      > </a
+      ><a name="7338" href="Universe.Hierarchy.html#7338" class="Bound"
+      >m</a
+      ><a name="7339" class="Symbol"
+      >)</a
+      ><a name="7340"
+      > </a
+      ><a name="7341" href="Universe.Hierarchy.html#7341" class="Bound"
+      >c</a
+      ><a name="7342"
+      > </a
+      ><a name="7343" class="Symbol"
+      >=</a
+      ><a name="7344"
+      > </a
+      ><a name="7345" href="Universe.Hierarchy.html#7259" class="Function"
+      >main</a
+      ><a name="7349"
+      > </a
+      ><a name="7350" href="Universe.Hierarchy.html#7338" class="Bound"
+      >m</a
+      ><a name="7351"
+      > </a
+      ><a name="7352" href="Universe.Hierarchy.html#7700" class="Function"
+      >step</a
+      ><a name="7356"
+      > </a
+      ><a name="7357" class="Keyword"
+      >where</a
+      ><a name="7362"
+      >
+  </a
+      ><a name="7365" class="Comment"
+      >{- We know Q (m + 1) (Loop (m + 1)) is contractible,
+     use that to show that the above f is trivial,
+     deduce f (Loop m , p) &#8801; p is trivial for all p in P m (Loop m),
+     which implies P m (Loop m) is contractible.
+     But this is just another form of Q m (Loop m),
+     so the conclusion follows by induction hypothesis. -}</a
+      ><a name="7697"
+      >
+  </a
+      ><a name="7700" href="Universe.Hierarchy.html#7700" class="Function"
+      >step</a
+      ><a name="7704"
+      > </a
+      ><a name="7705" class="Symbol"
+      >:</a
+      ><a name="7706"
+      > </a
+      ><a name="7707" href="Universe.Utility.Pointed.html#4332" class="Function"
+      >is-contr&#8226;</a
+      ><a name="7716"
+      > </a
+      ><a name="7717" class="Symbol"
+      >(</a
+      ><a name="7718" href="Universe.Hierarchy.html#3497" class="Function"
+      >Q</a
+      ><a name="7719"
+      > </a
+      ><a name="7720" href="Universe.Hierarchy.html#7338" class="Bound"
+      >m</a
+      ><a name="7721"
+      > </a
+      ><a name="7722" class="Symbol"
+      >(</a
+      ><a name="7723" href="Universe.Hierarchy.html#4260" class="Function"
+      >Loop</a
+      ><a name="7727"
+      > </a
+      ><a name="7728" href="Universe.Hierarchy.html#7338" class="Bound"
+      >m</a
+      ><a name="7729" class="Symbol"
+      >))</a
+      ><a name="7731"
+      >
+  </a
+      ><a name="7734" href="Universe.Hierarchy.html#7700" class="Function"
+      >step</a
+      ><a name="7738"
+      > </a
+      ><a name="7739" class="Symbol"
+      >=</a
+      ><a name="7740"
+      > </a
+      ><a name="7741" href="lib.Equivalences.html#3306" class="Function"
+      >&#8211;&gt;</a
+      ><a name="7743"
+      > </a
+      ><a name="7744" class="Symbol"
+      >(</a
+      ><a name="7745" href="Universe.Utility.Pointed.html#4540" class="Function"
+      >equiv-is-contr&#8226;</a
+      ><a name="7760"
+      > </a
+      ><a name="7761" class="Symbol"
+      >(</a
+      ><a name="7762" href="Universe.Hierarchy.html#3561" class="Function"
+      >P-is-Q</a
+      ><a name="7768"
+      > </a
+      ><a name="7769" href="Universe.Hierarchy.html#7338" class="Bound"
+      >m</a
+      ><a name="7770"
+      > </a
+      ><a name="7771" class="Symbol"
+      >(</a
+      ><a name="7772" href="Universe.Hierarchy.html#4260" class="Function"
+      >Loop</a
+      ><a name="7776"
+      > </a
+      ><a name="7777" href="Universe.Hierarchy.html#7338" class="Bound"
+      >m</a
+      ><a name="7778" class="Symbol"
+      >)))</a
+      ><a name="7781"
+      >
+            </a
+      ><a name="7794" class="Symbol"
+      >(&#955;</a
+      ><a name="7796"
+      > </a
+      ><a name="7797" href="Universe.Hierarchy.html#7797" class="Bound"
+      >q</a
+      ><a name="7798"
+      > </a
+      ><a name="7799" class="Symbol"
+      >&#8594;</a
+      ><a name="7800"
+      > </a
+      ><a name="7801" href="lib.Funext.html#3893" class="Function"
+      >app=</a
+      ><a name="7805"
+      > </a
+      ><a name="7806" class="Symbol"
+      >(</a
+      ><a name="7807" href="Universe.Hierarchy.html#5980" class="Function"
+      >f-is-trivial</a
+      ><a name="7819"
+      > </a
+      ><a name="7820" href="Universe.Hierarchy.html#7338" class="Bound"
+      >m</a
+      ><a name="7821"
+      > </a
+      ><a name="7822" href="Universe.Hierarchy.html#7341" class="Bound"
+      >c</a
+      ><a name="7823" class="Symbol"
+      >)</a
+      ><a name="7824"
+      > </a
+      ><a name="7825" class="Symbol"
+      >(</a
+      ><a name="7826" href="Universe.Hierarchy.html#4260" class="Function"
+      >Loop</a
+      ><a name="7830"
+      > </a
+      ><a name="7831" href="Universe.Hierarchy.html#7338" class="Bound"
+      >m</a
+      ><a name="7832"
+      > </a
+      ><a name="7833" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="7834"
+      > </a
+      ><a name="7835" href="Universe.Hierarchy.html#7797" class="Bound"
+      >q</a
+      ><a name="7836" class="Symbol"
+      >))</a
+      ><a name="7838"
+      >
+
+</a
+      ><a name="7840" class="Comment"
+      >-- Main theorems now fall out as corollaries.</a
+      ><a name="7885"
+      >
+</a
+      ><a name="7886" class="Keyword"
+      >module</a
+      ><a name="7892"
+      > </a
+      ><a name="7893" href="Universe.Hierarchy.html#7893" class="Module"
+      >_</a
+      ><a name="7894"
+      > </a
+      ><a name="7895" class="Symbol"
+      >(</a
+      ><a name="7896" href="Universe.Hierarchy.html#7896" class="Bound"
+      >n</a
+      ><a name="7897"
+      > </a
+      ><a name="7898" class="Symbol"
+      >:</a
+      ><a name="7899"
+      > </a
+      ><a name="7900" href="lib.types.Nat.html#136" class="Datatype"
+      >&#8469;</a
+      ><a name="7901" class="Symbol"
+      >)</a
+      ><a name="7902"
+      > </a
+      ><a name="7903" class="Keyword"
+      >where</a
+      ><a name="7908"
+      >
+  </a
+      ><a name="7911" href="Universe.Hierarchy.html#7911" class="Function"
+      >&#937;-&#10214;Loop&#10215;-is-not-tr</a
+      ><a name="7929"
+      > </a
+      ><a name="7930" class="Symbol"
+      >:</a
+      ><a name="7931"
+      > </a
+      ><a name="7932" href="lib.Base.html#5719" class="Function"
+      >&#172;</a
+      ><a name="7933"
+      > </a
+      ><a name="7934" class="Symbol"
+      >(</a
+      ><a name="7935" href="Universe.Utility.Pointed.html#3384" class="Function"
+      >has-level&#8226;</a
+      ><a name="7945"
+      > </a
+      ><a name="7946" class="Symbol"
+      >(</a
+      ><a name="7947" href="Universe.Hierarchy.html#7896" class="Bound"
+      >n</a
+      ><a name="7948"
+      > </a
+      ><a name="7949" href="lib.types.TLevel.html#238" class="Function Operator"
+      >-1</a
+      ><a name="7951" class="Symbol"
+      >)</a
+      ><a name="7952"
+      > </a
+      ><a name="7953" class="Symbol"
+      >(</a
+      ><a name="7954" href="Universe.Utility.Pointed.html#2690" class="Function"
+      >&#937;</a
+      ><a name="7955"
+      > </a
+      ><a name="7956" class="Symbol"
+      >(_</a
+      ><a name="7958"
+      > </a
+      ><a name="7959" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="7960"
+      > </a
+      ><a name="7961" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10214;</a
+      ><a name="7962"
+      > </a
+      ><a name="7963" href="Universe.Hierarchy.html#4260" class="Function"
+      >Loop</a
+      ><a name="7967"
+      > </a
+      ><a name="7968" href="Universe.Hierarchy.html#7896" class="Bound"
+      >n</a
+      ><a name="7969"
+      > </a
+      ><a name="7970" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10215;</a
+      ><a name="7971" class="Symbol"
+      >)))</a
+      ><a name="7974"
+      >
+  </a
+      ><a name="7977" href="Universe.Hierarchy.html#7911" class="Function"
+      >&#937;-&#10214;Loop&#10215;-is-not-tr</a
+      ><a name="7995"
+      > </a
+      ><a name="7996" class="Symbol"
+      >=</a
+      ><a name="7997"
+      > </a
+      ><a name="7998" href="Universe.Hierarchy.html#7259" class="Function"
+      >main</a
+      ><a name="8002"
+      > </a
+      ><a name="8003" href="Universe.Hierarchy.html#7896" class="Bound"
+      >n</a
+      ><a name="8004"
+      >
+                     </a
+      ><a name="8026" href="lib.Base.html#7682" class="Function Operator"
+      >&#8728;</a
+      ><a name="8027"
+      > </a
+      ><a name="8028" href="Universe.Utility.Pointed.html#4384" class="Function"
+      >prop-is-contr&#8226;</a
+      ><a name="8042"
+      > </a
+      ><a name="8043" class="Symbol"
+      >_</a
+      ><a name="8044"
+      >
+                     </a
+      ><a name="8066" href="lib.Base.html#7682" class="Function Operator"
+      >&#8728;</a
+      ><a name="8067"
+      > </a
+      ><a name="8068" href="Universe.Utility.Pointed.html#3463" class="Function"
+      >trunc-many</a
+      ><a name="8078"
+      > </a
+      ><a name="8079" href="Universe.Hierarchy.html#7896" class="Bound"
+      >n</a
+      ><a name="8080"
+      >
+                     </a
+      ><a name="8102" href="lib.Base.html#7682" class="Function Operator"
+      >&#8728;</a
+      ><a name="8103"
+      > </a
+      ><a name="8104" href="lib.Base.html#4463" class="Function"
+      >transport</a
+      ><a name="8113"
+      > </a
+      ><a name="8114" class="Symbol"
+      >(&#955;</a
+      ><a name="8116"
+      > </a
+      ><a name="8117" href="Universe.Hierarchy.html#8117" class="Bound"
+      >k</a
+      ><a name="8118"
+      > </a
+      ><a name="8119" class="Symbol"
+      >&#8594;</a
+      ><a name="8120"
+      > </a
+      ><a name="8121" href="Universe.Utility.Pointed.html#3384" class="Function"
+      >has-level&#8226;</a
+      ><a name="8131"
+      > </a
+      ><a name="8132" class="Symbol"
+      >(</a
+      ><a name="8133" href="Universe.Hierarchy.html#8117" class="Bound"
+      >k</a
+      ><a name="8134"
+      > </a
+      ><a name="8135" href="lib.types.TLevel.html#191" class="Function Operator"
+      >-2</a
+      ><a name="8137" class="Symbol"
+      >)</a
+      ><a name="8138"
+      > </a
+      ><a name="8139" class="Symbol"
+      >(</a
+      ><a name="8140" href="Universe.Utility.Pointed.html#2690" class="Function"
+      >&#937;</a
+      ><a name="8141"
+      > </a
+      ><a name="8142" class="Symbol"
+      >(_</a
+      ><a name="8144"
+      > </a
+      ><a name="8145" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="8146"
+      > </a
+      ><a name="8147" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10214;</a
+      ><a name="8148"
+      > </a
+      ><a name="8149" href="Universe.Hierarchy.html#4260" class="Function"
+      >Loop</a
+      ><a name="8153"
+      > </a
+      ><a name="8154" href="Universe.Hierarchy.html#7896" class="Bound"
+      >n</a
+      ><a name="8155"
+      > </a
+      ><a name="8156" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10215;</a
+      ><a name="8157" class="Symbol"
+      >)))</a
+      ><a name="8160"
+      >
+                                 </a
+      ><a name="8194" class="Symbol"
+      >(</a
+      ><a name="8195" href="lib.types.Nat.html#491" class="Function"
+      >+-comm</a
+      ><a name="8201"
+      > </a
+      ><a name="8202" class="Number"
+      >1</a
+      ><a name="8203"
+      > </a
+      ><a name="8204" href="Universe.Hierarchy.html#7896" class="Bound"
+      >n</a
+      ><a name="8205" class="Symbol"
+      >)</a
+      ><a name="8206"
+      >
+
+  </a
+      ><a name="8210" href="Universe.Hierarchy.html#8210" class="Function"
+      >&#937;-Loop-is-not-tr</a
+      ><a name="8226"
+      > </a
+      ><a name="8227" class="Symbol"
+      >:</a
+      ><a name="8228"
+      > </a
+      ><a name="8229" href="lib.Base.html#5719" class="Function"
+      >&#172;</a
+      ><a name="8230"
+      > </a
+      ><a name="8231" class="Symbol"
+      >(</a
+      ><a name="8232" href="Universe.Utility.Pointed.html#3384" class="Function"
+      >has-level&#8226;</a
+      ><a name="8242"
+      > </a
+      ><a name="8243" class="Symbol"
+      >(</a
+      ><a name="8244" href="Universe.Hierarchy.html#7896" class="Bound"
+      >n</a
+      ><a name="8245"
+      > </a
+      ><a name="8246" href="lib.types.TLevel.html#238" class="Function Operator"
+      >-1</a
+      ><a name="8248" class="Symbol"
+      >)</a
+      ><a name="8249"
+      > </a
+      ><a name="8250" class="Symbol"
+      >(</a
+      ><a name="8251" href="Universe.Utility.Pointed.html#2690" class="Function"
+      >&#937;</a
+      ><a name="8252"
+      > </a
+      ><a name="8253" class="Symbol"
+      >(_</a
+      ><a name="8255"
+      > </a
+      ><a name="8256" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="8257"
+      > </a
+      ><a name="8258" href="Universe.Hierarchy.html#4260" class="Function"
+      >Loop</a
+      ><a name="8262"
+      > </a
+      ><a name="8263" href="Universe.Hierarchy.html#7896" class="Bound"
+      >n</a
+      ><a name="8264" class="Symbol"
+      >)))</a
+      ><a name="8267"
+      >
+  </a
+      ><a name="8270" href="Universe.Hierarchy.html#8210" class="Function"
+      >&#937;-Loop-is-not-tr</a
+      ><a name="8286"
+      > </a
+      ><a name="8287" class="Symbol"
+      >=</a
+      ><a name="8288"
+      > </a
+      ><a name="8289" href="Universe.Hierarchy.html#7911" class="Function"
+      >&#937;-&#10214;Loop&#10215;-is-not-tr</a
+      ><a name="8307"
+      >
+                   </a
+      ><a name="8327" href="lib.Base.html#7682" class="Function Operator"
+      >&#8728;</a
+      ><a name="8328"
+      > </a
+      ><a name="8329" href="lib.Equivalences.html#7216" class="Function"
+      >equiv-preserves-level</a
+      ><a name="8350"
+      >
+                       </a
+      ><a name="8374" class="Symbol"
+      >(</a
+      ><a name="8375" href="lib.Base.html#5027" class="Field"
+      >fst</a
+      ><a name="8378"
+      > </a
+      ><a name="8379" class="Symbol"
+      >(</a
+      ><a name="8380" href="Universe.Utility.Pointed.html#8597" class="Function"
+      >forget-&#937;^-&#931;&#8226;&#8322;</a
+      ><a name="8393"
+      > </a
+      ><a name="8394" class="Symbol"
+      >_</a
+      ><a name="8395"
+      > </a
+      ><a name="8396" class="Number"
+      >1</a
+      ><a name="8397"
+      > </a
+      ><a name="8398" class="Symbol"
+      >(&#955;</a
+      ><a name="8400"
+      > </a
+      ><a name="8401" href="Universe.Hierarchy.html#8401" class="Bound"
+      >_</a
+      ><a name="8402"
+      > </a
+      ><a name="8403" class="Symbol"
+      >&#8594;</a
+      ><a name="8404"
+      > </a
+      ><a name="8405" href="lib.NType2.html#2016" class="Function"
+      >has-level-is-prop</a
+      ><a name="8422" class="Symbol"
+      >)))</a
+      ><a name="8425"
+      >
+
+  </a
+      ><a name="8429" class="Comment"
+      >{- Recall that L n is n-truncated.
+     We also know it is not (n-1)-truncated, it is thus a 'strict' n-type. -}</a
+      ><a name="8541"
+      >
+  </a
+      ><a name="8544" href="Universe.Hierarchy.html#8544" class="Function"
+      >Loop-is-not-trunc</a
+      ><a name="8561"
+      > </a
+      ><a name="8562" class="Symbol"
+      >:</a
+      ><a name="8563"
+      > </a
+      ><a name="8564" href="lib.Base.html#5719" class="Function"
+      >&#172;</a
+      ><a name="8565"
+      > </a
+      ><a name="8566" class="Symbol"
+      >(</a
+      ><a name="8567" href="lib.NType.html#243" class="Function"
+      >has-level</a
+      ><a name="8576"
+      > </a
+      ><a name="8577" class="Symbol"
+      >(</a
+      ><a name="8578" href="Universe.Hierarchy.html#7896" class="Bound"
+      >n</a
+      ><a name="8579"
+      > </a
+      ><a name="8580" href="lib.types.TLevel.html#238" class="Function Operator"
+      >-1</a
+      ><a name="8582" class="Symbol"
+      >)</a
+      ><a name="8583"
+      > </a
+      ><a name="8584" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10214;</a
+      ><a name="8585"
+      > </a
+      ><a name="8586" href="Universe.Hierarchy.html#4260" class="Function"
+      >Loop</a
+      ><a name="8590"
+      > </a
+      ><a name="8591" href="Universe.Hierarchy.html#7896" class="Bound"
+      >n</a
+      ><a name="8592"
+      > </a
+      ><a name="8593" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10215;</a
+      ><a name="8594" class="Symbol"
+      >)</a
+      ><a name="8595"
+      >
+  </a
+      ><a name="8598" href="Universe.Hierarchy.html#8544" class="Function"
+      >Loop-is-not-trunc</a
+      ><a name="8615"
+      > </a
+      ><a name="8616" class="Symbol"
+      >=</a
+      ><a name="8617"
+      > </a
+      ><a name="8618" href="Universe.Hierarchy.html#7911" class="Function"
+      >&#937;-&#10214;Loop&#10215;-is-not-tr</a
+      ><a name="8636"
+      > </a
+      ><a name="8637" href="lib.Base.html#7682" class="Function Operator"
+      >&#8728;</a
+      ><a name="8638"
+      > </a
+      ><a name="8639" class="Symbol"
+      >(&#955;</a
+      ><a name="8641"
+      > </a
+      ><a name="8642" href="Universe.Hierarchy.html#8642" class="Bound"
+      >t</a
+      ><a name="8643"
+      > </a
+      ><a name="8644" class="Symbol"
+      >&#8594;</a
+      ><a name="8645"
+      > </a
+      ><a name="8646" href="lib.NType2.html#3566" class="Function"
+      >universe-=-level</a
+      ><a name="8662"
+      > </a
+      ><a name="8663" href="Universe.Hierarchy.html#8642" class="Bound"
+      >t</a
+      ><a name="8664"
+      > </a
+      ><a name="8665" href="Universe.Hierarchy.html#8642" class="Bound"
+      >t</a
+      ><a name="8666" class="Symbol"
+      >)</a
+      ><a name="8667"
+      >
+
+  </a
+      ><a name="8671" class="Comment"
+      >-- The n-th universe is not n-truncated.</a
+      ><a name="8711"
+      >
+  </a
+      ><a name="8714" href="Universe.Hierarchy.html#8714" class="Function"
+      >Type-is-not-trunc</a
+      ><a name="8731"
+      > </a
+      ><a name="8732" class="Symbol"
+      >:</a
+      ><a name="8733"
+      > </a
+      ><a name="8734" href="lib.Base.html#5719" class="Function"
+      >&#172;</a
+      ><a name="8735"
+      > </a
+      ><a name="8736" class="Symbol"
+      >(</a
+      ><a name="8737" href="lib.NType.html#243" class="Function"
+      >has-level</a
+      ><a name="8746"
+      > </a
+      ><a name="8747" href="lib.types.TLevel.html#269" class="Function Operator"
+      >&#10216;</a
+      ><a name="8748"
+      > </a
+      ><a name="8749" href="Universe.Hierarchy.html#7896" class="Bound"
+      >n</a
+      ><a name="8750"
+      > </a
+      ><a name="8751" href="lib.types.TLevel.html#269" class="Function Operator"
+      >&#10217;</a
+      ><a name="8752"
+      > </a
+      ><a name="8753" class="Symbol"
+      >(</a
+      ><a name="8754" href="lib.Base.html#1215" class="Function"
+      >Type</a
+      ><a name="8758"
+      > </a
+      ><a name="8759" href="Universe.Utility.General.html#639" class="Function Operator"
+      >&#65378;</a
+      ><a name="8760"
+      > </a
+      ><a name="8761" href="Universe.Hierarchy.html#7896" class="Bound"
+      >n</a
+      ><a name="8762"
+      > </a
+      ><a name="8763" href="Universe.Utility.General.html#639" class="Function Operator"
+      >&#65379;</a
+      ><a name="8764" class="Symbol"
+      >))</a
+      ><a name="8766"
+      >
+  </a
+      ><a name="8769" href="Universe.Hierarchy.html#8714" class="Function"
+      >Type-is-not-trunc</a
+      ><a name="8786"
+      > </a
+      ><a name="8787" class="Symbol"
+      >=</a
+      ><a name="8788"
+      > </a
+      ><a name="8789" href="Universe.Hierarchy.html#7911" class="Function"
+      >&#937;-&#10214;Loop&#10215;-is-not-tr</a
+      ><a name="8807"
+      > </a
+      ><a name="8808" href="lib.Base.html#7682" class="Function Operator"
+      >&#8728;</a
+      ><a name="8809"
+      > </a
+      ><a name="8810" class="Symbol"
+      >(&#955;</a
+      ><a name="8812"
+      > </a
+      ><a name="8813" href="Universe.Hierarchy.html#8813" class="Bound"
+      >t</a
+      ><a name="8814"
+      > </a
+      ><a name="8815" class="Symbol"
+      >&#8594;</a
+      ><a name="8816"
+      > </a
+      ><a name="8817" href="Universe.Hierarchy.html#8813" class="Bound"
+      >t</a
+      ><a name="8818"
+      > </a
+      ><a name="8819" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10214;</a
+      ><a name="8820"
+      > </a
+      ><a name="8821" href="Universe.Hierarchy.html#4260" class="Function"
+      >Loop</a
+      ><a name="8825"
+      > </a
+      ><a name="8826" href="Universe.Hierarchy.html#7896" class="Bound"
+      >n</a
+      ><a name="8827"
+      > </a
+      ><a name="8828" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10215;</a
+      ><a name="8829"
+      > </a
+      ><a name="8830" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10214;</a
+      ><a name="8831"
+      > </a
+      ><a name="8832" href="Universe.Hierarchy.html#4260" class="Function"
+      >Loop</a
+      ><a name="8836"
+      > </a
+      ><a name="8837" href="Universe.Hierarchy.html#7896" class="Bound"
+      >n</a
+      ><a name="8838"
+      > </a
+      ><a name="8839" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10215;</a
+      ><a name="8840" class="Symbol"
+      >)</a
+      ><a name="8841"
+      >
+
+  </a
+      ><a name="8845" class="Comment"
+      >{- MAIN RESULT:
+     The n-th universe restricted to n-types is a 'strict' (n+1)-type. -}</a
+      ><a name="8934"
+      >
+  </a
+      ><a name="8937" href="Universe.Hierarchy.html#8937" class="Function"
+      >Type-&#8804;-is-not-trunc</a
+      ><a name="8956"
+      > </a
+      ><a name="8957" class="Symbol"
+      >:</a
+      ><a name="8958"
+      > </a
+      ><a name="8959" href="lib.Base.html#5719" class="Function"
+      >&#172;</a
+      ><a name="8960"
+      > </a
+      ><a name="8961" class="Symbol"
+      >(</a
+      ><a name="8962" href="lib.NType.html#243" class="Function"
+      >has-level</a
+      ><a name="8971"
+      > </a
+      ><a name="8972" href="lib.types.TLevel.html#269" class="Function Operator"
+      >&#10216;</a
+      ><a name="8973"
+      > </a
+      ><a name="8974" href="Universe.Hierarchy.html#7896" class="Bound"
+      >n</a
+      ><a name="8975"
+      > </a
+      ><a name="8976" href="lib.types.TLevel.html#269" class="Function Operator"
+      >&#10217;</a
+      ><a name="8977"
+      > </a
+      ><a name="8978" class="Symbol"
+      >(</a
+      ><a name="8979" href="lib.types.TLevel.html#269" class="Function Operator"
+      >&#10216;</a
+      ><a name="8980"
+      > </a
+      ><a name="8981" href="Universe.Hierarchy.html#7896" class="Bound"
+      >n</a
+      ><a name="8982"
+      > </a
+      ><a name="8983" href="lib.types.TLevel.html#269" class="Function Operator"
+      >&#10217;</a
+      ><a name="8984"
+      > </a
+      ><a name="8985" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="8990"
+      > </a
+      ><a name="8991" href="Universe.Utility.General.html#639" class="Function Operator"
+      >&#65378;</a
+      ><a name="8992"
+      > </a
+      ><a name="8993" href="Universe.Hierarchy.html#7896" class="Bound"
+      >n</a
+      ><a name="8994"
+      > </a
+      ><a name="8995" href="Universe.Utility.General.html#639" class="Function Operator"
+      >&#65379;</a
+      ><a name="8996" class="Symbol"
+      >))</a
+      ><a name="8998"
+      >
+  </a
+      ><a name="9001" href="Universe.Hierarchy.html#8937" class="Function"
+      >Type-&#8804;-is-not-trunc</a
+      ><a name="9020"
+      > </a
+      ><a name="9021" class="Symbol"
+      >=</a
+      ><a name="9022"
+      > </a
+      ><a name="9023" href="Universe.Hierarchy.html#8210" class="Function"
+      >&#937;-Loop-is-not-tr</a
+      ><a name="9039"
+      > </a
+      ><a name="9040" href="lib.Base.html#7682" class="Function Operator"
+      >&#8728;</a
+      ><a name="9041"
+      > </a
+      ><a name="9042" class="Symbol"
+      >(&#955;</a
+      ><a name="9044"
+      > </a
+      ><a name="9045" href="Universe.Hierarchy.html#9045" class="Bound"
+      >t</a
+      ><a name="9046"
+      > </a
+      ><a name="9047" class="Symbol"
+      >&#8594;</a
+      ><a name="9048"
+      > </a
+      ><a name="9049" href="Universe.Hierarchy.html#9045" class="Bound"
+      >t</a
+      ><a name="9050"
+      > </a
+      ><a name="9051" class="Symbol"
+      >(</a
+      ><a name="9052" href="Universe.Hierarchy.html#4260" class="Function"
+      >Loop</a
+      ><a name="9056"
+      > </a
+      ><a name="9057" href="Universe.Hierarchy.html#7896" class="Bound"
+      >n</a
+      ><a name="9058" class="Symbol"
+      >)</a
+      ><a name="9059"
+      > </a
+      ><a name="9060" class="Symbol"
+      >(</a
+      ><a name="9061" href="Universe.Hierarchy.html#4260" class="Function"
+      >Loop</a
+      ><a name="9065"
+      > </a
+      ><a name="9066" href="Universe.Hierarchy.html#7896" class="Bound"
+      >n</a
+      ><a name="9067" class="Symbol"
+      >))</a
+      ><a name="9069"
+      >
+</a
+      ></pre
+    ></body
+  ></html
+>

@@ -1,0 +1,1995 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+><head
+  ><title
+    >Universe.Utility.TruncUniverse</title
+    ><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"
+     /><meta http-equiv="Content-Style-Type" content="text/css"
+     /><link href="Agda.css" rel="stylesheet" type="text/css"
+     /></head
+  ><body
+  ><pre
+    ><a name="1" class="Symbol"
+      >{-#</a
+      ><a name="4"
+      > </a
+      ><a name="5" class="Keyword"
+      >OPTIONS</a
+      ><a name="12"
+      > --without-K </a
+      ><a name="25" class="Symbol"
+      >#-}</a
+      ><a name="28"
+      >
+
+</a
+      ><a name="30" class="Comment"
+      >{- The type of all types in some universe with a fixed truncation level
+   behaves almost like a universe itself. In this utility module, we develop
+   some notation for efficiently working with this pseudo-universe.
+   It will lead to considerably more briefer and more comprehensible proofs. -}</a
+      ><a name="326"
+      >
+</a
+      ><a name="327" class="Keyword"
+      >module</a
+      ><a name="333"
+      > </a
+      ><a name="334" href="Universe.Utility.TruncUniverse.html#1" class="Module"
+      >Universe.Utility.TruncUniverse</a
+      ><a name="364"
+      > </a
+      ><a name="365" class="Keyword"
+      >where</a
+      ><a name="370"
+      >
+
+</a
+      ><a name="372" class="Keyword"
+      >open</a
+      ><a name="376"
+      > </a
+      ><a name="377" class="Keyword"
+      >import</a
+      ><a name="383"
+      > </a
+      ><a name="384" href="lib.Basics.html#1" class="Module"
+      >lib.Basics</a
+      ><a name="394"
+      >
+</a
+      ><a name="395" class="Keyword"
+      >open</a
+      ><a name="399"
+      > </a
+      ><a name="400" class="Keyword"
+      >import</a
+      ><a name="406"
+      > </a
+      ><a name="407" href="lib.NType2.html#1" class="Module"
+      >lib.NType2</a
+      ><a name="417"
+      >
+</a
+      ><a name="418" class="Keyword"
+      >open</a
+      ><a name="422"
+      > </a
+      ><a name="423" class="Keyword"
+      >import</a
+      ><a name="429"
+      > </a
+      ><a name="430" href="lib.types.Pi.html#1" class="Module"
+      >lib.types.Pi</a
+      ><a name="442"
+      >
+</a
+      ><a name="443" class="Keyword"
+      >open</a
+      ><a name="447"
+      > </a
+      ><a name="448" class="Keyword"
+      >import</a
+      ><a name="454"
+      > </a
+      ><a name="455" href="lib.types.Sigma.html#1" class="Module"
+      >lib.types.Sigma</a
+      ><a name="470"
+      >
+</a
+      ><a name="471" class="Keyword"
+      >open</a
+      ><a name="475"
+      > </a
+      ><a name="476" class="Keyword"
+      >import</a
+      ><a name="482"
+      > </a
+      ><a name="483" href="lib.types.TLevel.html#1" class="Module"
+      >lib.types.TLevel</a
+      ><a name="499"
+      >
+</a
+      ><a name="500" class="Keyword"
+      >open</a
+      ><a name="504"
+      > </a
+      ><a name="505" class="Keyword"
+      >import</a
+      ><a name="511"
+      > </a
+      ><a name="512" href="lib.types.Unit.html#1" class="Module"
+      >lib.types.Unit</a
+      ><a name="526"
+      >
+
+</a
+      ><a name="528" class="Keyword"
+      >open</a
+      ><a name="532"
+      > </a
+      ><a name="533" class="Keyword"
+      >import</a
+      ><a name="539"
+      > </a
+      ><a name="540" href="Universe.Utility.General.html#1" class="Module"
+      >Universe.Utility.General</a
+      ><a name="564"
+      >
+
+
+</a
+      ><a name="567" class="Keyword"
+      >module</a
+      ><a name="573"
+      > </a
+      ><a name="574" href="Universe.Utility.TruncUniverse.html#574" class="Module"
+      >_</a
+      ><a name="575"
+      > </a
+      ><a name="576" class="Symbol"
+      >{</a
+      ><a name="577" href="Universe.Utility.TruncUniverse.html#577" class="Bound"
+      >n</a
+      ><a name="578"
+      > </a
+      ><a name="579" class="Symbol"
+      >:</a
+      ><a name="580"
+      > </a
+      ><a name="581" href="lib.Base.html#8807" class="Function"
+      >&#8469;&#8331;&#8322;</a
+      ><a name="584" class="Symbol"
+      >}</a
+      ><a name="585"
+      > </a
+      ><a name="586" class="Keyword"
+      >where</a
+      ><a name="591"
+      >
+  </a
+      ><a name="594" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10214;_&#10215;</a
+      ><a name="597"
+      > </a
+      ><a name="598" class="Symbol"
+      >:</a
+      ><a name="599"
+      > </a
+      ><a name="600" class="Symbol"
+      >&#8704;</a
+      ><a name="601"
+      > </a
+      ><a name="602" class="Symbol"
+      >{</a
+      ><a name="603" href="Universe.Utility.TruncUniverse.html#603" class="Bound"
+      >i</a
+      ><a name="604" class="Symbol"
+      >}</a
+      ><a name="605"
+      > </a
+      ><a name="606" class="Symbol"
+      >&#8594;</a
+      ><a name="607"
+      > </a
+      ><a name="608" href="Universe.Utility.TruncUniverse.html#577" class="Bound"
+      >n</a
+      ><a name="609"
+      > </a
+      ><a name="610" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="615"
+      > </a
+      ><a name="616" href="Universe.Utility.TruncUniverse.html#603" class="Bound"
+      >i</a
+      ><a name="617"
+      > </a
+      ><a name="618" class="Symbol"
+      >&#8594;</a
+      ><a name="619"
+      > </a
+      ><a name="620" href="lib.Base.html#1215" class="Function"
+      >Type</a
+      ><a name="624"
+      > </a
+      ><a name="625" href="Universe.Utility.TruncUniverse.html#603" class="Bound"
+      >i</a
+      ><a name="626"
+      >
+  </a
+      ><a name="629" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10214;</a
+      ><a name="630"
+      > </a
+      ><a name="631" class="Symbol"
+      >(</a
+      ><a name="632" href="Universe.Utility.TruncUniverse.html#632" class="Bound"
+      >B</a
+      ><a name="633"
+      > </a
+      ><a name="634" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="635"
+      > </a
+      ><a name="636" class="Symbol"
+      >_)</a
+      ><a name="638"
+      > </a
+      ><a name="639" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10215;</a
+      ><a name="640"
+      > </a
+      ><a name="641" class="Symbol"
+      >=</a
+      ><a name="642"
+      > </a
+      ><a name="643" href="Universe.Utility.TruncUniverse.html#632" class="Bound"
+      >B</a
+      ><a name="644"
+      >
+
+</a
+      ><a name="646" class="Keyword"
+      >module</a
+      ><a name="652"
+      > </a
+      ><a name="653" href="Universe.Utility.TruncUniverse.html#653" class="Module"
+      >_</a
+      ><a name="654"
+      > </a
+      ><a name="655" class="Symbol"
+      >{</a
+      ><a name="656" href="Universe.Utility.TruncUniverse.html#656" class="Bound"
+      >n</a
+      ><a name="657"
+      > </a
+      ><a name="658" class="Symbol"
+      >:</a
+      ><a name="659"
+      > </a
+      ><a name="660" href="lib.Base.html#8807" class="Function"
+      >&#8469;&#8331;&#8322;</a
+      ><a name="663" class="Symbol"
+      >}</a
+      ><a name="664"
+      > </a
+      ><a name="665" class="Keyword"
+      >where</a
+      ><a name="670"
+      >
+  </a
+      ><a name="673" href="Universe.Utility.TruncUniverse.html#673" class="Function"
+      >Lift-&#8804;</a
+      ><a name="679"
+      > </a
+      ><a name="680" class="Symbol"
+      >:</a
+      ><a name="681"
+      > </a
+      ><a name="682" class="Symbol"
+      >&#8704;</a
+      ><a name="683"
+      > </a
+      ><a name="684" class="Symbol"
+      >{</a
+      ><a name="685" href="Universe.Utility.TruncUniverse.html#685" class="Bound"
+      >i</a
+      ><a name="686"
+      > </a
+      ><a name="687" href="Universe.Utility.TruncUniverse.html#687" class="Bound"
+      >j</a
+      ><a name="688" class="Symbol"
+      >}</a
+      ><a name="689"
+      > </a
+      ><a name="690" class="Symbol"
+      >&#8594;</a
+      ><a name="691"
+      > </a
+      ><a name="692" href="Universe.Utility.TruncUniverse.html#656" class="Bound"
+      >n</a
+      ><a name="693"
+      > </a
+      ><a name="694" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="699"
+      > </a
+      ><a name="700" href="Universe.Utility.TruncUniverse.html#685" class="Bound"
+      >i</a
+      ><a name="701"
+      > </a
+      ><a name="702" class="Symbol"
+      >&#8594;</a
+      ><a name="703"
+      > </a
+      ><a name="704" href="Universe.Utility.TruncUniverse.html#656" class="Bound"
+      >n</a
+      ><a name="705"
+      > </a
+      ><a name="706" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="711"
+      > </a
+      ><a name="712" class="Symbol"
+      >(</a
+      ><a name="713" href="Universe.Utility.TruncUniverse.html#685" class="Bound"
+      >i</a
+      ><a name="714"
+      > </a
+      ><a name="715" href="Universe.Utility.General.html#344" class="Function Operator"
+      >&#8852;</a
+      ><a name="716"
+      > </a
+      ><a name="717" href="Universe.Utility.TruncUniverse.html#687" class="Bound"
+      >j</a
+      ><a name="718" class="Symbol"
+      >)</a
+      ><a name="719"
+      >
+  </a
+      ><a name="722" href="Universe.Utility.TruncUniverse.html#673" class="Function"
+      >Lift-&#8804;</a
+      ><a name="728"
+      > </a
+      ><a name="729" class="Symbol"
+      >{</a
+      ><a name="730" href="Universe.Utility.TruncUniverse.html#730" class="Bound"
+      >i</a
+      ><a name="731" class="Symbol"
+      >}</a
+      ><a name="732"
+      > </a
+      ><a name="733" class="Symbol"
+      >{</a
+      ><a name="734" href="Universe.Utility.TruncUniverse.html#734" class="Bound"
+      >j</a
+      ><a name="735" class="Symbol"
+      >}</a
+      ><a name="736"
+      > </a
+      ><a name="737" class="Symbol"
+      >(</a
+      ><a name="738" href="Universe.Utility.TruncUniverse.html#738" class="Bound"
+      >A</a
+      ><a name="739"
+      > </a
+      ><a name="740" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="741"
+      > </a
+      ><a name="742" href="Universe.Utility.TruncUniverse.html#742" class="Bound"
+      >h</a
+      ><a name="743" class="Symbol"
+      >)</a
+      ><a name="744"
+      > </a
+      ><a name="745" class="Symbol"
+      >=</a
+      ><a name="746"
+      > </a
+      ><a name="747" class="Symbol"
+      >(</a
+      ><a name="748" href="lib.Base.html#6006" class="Record"
+      >Lift</a
+      ><a name="752"
+      > </a
+      ><a name="753" class="Symbol"
+      >{</a
+      ><a name="754"
+      >j </a
+      ><a name="756" class="Symbol"
+      >=</a
+      ><a name="757"
+      > </a
+      ><a name="758" href="Universe.Utility.TruncUniverse.html#734" class="Bound"
+      >j</a
+      ><a name="759" class="Symbol"
+      >}</a
+      ><a name="760"
+      > </a
+      ><a name="761" href="Universe.Utility.TruncUniverse.html#738" class="Bound"
+      >A</a
+      ><a name="762"
+      > </a
+      ><a name="763" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="764"
+      > </a
+      ><a name="765" href="lib.Equivalences.html#7216" class="Function"
+      >equiv-preserves-level</a
+      ><a name="786"
+      > </a
+      ><a name="787" class="Symbol"
+      >(</a
+      ><a name="788" href="lib.Equivalences.html#5012" class="Function"
+      >lift-equiv</a
+      ><a name="798"
+      > </a
+      ><a name="799" href="lib.Equivalences.html#4644" class="Function Operator"
+      >&#8315;&#185;</a
+      ><a name="801" class="Symbol"
+      >)</a
+      ><a name="802"
+      > </a
+      ><a name="803" href="Universe.Utility.TruncUniverse.html#742" class="Bound"
+      >h</a
+      ><a name="804" class="Symbol"
+      >)</a
+      ><a name="805"
+      >
+
+  </a
+      ><a name="809" href="Universe.Utility.TruncUniverse.html#809" class="Function"
+      >raise</a
+      ><a name="814"
+      > </a
+      ><a name="815" class="Symbol"
+      >:</a
+      ><a name="816"
+      > </a
+      ><a name="817" class="Symbol"
+      >&#8704;</a
+      ><a name="818"
+      > </a
+      ><a name="819" class="Symbol"
+      >{</a
+      ><a name="820" href="Universe.Utility.TruncUniverse.html#820" class="Bound"
+      >i</a
+      ><a name="821" class="Symbol"
+      >}</a
+      ><a name="822"
+      > </a
+      ><a name="823" class="Symbol"
+      >&#8594;</a
+      ><a name="824"
+      > </a
+      ><a name="825" href="Universe.Utility.TruncUniverse.html#656" class="Bound"
+      >n</a
+      ><a name="826"
+      > </a
+      ><a name="827" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="832"
+      > </a
+      ><a name="833" href="Universe.Utility.TruncUniverse.html#820" class="Bound"
+      >i</a
+      ><a name="834"
+      > </a
+      ><a name="835" class="Symbol"
+      >&#8594;</a
+      ><a name="836"
+      > </a
+      ><a name="837" href="lib.Base.html#8780" class="InductiveConstructor"
+      >S</a
+      ><a name="838"
+      > </a
+      ><a name="839" href="Universe.Utility.TruncUniverse.html#656" class="Bound"
+      >n</a
+      ><a name="840"
+      > </a
+      ><a name="841" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="846"
+      > </a
+      ><a name="847" href="Universe.Utility.TruncUniverse.html#820" class="Bound"
+      >i</a
+      ><a name="848"
+      >
+  </a
+      ><a name="851" href="Universe.Utility.TruncUniverse.html#809" class="Function"
+      >raise</a
+      ><a name="856"
+      > </a
+      ><a name="857" class="Symbol"
+      >(</a
+      ><a name="858" href="Universe.Utility.TruncUniverse.html#858" class="Bound"
+      >A</a
+      ><a name="859"
+      > </a
+      ><a name="860" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="861"
+      > </a
+      ><a name="862" href="Universe.Utility.TruncUniverse.html#862" class="Bound"
+      >h</a
+      ><a name="863" class="Symbol"
+      >)</a
+      ><a name="864"
+      > </a
+      ><a name="865" class="Symbol"
+      >=</a
+      ><a name="866"
+      > </a
+      ><a name="867" class="Symbol"
+      >(</a
+      ><a name="868" href="Universe.Utility.TruncUniverse.html#858" class="Bound"
+      >A</a
+      ><a name="869"
+      > </a
+      ><a name="870" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="871"
+      > </a
+      ><a name="872" href="lib.NType.html#1025" class="Function"
+      >raise-level</a
+      ><a name="883"
+      > </a
+      ><a name="884" href="Universe.Utility.TruncUniverse.html#656" class="Bound"
+      >n</a
+      ><a name="885"
+      > </a
+      ><a name="886" href="Universe.Utility.TruncUniverse.html#862" class="Bound"
+      >h</a
+      ><a name="887" class="Symbol"
+      >)</a
+      ><a name="888"
+      >
+
+  </a
+      ><a name="892" href="Universe.Utility.TruncUniverse.html#892" class="Function"
+      >raise-&#8804;T</a
+      ><a name="900"
+      > </a
+      ><a name="901" class="Symbol"
+      >:</a
+      ><a name="902"
+      > </a
+      ><a name="903" class="Symbol"
+      >&#8704;</a
+      ><a name="904"
+      > </a
+      ><a name="905" class="Symbol"
+      >{</a
+      ><a name="906" href="Universe.Utility.TruncUniverse.html#906" class="Bound"
+      >i</a
+      ><a name="907" class="Symbol"
+      >}</a
+      ><a name="908"
+      > </a
+      ><a name="909" class="Symbol"
+      >{</a
+      ><a name="910" href="Universe.Utility.TruncUniverse.html#910" class="Bound"
+      >m</a
+      ><a name="911"
+      > </a
+      ><a name="912" href="Universe.Utility.TruncUniverse.html#912" class="Bound"
+      >n</a
+      ><a name="913"
+      > </a
+      ><a name="914" class="Symbol"
+      >:</a
+      ><a name="915"
+      > </a
+      ><a name="916" href="lib.Base.html#8807" class="Function"
+      >&#8469;&#8331;&#8322;</a
+      ><a name="919" class="Symbol"
+      >}</a
+      ><a name="920"
+      > </a
+      ><a name="921" class="Symbol"
+      >&#8594;</a
+      ><a name="922"
+      > </a
+      ><a name="923" href="Universe.Utility.TruncUniverse.html#910" class="Bound"
+      >m</a
+      ><a name="924"
+      > </a
+      ><a name="925" href="lib.types.TLevel.html#884" class="Function Operator"
+      >&#8804;T</a
+      ><a name="927"
+      > </a
+      ><a name="928" href="Universe.Utility.TruncUniverse.html#912" class="Bound"
+      >n</a
+      ><a name="929"
+      > </a
+      ><a name="930" class="Symbol"
+      >&#8594;</a
+      ><a name="931"
+      > </a
+      ><a name="932" href="Universe.Utility.TruncUniverse.html#910" class="Bound"
+      >m</a
+      ><a name="933"
+      > </a
+      ><a name="934" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="939"
+      > </a
+      ><a name="940" href="Universe.Utility.TruncUniverse.html#906" class="Bound"
+      >i</a
+      ><a name="941"
+      > </a
+      ><a name="942" class="Symbol"
+      >&#8594;</a
+      ><a name="943"
+      > </a
+      ><a name="944" href="Universe.Utility.TruncUniverse.html#912" class="Bound"
+      >n</a
+      ><a name="945"
+      > </a
+      ><a name="946" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="951"
+      > </a
+      ><a name="952" href="Universe.Utility.TruncUniverse.html#906" class="Bound"
+      >i</a
+      ><a name="953"
+      >
+  </a
+      ><a name="956" href="Universe.Utility.TruncUniverse.html#892" class="Function"
+      >raise-&#8804;T</a
+      ><a name="964"
+      > </a
+      ><a name="965" href="Universe.Utility.TruncUniverse.html#965" class="Bound"
+      >p</a
+      ><a name="966"
+      > </a
+      ><a name="967" class="Symbol"
+      >(</a
+      ><a name="968" href="Universe.Utility.TruncUniverse.html#968" class="Bound"
+      >A</a
+      ><a name="969"
+      > </a
+      ><a name="970" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="971"
+      > </a
+      ><a name="972" href="Universe.Utility.TruncUniverse.html#972" class="Bound"
+      >h</a
+      ><a name="973" class="Symbol"
+      >)</a
+      ><a name="974"
+      > </a
+      ><a name="975" class="Symbol"
+      >=</a
+      ><a name="976"
+      > </a
+      ><a name="977" class="Symbol"
+      >(</a
+      ><a name="978" href="Universe.Utility.TruncUniverse.html#968" class="Bound"
+      >A</a
+      ><a name="979"
+      > </a
+      ><a name="980" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="981"
+      > </a
+      ><a name="982" href="lib.NType2.html#5400" class="Function"
+      >raise-level-&#8804;T</a
+      ><a name="996"
+      > </a
+      ><a name="997" href="Universe.Utility.TruncUniverse.html#965" class="Bound"
+      >p</a
+      ><a name="998"
+      > </a
+      ><a name="999" href="Universe.Utility.TruncUniverse.html#972" class="Bound"
+      >h</a
+      ><a name="1000" class="Symbol"
+      >)</a
+      ><a name="1001"
+      >
+
+  </a
+      ><a name="1005" href="Universe.Utility.TruncUniverse.html#1005" class="Function"
+      >&#8868;-&#8804;</a
+      ><a name="1008"
+      > </a
+      ><a name="1009" class="Symbol"
+      >:</a
+      ><a name="1010"
+      > </a
+      ><a name="1011" href="Universe.Utility.TruncUniverse.html#656" class="Bound"
+      >n</a
+      ><a name="1012"
+      > </a
+      ><a name="1013" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="1018"
+      > </a
+      ><a name="1019" href="lib.Base.html#1099" class="Function"
+      >lzero</a
+      ><a name="1024"
+      >
+  </a
+      ><a name="1027" href="Universe.Utility.TruncUniverse.html#1005" class="Function"
+      >&#8868;-&#8804;</a
+      ><a name="1030"
+      > </a
+      ><a name="1031" class="Symbol"
+      >=</a
+      ><a name="1032"
+      > </a
+      ><a name="1033" class="Symbol"
+      >(</a
+      ><a name="1034" href="lib.types.Unit.html#83" class="Function"
+      >&#8868;</a
+      ><a name="1035"
+      > </a
+      ><a name="1036" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="1037"
+      > </a
+      ><a name="1038" href="lib.NType2.html#5400" class="Function"
+      >raise-level-&#8804;T</a
+      ><a name="1052"
+      > </a
+      ><a name="1053" class="Symbol"
+      >(</a
+      ><a name="1054" href="lib.types.TLevel.html#1020" class="Function"
+      >-2&#8804;T</a
+      ><a name="1058"
+      > </a
+      ><a name="1059" href="Universe.Utility.TruncUniverse.html#656" class="Bound"
+      >n</a
+      ><a name="1060" class="Symbol"
+      >)</a
+      ><a name="1061"
+      > </a
+      ><a name="1062" href="lib.types.Unit.html#140" class="Function"
+      >Unit-is-contr</a
+      ><a name="1075" class="Symbol"
+      >)</a
+      ><a name="1076"
+      >
+
+  </a
+      ><a name="1080" href="Universe.Utility.TruncUniverse.html#1080" class="Function"
+      >&#928;-&#8804;</a
+      ><a name="1083"
+      > </a
+      ><a name="1084" class="Symbol"
+      >:</a
+      ><a name="1085"
+      > </a
+      ><a name="1086" class="Symbol"
+      >&#8704;</a
+      ><a name="1087"
+      > </a
+      ><a name="1088" class="Symbol"
+      >{</a
+      ><a name="1089" href="Universe.Utility.TruncUniverse.html#1089" class="Bound"
+      >i</a
+      ><a name="1090"
+      > </a
+      ><a name="1091" href="Universe.Utility.TruncUniverse.html#1091" class="Bound"
+      >j</a
+      ><a name="1092" class="Symbol"
+      >}</a
+      ><a name="1093"
+      > </a
+      ><a name="1094" class="Symbol"
+      >(</a
+      ><a name="1095" href="Universe.Utility.TruncUniverse.html#1095" class="Bound"
+      >A</a
+      ><a name="1096"
+      > </a
+      ><a name="1097" class="Symbol"
+      >:</a
+      ><a name="1098"
+      > </a
+      ><a name="1099" href="lib.Base.html#1215" class="Function"
+      >Type</a
+      ><a name="1103"
+      > </a
+      ><a name="1104" href="Universe.Utility.TruncUniverse.html#1089" class="Bound"
+      >i</a
+      ><a name="1105" class="Symbol"
+      >)</a
+      ><a name="1106"
+      > </a
+      ><a name="1107" class="Symbol"
+      >&#8594;</a
+      ><a name="1108"
+      > </a
+      ><a name="1109" class="Symbol"
+      >(</a
+      ><a name="1110" href="Universe.Utility.TruncUniverse.html#1095" class="Bound"
+      >A</a
+      ><a name="1111"
+      > </a
+      ><a name="1112" class="Symbol"
+      >&#8594;</a
+      ><a name="1113"
+      > </a
+      ><a name="1114" href="Universe.Utility.TruncUniverse.html#656" class="Bound"
+      >n</a
+      ><a name="1115"
+      > </a
+      ><a name="1116" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="1121"
+      > </a
+      ><a name="1122" href="Universe.Utility.TruncUniverse.html#1091" class="Bound"
+      >j</a
+      ><a name="1123" class="Symbol"
+      >)</a
+      ><a name="1124"
+      > </a
+      ><a name="1125" class="Symbol"
+      >&#8594;</a
+      ><a name="1126"
+      > </a
+      ><a name="1127" href="Universe.Utility.TruncUniverse.html#656" class="Bound"
+      >n</a
+      ><a name="1128"
+      > </a
+      ><a name="1129" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="1134"
+      > </a
+      ><a name="1135" class="Symbol"
+      >(</a
+      ><a name="1136" href="Universe.Utility.TruncUniverse.html#1089" class="Bound"
+      >i</a
+      ><a name="1137"
+      > </a
+      ><a name="1138" href="Universe.Utility.General.html#344" class="Function Operator"
+      >&#8852;</a
+      ><a name="1139"
+      > </a
+      ><a name="1140" href="Universe.Utility.TruncUniverse.html#1091" class="Bound"
+      >j</a
+      ><a name="1141" class="Symbol"
+      >)</a
+      ><a name="1142"
+      >
+  </a
+      ><a name="1145" href="Universe.Utility.TruncUniverse.html#1080" class="Function"
+      >&#928;-&#8804;</a
+      ><a name="1148"
+      > </a
+      ><a name="1149" href="Universe.Utility.TruncUniverse.html#1149" class="Bound"
+      >A</a
+      ><a name="1150"
+      > </a
+      ><a name="1151" href="Universe.Utility.TruncUniverse.html#1151" class="Bound"
+      >B</a
+      ><a name="1152"
+      > </a
+      ><a name="1153" class="Symbol"
+      >=</a
+      ><a name="1154"
+      > </a
+      ><a name="1155" class="Symbol"
+      >(</a
+      ><a name="1156" href="lib.Base.html#4750" class="Function"
+      >&#928;</a
+      ><a name="1157"
+      > </a
+      ><a name="1158" href="Universe.Utility.TruncUniverse.html#1149" class="Bound"
+      >A</a
+      ><a name="1159"
+      > </a
+      ><a name="1160" class="Symbol"
+      >(</a
+      ><a name="1161" href="lib.Base.html#5027" class="Field"
+      >fst</a
+      ><a name="1164"
+      > </a
+      ><a name="1165" href="lib.Base.html#7682" class="Function Operator"
+      >&#8728;</a
+      ><a name="1166"
+      > </a
+      ><a name="1167" href="Universe.Utility.TruncUniverse.html#1151" class="Bound"
+      >B</a
+      ><a name="1168" class="Symbol"
+      >)</a
+      ><a name="1169"
+      > </a
+      ><a name="1170" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="1171"
+      > </a
+      ><a name="1172" href="lib.types.Pi.html#109" class="Function"
+      >&#928;-level</a
+      ><a name="1179"
+      > </a
+      ><a name="1180" class="Symbol"
+      >(</a
+      ><a name="1181" href="lib.Base.html#5039" class="Field"
+      >snd</a
+      ><a name="1184"
+      > </a
+      ><a name="1185" href="lib.Base.html#7682" class="Function Operator"
+      >&#8728;</a
+      ><a name="1186"
+      > </a
+      ><a name="1187" href="Universe.Utility.TruncUniverse.html#1151" class="Bound"
+      >B</a
+      ><a name="1188" class="Symbol"
+      >))</a
+      ><a name="1190"
+      >
+
+  </a
+      ><a name="1194" class="Keyword"
+      >infixr</a
+      ><a name="1200"
+      > </a
+      ><a name="1201" class="Number"
+      >2</a
+      ><a name="1202"
+      > _&#8594;-&#8804;_
+
+  </a
+      ><a name="1212" href="Universe.Utility.TruncUniverse.html#1212" class="Function Operator"
+      >_&#8594;-&#8804;_</a
+      ><a name="1217"
+      > </a
+      ><a name="1218" class="Symbol"
+      >:</a
+      ><a name="1219"
+      > </a
+      ><a name="1220" class="Symbol"
+      >&#8704;</a
+      ><a name="1221"
+      > </a
+      ><a name="1222" class="Symbol"
+      >{</a
+      ><a name="1223" href="Universe.Utility.TruncUniverse.html#1223" class="Bound"
+      >i</a
+      ><a name="1224"
+      > </a
+      ><a name="1225" href="Universe.Utility.TruncUniverse.html#1225" class="Bound"
+      >j</a
+      ><a name="1226" class="Symbol"
+      >}</a
+      ><a name="1227"
+      > </a
+      ><a name="1228" class="Symbol"
+      >&#8594;</a
+      ><a name="1229"
+      > </a
+      ><a name="1230" href="lib.Base.html#1215" class="Function"
+      >Type</a
+      ><a name="1234"
+      > </a
+      ><a name="1235" href="Universe.Utility.TruncUniverse.html#1223" class="Bound"
+      >i</a
+      ><a name="1236"
+      > </a
+      ><a name="1237" class="Symbol"
+      >&#8594;</a
+      ><a name="1238"
+      > </a
+      ><a name="1239" href="Universe.Utility.TruncUniverse.html#656" class="Bound"
+      >n</a
+      ><a name="1240"
+      > </a
+      ><a name="1241" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="1246"
+      > </a
+      ><a name="1247" href="Universe.Utility.TruncUniverse.html#1225" class="Bound"
+      >j</a
+      ><a name="1248"
+      > </a
+      ><a name="1249" class="Symbol"
+      >&#8594;</a
+      ><a name="1250"
+      > </a
+      ><a name="1251" href="Universe.Utility.TruncUniverse.html#656" class="Bound"
+      >n</a
+      ><a name="1252"
+      > </a
+      ><a name="1253" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="1258"
+      > </a
+      ><a name="1259" class="Symbol"
+      >(</a
+      ><a name="1260" href="Universe.Utility.TruncUniverse.html#1223" class="Bound"
+      >i</a
+      ><a name="1261"
+      > </a
+      ><a name="1262" href="Universe.Utility.General.html#344" class="Function Operator"
+      >&#8852;</a
+      ><a name="1263"
+      > </a
+      ><a name="1264" href="Universe.Utility.TruncUniverse.html#1225" class="Bound"
+      >j</a
+      ><a name="1265" class="Symbol"
+      >)</a
+      ><a name="1266"
+      >
+  </a
+      ><a name="1269" href="Universe.Utility.TruncUniverse.html#1269" class="Bound"
+      >A</a
+      ><a name="1270"
+      > </a
+      ><a name="1271" href="Universe.Utility.TruncUniverse.html#1212" class="Function Operator"
+      >&#8594;-&#8804;</a
+      ><a name="1274"
+      > </a
+      ><a name="1275" href="Universe.Utility.TruncUniverse.html#1275" class="Bound"
+      >B</a
+      ><a name="1276"
+      > </a
+      ><a name="1277" class="Symbol"
+      >=</a
+      ><a name="1278"
+      > </a
+      ><a name="1279" href="Universe.Utility.TruncUniverse.html#1080" class="Function"
+      >&#928;-&#8804;</a
+      ><a name="1282"
+      > </a
+      ><a name="1283" href="Universe.Utility.TruncUniverse.html#1269" class="Bound"
+      >A</a
+      ><a name="1284"
+      > </a
+      ><a name="1285" class="Symbol"
+      >(&#955;</a
+      ><a name="1287"
+      > </a
+      ><a name="1288" href="Universe.Utility.TruncUniverse.html#1288" class="Bound"
+      >_</a
+      ><a name="1289"
+      > </a
+      ><a name="1290" class="Symbol"
+      >&#8594;</a
+      ><a name="1291"
+      > </a
+      ><a name="1292" href="Universe.Utility.TruncUniverse.html#1275" class="Bound"
+      >B</a
+      ><a name="1293" class="Symbol"
+      >)</a
+      ><a name="1294"
+      >
+
+  </a
+      ><a name="1298" href="Universe.Utility.TruncUniverse.html#1298" class="Function"
+      >&#931;-&#8804;</a
+      ><a name="1301"
+      > </a
+      ><a name="1302" class="Symbol"
+      >:</a
+      ><a name="1303"
+      > </a
+      ><a name="1304" class="Symbol"
+      >&#8704;</a
+      ><a name="1305"
+      > </a
+      ><a name="1306" class="Symbol"
+      >{</a
+      ><a name="1307" href="Universe.Utility.TruncUniverse.html#1307" class="Bound"
+      >i</a
+      ><a name="1308"
+      > </a
+      ><a name="1309" href="Universe.Utility.TruncUniverse.html#1309" class="Bound"
+      >j</a
+      ><a name="1310" class="Symbol"
+      >}</a
+      ><a name="1311"
+      > </a
+      ><a name="1312" class="Symbol"
+      >(</a
+      ><a name="1313" href="Universe.Utility.TruncUniverse.html#1313" class="Bound"
+      >A</a
+      ><a name="1314"
+      > </a
+      ><a name="1315" class="Symbol"
+      >:</a
+      ><a name="1316"
+      > </a
+      ><a name="1317" href="Universe.Utility.TruncUniverse.html#656" class="Bound"
+      >n</a
+      ><a name="1318"
+      > </a
+      ><a name="1319" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="1324"
+      > </a
+      ><a name="1325" href="Universe.Utility.TruncUniverse.html#1307" class="Bound"
+      >i</a
+      ><a name="1326" class="Symbol"
+      >)</a
+      ><a name="1327"
+      > </a
+      ><a name="1328" class="Symbol"
+      >&#8594;</a
+      ><a name="1329"
+      > </a
+      ><a name="1330" class="Symbol"
+      >(</a
+      ><a name="1331" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10214;</a
+      ><a name="1332"
+      > </a
+      ><a name="1333" href="Universe.Utility.TruncUniverse.html#1313" class="Bound"
+      >A</a
+      ><a name="1334"
+      > </a
+      ><a name="1335" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10215;</a
+      ><a name="1336"
+      > </a
+      ><a name="1337" class="Symbol"
+      >&#8594;</a
+      ><a name="1338"
+      > </a
+      ><a name="1339" href="Universe.Utility.TruncUniverse.html#656" class="Bound"
+      >n</a
+      ><a name="1340"
+      > </a
+      ><a name="1341" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="1346"
+      > </a
+      ><a name="1347" href="Universe.Utility.TruncUniverse.html#1309" class="Bound"
+      >j</a
+      ><a name="1348" class="Symbol"
+      >)</a
+      ><a name="1349"
+      > </a
+      ><a name="1350" class="Symbol"
+      >&#8594;</a
+      ><a name="1351"
+      > </a
+      ><a name="1352" href="Universe.Utility.TruncUniverse.html#656" class="Bound"
+      >n</a
+      ><a name="1353"
+      > </a
+      ><a name="1354" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="1359"
+      > </a
+      ><a name="1360" class="Symbol"
+      >(</a
+      ><a name="1361" href="Universe.Utility.TruncUniverse.html#1307" class="Bound"
+      >i</a
+      ><a name="1362"
+      > </a
+      ><a name="1363" href="Universe.Utility.General.html#344" class="Function Operator"
+      >&#8852;</a
+      ><a name="1364"
+      > </a
+      ><a name="1365" href="Universe.Utility.TruncUniverse.html#1309" class="Bound"
+      >j</a
+      ><a name="1366" class="Symbol"
+      >)</a
+      ><a name="1367"
+      >
+  </a
+      ><a name="1370" href="Universe.Utility.TruncUniverse.html#1298" class="Function"
+      >&#931;-&#8804;</a
+      ><a name="1373"
+      > </a
+      ><a name="1374" href="Universe.Utility.TruncUniverse.html#1374" class="Bound"
+      >A</a
+      ><a name="1375"
+      > </a
+      ><a name="1376" href="Universe.Utility.TruncUniverse.html#1376" class="Bound"
+      >B</a
+      ><a name="1377"
+      > </a
+      ><a name="1378" class="Symbol"
+      >=</a
+      ><a name="1379"
+      > </a
+      ><a name="1380" class="Symbol"
+      >(</a
+      ><a name="1381" href="lib.Base.html#4935" class="Record"
+      >&#931;</a
+      ><a name="1382"
+      > </a
+      ><a name="1383" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10214;</a
+      ><a name="1384"
+      > </a
+      ><a name="1385" href="Universe.Utility.TruncUniverse.html#1374" class="Bound"
+      >A</a
+      ><a name="1386"
+      > </a
+      ><a name="1387" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10215;</a
+      ><a name="1388"
+      > </a
+      ><a name="1389" class="Symbol"
+      >(&#955;</a
+      ><a name="1391"
+      > </a
+      ><a name="1392" href="Universe.Utility.TruncUniverse.html#1392" class="Bound"
+      >a</a
+      ><a name="1393"
+      > </a
+      ><a name="1394" class="Symbol"
+      >&#8594;</a
+      ><a name="1395"
+      > </a
+      ><a name="1396" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10214;</a
+      ><a name="1397"
+      > </a
+      ><a name="1398" href="Universe.Utility.TruncUniverse.html#1376" class="Bound"
+      >B</a
+      ><a name="1399"
+      > </a
+      ><a name="1400" href="Universe.Utility.TruncUniverse.html#1392" class="Bound"
+      >a</a
+      ><a name="1401"
+      > </a
+      ><a name="1402" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10215;</a
+      ><a name="1403" class="Symbol"
+      >)</a
+      ><a name="1404"
+      > </a
+      ><a name="1405" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="1406"
+      > </a
+      ><a name="1407" href="lib.types.Sigma.html#2328" class="Function"
+      >&#931;-level</a
+      ><a name="1414"
+      > </a
+      ><a name="1415" class="Symbol"
+      >(</a
+      ><a name="1416" href="lib.Base.html#5039" class="Field"
+      >snd</a
+      ><a name="1419"
+      > </a
+      ><a name="1420" href="Universe.Utility.TruncUniverse.html#1374" class="Bound"
+      >A</a
+      ><a name="1421" class="Symbol"
+      >)</a
+      ><a name="1422"
+      > </a
+      ><a name="1423" class="Symbol"
+      >(</a
+      ><a name="1424" href="lib.Base.html#5039" class="Field"
+      >snd</a
+      ><a name="1427"
+      > </a
+      ><a name="1428" href="lib.Base.html#7682" class="Function Operator"
+      >&#8728;</a
+      ><a name="1429"
+      > </a
+      ><a name="1430" href="Universe.Utility.TruncUniverse.html#1376" class="Bound"
+      >B</a
+      ><a name="1431" class="Symbol"
+      >))</a
+      ><a name="1433"
+      >
+
+  </a
+      ><a name="1437" class="Keyword"
+      >infixr</a
+      ><a name="1443"
+      > </a
+      ><a name="1444" class="Number"
+      >4</a
+      ><a name="1445"
+      > _&#215;-&#8804;_
+
+  </a
+      ><a name="1455" href="Universe.Utility.TruncUniverse.html#1455" class="Function Operator"
+      >_&#215;-&#8804;_</a
+      ><a name="1460"
+      > </a
+      ><a name="1461" class="Symbol"
+      >:</a
+      ><a name="1462"
+      > </a
+      ><a name="1463" class="Symbol"
+      >&#8704;</a
+      ><a name="1464"
+      > </a
+      ><a name="1465" class="Symbol"
+      >{</a
+      ><a name="1466" href="Universe.Utility.TruncUniverse.html#1466" class="Bound"
+      >i</a
+      ><a name="1467"
+      > </a
+      ><a name="1468" href="Universe.Utility.TruncUniverse.html#1468" class="Bound"
+      >j</a
+      ><a name="1469" class="Symbol"
+      >}</a
+      ><a name="1470"
+      > </a
+      ><a name="1471" class="Symbol"
+      >&#8594;</a
+      ><a name="1472"
+      > </a
+      ><a name="1473" href="Universe.Utility.TruncUniverse.html#656" class="Bound"
+      >n</a
+      ><a name="1474"
+      > </a
+      ><a name="1475" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="1480"
+      > </a
+      ><a name="1481" href="Universe.Utility.TruncUniverse.html#1466" class="Bound"
+      >i</a
+      ><a name="1482"
+      > </a
+      ><a name="1483" class="Symbol"
+      >&#8594;</a
+      ><a name="1484"
+      > </a
+      ><a name="1485" href="Universe.Utility.TruncUniverse.html#656" class="Bound"
+      >n</a
+      ><a name="1486"
+      > </a
+      ><a name="1487" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="1492"
+      > </a
+      ><a name="1493" href="Universe.Utility.TruncUniverse.html#1468" class="Bound"
+      >j</a
+      ><a name="1494"
+      > </a
+      ><a name="1495" class="Symbol"
+      >&#8594;</a
+      ><a name="1496"
+      > </a
+      ><a name="1497" href="Universe.Utility.TruncUniverse.html#656" class="Bound"
+      >n</a
+      ><a name="1498"
+      > </a
+      ><a name="1499" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="1504"
+      > </a
+      ><a name="1505" class="Symbol"
+      >(</a
+      ><a name="1506" href="Universe.Utility.TruncUniverse.html#1466" class="Bound"
+      >i</a
+      ><a name="1507"
+      > </a
+      ><a name="1508" href="Universe.Utility.General.html#344" class="Function Operator"
+      >&#8852;</a
+      ><a name="1509"
+      > </a
+      ><a name="1510" href="Universe.Utility.TruncUniverse.html#1468" class="Bound"
+      >j</a
+      ><a name="1511" class="Symbol"
+      >)</a
+      ><a name="1512"
+      >
+  </a
+      ><a name="1515" href="Universe.Utility.TruncUniverse.html#1515" class="Bound"
+      >A</a
+      ><a name="1516"
+      > </a
+      ><a name="1517" href="Universe.Utility.TruncUniverse.html#1455" class="Function Operator"
+      >&#215;-&#8804;</a
+      ><a name="1520"
+      > </a
+      ><a name="1521" href="Universe.Utility.TruncUniverse.html#1521" class="Bound"
+      >B</a
+      ><a name="1522"
+      > </a
+      ><a name="1523" class="Symbol"
+      >=</a
+      ><a name="1524"
+      > </a
+      ><a name="1525" href="Universe.Utility.TruncUniverse.html#1298" class="Function"
+      >&#931;-&#8804;</a
+      ><a name="1528"
+      > </a
+      ><a name="1529" href="Universe.Utility.TruncUniverse.html#1515" class="Bound"
+      >A</a
+      ><a name="1530"
+      > </a
+      ><a name="1531" class="Symbol"
+      >(&#955;</a
+      ><a name="1533"
+      > </a
+      ><a name="1534" href="Universe.Utility.TruncUniverse.html#1534" class="Bound"
+      >_</a
+      ><a name="1535"
+      > </a
+      ><a name="1536" class="Symbol"
+      >&#8594;</a
+      ><a name="1537"
+      > </a
+      ><a name="1538" href="Universe.Utility.TruncUniverse.html#1521" class="Bound"
+      >B</a
+      ><a name="1539" class="Symbol"
+      >)</a
+      ><a name="1540"
+      >
+
+  </a
+      ><a name="1544" href="Universe.Utility.TruncUniverse.html#1544" class="Function"
+      >Path-&lt;</a
+      ><a name="1550"
+      > </a
+      ><a name="1551" class="Symbol"
+      >:</a
+      ><a name="1552"
+      > </a
+      ><a name="1553" class="Symbol"
+      >&#8704;</a
+      ><a name="1554"
+      > </a
+      ><a name="1555" class="Symbol"
+      >{</a
+      ><a name="1556" href="Universe.Utility.TruncUniverse.html#1556" class="Bound"
+      >i</a
+      ><a name="1557" class="Symbol"
+      >}</a
+      ><a name="1558"
+      > </a
+      ><a name="1559" class="Symbol"
+      >(</a
+      ><a name="1560" href="Universe.Utility.TruncUniverse.html#1560" class="Bound"
+      >A</a
+      ><a name="1561"
+      > </a
+      ><a name="1562" class="Symbol"
+      >:</a
+      ><a name="1563"
+      > </a
+      ><a name="1564" href="lib.Base.html#8780" class="InductiveConstructor"
+      >S</a
+      ><a name="1565"
+      > </a
+      ><a name="1566" href="Universe.Utility.TruncUniverse.html#656" class="Bound"
+      >n</a
+      ><a name="1567"
+      > </a
+      ><a name="1568" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="1573"
+      > </a
+      ><a name="1574" href="Universe.Utility.TruncUniverse.html#1556" class="Bound"
+      >i</a
+      ><a name="1575" class="Symbol"
+      >)</a
+      ><a name="1576"
+      > </a
+      ><a name="1577" class="Symbol"
+      >(</a
+      ><a name="1578" href="Universe.Utility.TruncUniverse.html#1578" class="Bound"
+      >x</a
+      ><a name="1579"
+      > </a
+      ><a name="1580" href="Universe.Utility.TruncUniverse.html#1580" class="Bound"
+      >y</a
+      ><a name="1581"
+      > </a
+      ><a name="1582" class="Symbol"
+      >:</a
+      ><a name="1583"
+      > </a
+      ><a name="1584" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10214;</a
+      ><a name="1585"
+      > </a
+      ><a name="1586" href="Universe.Utility.TruncUniverse.html#1560" class="Bound"
+      >A</a
+      ><a name="1587"
+      > </a
+      ><a name="1588" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10215;</a
+      ><a name="1589" class="Symbol"
+      >)</a
+      ><a name="1590"
+      > </a
+      ><a name="1591" class="Symbol"
+      >&#8594;</a
+      ><a name="1592"
+      > </a
+      ><a name="1593" href="Universe.Utility.TruncUniverse.html#656" class="Bound"
+      >n</a
+      ><a name="1594"
+      > </a
+      ><a name="1595" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="1600"
+      > </a
+      ><a name="1601" href="Universe.Utility.TruncUniverse.html#1556" class="Bound"
+      >i</a
+      ><a name="1602"
+      >
+  </a
+      ><a name="1605" href="Universe.Utility.TruncUniverse.html#1544" class="Function"
+      >Path-&lt;</a
+      ><a name="1611"
+      > </a
+      ><a name="1612" href="Universe.Utility.TruncUniverse.html#1612" class="Bound"
+      >A</a
+      ><a name="1613"
+      > </a
+      ><a name="1614" href="Universe.Utility.TruncUniverse.html#1614" class="Bound"
+      >x</a
+      ><a name="1615"
+      > </a
+      ><a name="1616" href="Universe.Utility.TruncUniverse.html#1616" class="Bound"
+      >y</a
+      ><a name="1617"
+      > </a
+      ><a name="1618" class="Symbol"
+      >=</a
+      ><a name="1619"
+      > </a
+      ><a name="1620" class="Symbol"
+      >(</a
+      ><a name="1621" href="Universe.Utility.TruncUniverse.html#1614" class="Bound"
+      >x</a
+      ><a name="1622"
+      > </a
+      ><a name="1623" href="lib.Base.html#1950" class="Datatype Operator"
+      >==</a
+      ><a name="1625"
+      > </a
+      ><a name="1626" href="Universe.Utility.TruncUniverse.html#1616" class="Bound"
+      >y</a
+      ><a name="1627"
+      > </a
+      ><a name="1628" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="1629"
+      > </a
+      ><a name="1630" href="lib.Base.html#5039" class="Field"
+      >snd</a
+      ><a name="1633"
+      > </a
+      ><a name="1634" href="Universe.Utility.TruncUniverse.html#1612" class="Bound"
+      >A</a
+      ><a name="1635"
+      > </a
+      ><a name="1636" class="Symbol"
+      >_</a
+      ><a name="1637"
+      > </a
+      ><a name="1638" class="Symbol"
+      >_)</a
+      ><a name="1640"
+      >
+
+  </a
+      ><a name="1644" href="Universe.Utility.TruncUniverse.html#1644" class="Function"
+      >Path-&#8804;</a
+      ><a name="1650"
+      > </a
+      ><a name="1651" class="Symbol"
+      >:</a
+      ><a name="1652"
+      > </a
+      ><a name="1653" class="Symbol"
+      >&#8704;</a
+      ><a name="1654"
+      > </a
+      ><a name="1655" class="Symbol"
+      >{</a
+      ><a name="1656" href="Universe.Utility.TruncUniverse.html#1656" class="Bound"
+      >i</a
+      ><a name="1657" class="Symbol"
+      >}</a
+      ><a name="1658"
+      > </a
+      ><a name="1659" class="Symbol"
+      >(</a
+      ><a name="1660" href="Universe.Utility.TruncUniverse.html#1660" class="Bound"
+      >A</a
+      ><a name="1661"
+      > </a
+      ><a name="1662" class="Symbol"
+      >:</a
+      ><a name="1663"
+      > </a
+      ><a name="1664" href="Universe.Utility.TruncUniverse.html#656" class="Bound"
+      >n</a
+      ><a name="1665"
+      > </a
+      ><a name="1666" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="1671"
+      > </a
+      ><a name="1672" href="Universe.Utility.TruncUniverse.html#1656" class="Bound"
+      >i</a
+      ><a name="1673" class="Symbol"
+      >)</a
+      ><a name="1674"
+      > </a
+      ><a name="1675" class="Symbol"
+      >(</a
+      ><a name="1676" href="Universe.Utility.TruncUniverse.html#1676" class="Bound"
+      >x</a
+      ><a name="1677"
+      > </a
+      ><a name="1678" href="Universe.Utility.TruncUniverse.html#1678" class="Bound"
+      >y</a
+      ><a name="1679"
+      > </a
+      ><a name="1680" class="Symbol"
+      >:</a
+      ><a name="1681"
+      > </a
+      ><a name="1682" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10214;</a
+      ><a name="1683"
+      > </a
+      ><a name="1684" href="Universe.Utility.TruncUniverse.html#1660" class="Bound"
+      >A</a
+      ><a name="1685"
+      > </a
+      ><a name="1686" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10215;</a
+      ><a name="1687" class="Symbol"
+      >)</a
+      ><a name="1688"
+      > </a
+      ><a name="1689" class="Symbol"
+      >&#8594;</a
+      ><a name="1690"
+      > </a
+      ><a name="1691" href="Universe.Utility.TruncUniverse.html#656" class="Bound"
+      >n</a
+      ><a name="1692"
+      > </a
+      ><a name="1693" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="1698"
+      > </a
+      ><a name="1699" href="Universe.Utility.TruncUniverse.html#1656" class="Bound"
+      >i</a
+      ><a name="1700"
+      >
+  </a
+      ><a name="1703" href="Universe.Utility.TruncUniverse.html#1644" class="Function"
+      >Path-&#8804;</a
+      ><a name="1709"
+      > </a
+      ><a name="1710" href="Universe.Utility.TruncUniverse.html#1710" class="Bound"
+      >A</a
+      ><a name="1711"
+      > </a
+      ><a name="1712" href="Universe.Utility.TruncUniverse.html#1712" class="Bound"
+      >x</a
+      ><a name="1713"
+      > </a
+      ><a name="1714" href="Universe.Utility.TruncUniverse.html#1714" class="Bound"
+      >y</a
+      ><a name="1715"
+      > </a
+      ><a name="1716" class="Symbol"
+      >=</a
+      ><a name="1717"
+      > </a
+      ><a name="1718" href="Universe.Utility.TruncUniverse.html#1544" class="Function"
+      >Path-&lt;</a
+      ><a name="1724"
+      > </a
+      ><a name="1725" class="Symbol"
+      >(</a
+      ><a name="1726" href="Universe.Utility.TruncUniverse.html#809" class="Function"
+      >raise</a
+      ><a name="1731"
+      > </a
+      ><a name="1732" href="Universe.Utility.TruncUniverse.html#1710" class="Bound"
+      >A</a
+      ><a name="1733" class="Symbol"
+      >)</a
+      ><a name="1734"
+      > </a
+      ><a name="1735" href="Universe.Utility.TruncUniverse.html#1712" class="Bound"
+      >x</a
+      ><a name="1736"
+      > </a
+      ><a name="1737" href="Universe.Utility.TruncUniverse.html#1714" class="Bound"
+      >y</a
+      ><a name="1738"
+      >
+
+  </a
+      ><a name="1742" href="Universe.Utility.TruncUniverse.html#1742" class="Function Operator"
+      >_&#8771;-&#8804;_</a
+      ><a name="1747"
+      > </a
+      ><a name="1748" class="Symbol"
+      >:</a
+      ><a name="1749"
+      > </a
+      ><a name="1750" class="Symbol"
+      >&#8704;</a
+      ><a name="1751"
+      > </a
+      ><a name="1752" class="Symbol"
+      >{</a
+      ><a name="1753" href="Universe.Utility.TruncUniverse.html#1753" class="Bound"
+      >i</a
+      ><a name="1754"
+      > </a
+      ><a name="1755" href="Universe.Utility.TruncUniverse.html#1755" class="Bound"
+      >j</a
+      ><a name="1756" class="Symbol"
+      >}</a
+      ><a name="1757"
+      > </a
+      ><a name="1758" class="Symbol"
+      >(</a
+      ><a name="1759" href="Universe.Utility.TruncUniverse.html#1759" class="Bound"
+      >A</a
+      ><a name="1760"
+      > </a
+      ><a name="1761" class="Symbol"
+      >:</a
+      ><a name="1762"
+      > </a
+      ><a name="1763" href="Universe.Utility.TruncUniverse.html#656" class="Bound"
+      >n</a
+      ><a name="1764"
+      > </a
+      ><a name="1765" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="1770"
+      > </a
+      ><a name="1771" href="Universe.Utility.TruncUniverse.html#1753" class="Bound"
+      >i</a
+      ><a name="1772" class="Symbol"
+      >)</a
+      ><a name="1773"
+      > </a
+      ><a name="1774" class="Symbol"
+      >(</a
+      ><a name="1775" href="Universe.Utility.TruncUniverse.html#1775" class="Bound"
+      >B</a
+      ><a name="1776"
+      > </a
+      ><a name="1777" class="Symbol"
+      >:</a
+      ><a name="1778"
+      > </a
+      ><a name="1779" href="Universe.Utility.TruncUniverse.html#656" class="Bound"
+      >n</a
+      ><a name="1780"
+      > </a
+      ><a name="1781" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="1786"
+      > </a
+      ><a name="1787" href="Universe.Utility.TruncUniverse.html#1755" class="Bound"
+      >j</a
+      ><a name="1788" class="Symbol"
+      >)</a
+      ><a name="1789"
+      > </a
+      ><a name="1790" class="Symbol"
+      >&#8594;</a
+      ><a name="1791"
+      > </a
+      ><a name="1792" href="Universe.Utility.TruncUniverse.html#656" class="Bound"
+      >n</a
+      ><a name="1793"
+      > </a
+      ><a name="1794" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="1799"
+      > </a
+      ><a name="1800" class="Symbol"
+      >(</a
+      ><a name="1801" href="Universe.Utility.TruncUniverse.html#1753" class="Bound"
+      >i</a
+      ><a name="1802"
+      > </a
+      ><a name="1803" href="Universe.Utility.General.html#344" class="Function Operator"
+      >&#8852;</a
+      ><a name="1804"
+      > </a
+      ><a name="1805" href="Universe.Utility.TruncUniverse.html#1755" class="Bound"
+      >j</a
+      ><a name="1806" class="Symbol"
+      >)</a
+      ><a name="1807"
+      >
+  </a
+      ><a name="1810" href="Universe.Utility.TruncUniverse.html#1810" class="Bound"
+      >A</a
+      ><a name="1811"
+      > </a
+      ><a name="1812" href="Universe.Utility.TruncUniverse.html#1742" class="Function Operator"
+      >&#8771;-&#8804;</a
+      ><a name="1815"
+      > </a
+      ><a name="1816" href="Universe.Utility.TruncUniverse.html#1816" class="Bound"
+      >B</a
+      ><a name="1817"
+      > </a
+      ><a name="1818" class="Symbol"
+      >=</a
+      ><a name="1819"
+      > </a
+      ><a name="1820" class="Symbol"
+      >(</a
+      ><a name="1821" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10214;</a
+      ><a name="1822"
+      > </a
+      ><a name="1823" href="Universe.Utility.TruncUniverse.html#1810" class="Bound"
+      >A</a
+      ><a name="1824"
+      > </a
+      ><a name="1825" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10215;</a
+      ><a name="1826"
+      > </a
+      ><a name="1827" href="lib.Equivalences.html#2994" class="Function Operator"
+      >&#8771;</a
+      ><a name="1828"
+      > </a
+      ><a name="1829" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10214;</a
+      ><a name="1830"
+      > </a
+      ><a name="1831" href="Universe.Utility.TruncUniverse.html#1816" class="Bound"
+      >B</a
+      ><a name="1832"
+      > </a
+      ><a name="1833" href="Universe.Utility.TruncUniverse.html#594" class="Function Operator"
+      >&#10215;</a
+      ><a name="1834"
+      > </a
+      ><a name="1835" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="1836"
+      > </a
+      ><a name="1837" href="lib.NType2.html#3029" class="Function"
+      >&#8771;-level</a
+      ><a name="1844"
+      > </a
+      ><a name="1845" class="Symbol"
+      >(</a
+      ><a name="1846" href="lib.Base.html#5039" class="Field"
+      >snd</a
+      ><a name="1849"
+      > </a
+      ><a name="1850" href="Universe.Utility.TruncUniverse.html#1810" class="Bound"
+      >A</a
+      ><a name="1851" class="Symbol"
+      >)</a
+      ><a name="1852"
+      > </a
+      ><a name="1853" class="Symbol"
+      >(</a
+      ><a name="1854" href="lib.Base.html#5039" class="Field"
+      >snd</a
+      ><a name="1857"
+      > </a
+      ><a name="1858" href="Universe.Utility.TruncUniverse.html#1816" class="Bound"
+      >B</a
+      ><a name="1859" class="Symbol"
+      >))</a
+      ><a name="1861"
+      >
+
+</a
+      ><a name="1863" href="Universe.Utility.TruncUniverse.html#1863" class="Function Operator"
+      >_-Type-&#8804;_</a
+      ><a name="1872"
+      > </a
+      ><a name="1873" class="Symbol"
+      >:</a
+      ><a name="1874"
+      > </a
+      ><a name="1875" class="Symbol"
+      >(</a
+      ><a name="1876" href="Universe.Utility.TruncUniverse.html#1876" class="Bound"
+      >n</a
+      ><a name="1877"
+      > </a
+      ><a name="1878" class="Symbol"
+      >:</a
+      ><a name="1879"
+      > </a
+      ><a name="1880" href="lib.Base.html#8807" class="Function"
+      >&#8469;&#8331;&#8322;</a
+      ><a name="1883" class="Symbol"
+      >)</a
+      ><a name="1884"
+      > </a
+      ><a name="1885" class="Symbol"
+      >(</a
+      ><a name="1886" href="Universe.Utility.TruncUniverse.html#1886" class="Bound"
+      >i</a
+      ><a name="1887"
+      > </a
+      ><a name="1888" class="Symbol"
+      >:</a
+      ><a name="1889"
+      > </a
+      ><a name="1890" href="lib.Base.html#1070" class="Function"
+      >ULevel</a
+      ><a name="1896" class="Symbol"
+      >)</a
+      ><a name="1897"
+      > </a
+      ><a name="1898" class="Symbol"
+      >&#8594;</a
+      ><a name="1899"
+      > </a
+      ><a name="1900" href="lib.Base.html#8780" class="InductiveConstructor"
+      >S</a
+      ><a name="1901"
+      > </a
+      ><a name="1902" href="Universe.Utility.TruncUniverse.html#1876" class="Bound"
+      >n</a
+      ><a name="1903"
+      > </a
+      ><a name="1904" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="1909"
+      > </a
+      ><a name="1910" href="lib.Base.html#1133" class="Function"
+      >lsucc</a
+      ><a name="1915"
+      > </a
+      ><a name="1916" href="Universe.Utility.TruncUniverse.html#1886" class="Bound"
+      >i</a
+      ><a name="1917"
+      >
+</a
+      ><a name="1918" href="Universe.Utility.TruncUniverse.html#1918" class="Bound"
+      >n</a
+      ><a name="1919"
+      > </a
+      ><a name="1920" href="Universe.Utility.TruncUniverse.html#1863" class="Function Operator"
+      >-Type-&#8804;</a
+      ><a name="1927"
+      > </a
+      ><a name="1928" href="Universe.Utility.TruncUniverse.html#1928" class="Bound"
+      >i</a
+      ><a name="1929"
+      > </a
+      ><a name="1930" class="Symbol"
+      >=</a
+      ><a name="1931"
+      > </a
+      ><a name="1932" class="Symbol"
+      >(</a
+      ><a name="1933" href="Universe.Utility.TruncUniverse.html#1918" class="Bound"
+      >n</a
+      ><a name="1934"
+      > </a
+      ><a name="1935" href="lib.NType2.html#2683" class="Function Operator"
+      >-Type</a
+      ><a name="1940"
+      > </a
+      ><a name="1941" href="Universe.Utility.TruncUniverse.html#1928" class="Bound"
+      >i</a
+      ><a name="1942"
+      > </a
+      ><a name="1943" href="lib.Base.html#5011" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="1944"
+      > </a
+      ><a name="1945" href="Universe.Utility.TruncUniverse.html#1918" class="Bound"
+      >n</a
+      ><a name="1946"
+      > </a
+      ><a name="1947" href="lib.NType2.html#4692" class="Function Operator"
+      >-Type-level</a
+      ><a name="1958"
+      > </a
+      ><a name="1959" href="Universe.Utility.TruncUniverse.html#1928" class="Bound"
+      >i</a
+      ><a name="1960" class="Symbol"
+      >)</a
+      ><a name="1961"
+      >
+</a
+      ></pre
+    ></body
+  ></html
+>
