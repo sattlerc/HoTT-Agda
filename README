@@ -55,11 +55,7 @@ Copyright and Licensing
 =======================
 
 The HoTT community's Agda library, residing in the 'lib' subdirectory, is free
-software distributed under the terms of the ??? license (see 'lib/???').
-
-[Note to the editor:
- the community is currently deciding on a license and will add it shortly.]
+software distributed under the terms of the MIT License (see 'lib/LICENSE').
 
 Our own development, residing in the 'Universe' subdirectory, is free software
-distributed under the terms of the MIT license (see 'Universe/LICENSE').
-
+distributed under the terms of the MIT License (see 'Universe/LICENSE').
