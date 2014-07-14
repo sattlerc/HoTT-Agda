@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K #-}
+{-# OPTIONS  #-}
 
 open import lib.Basics
 open import lib.types.Paths
@@ -33,6 +33,7 @@ module _ {i j} {A : Type i} {B : Type j} where
     →-is-prop = →-level
 
 {- Equivalences in a Π-type -}
+
 equiv-Π-l : ∀ {i j k} {A : Type i} {B : Type j} (P : B → Type k) {h : A → B}
             → is-equiv h → Π A (P ∘ h) ≃ Π B P
 equiv-Π-l {A = A} {B = B} P {h = h} e = equiv f g f-g g-f where
@@ -53,6 +54,11 @@ equiv-Π-l {A = A} {B = B} P {h = h} e = equiv f g f-g g-f where
                                          (is-equiv.adj e a)
                                          (↓-ap-in P (–> w)
                                                     (apd u $ <–-inv-l w a))
+
+-- with "proper" type signature
+equiv-Π-l' : ∀ {i j k} {A : Type i} {B : Type j} {P : B → Type k}
+               (h : A ≃ B) → Π A (P ∘ –> h) ≃ Π B P
+equiv-Π-l' {P = P} e = equiv-Π-l P (snd e)
 
 equiv-Π-r : ∀ {i j k} {A : Type i} {B : A → Type j} {C : A → Type k}
   → (∀ x → B x ≃ C x) → Π A B ≃ Π A C

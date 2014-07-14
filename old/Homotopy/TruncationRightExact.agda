@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K #-}
+{-# OPTIONS  #-}
 
 open import Base
 open import Homotopy.PushoutDef

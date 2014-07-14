@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K #-}
+{-# OPTIONS  #-}
 
 -- Drop-in replacement for the module [Base].
 module BaseOver where

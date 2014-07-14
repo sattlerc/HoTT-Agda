@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K #-}
+{-# OPTIONS  #-}
 
 open import Types
 open import Functions

@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K #-}
+{-# OPTIONS  #-}
 
 {-
   This file lists some basic facts about equivalences

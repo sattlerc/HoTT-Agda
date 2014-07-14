@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K #-}
+{-# OPTIONS  #-}
 
 open import lib.Basics
 open import lib.types.Pointed
@@ -40,3 +40,9 @@ abstract
   Bool-is-set = dec-eq-is-set Bool-has-dec-eq
 
 Bool-level = Bool-is-set
+
+Bool-as-Coprod : Bool ≃ Coprod Unit Unit
+Bool-as-Coprod = equiv (λ {true → inl unit ; false → inr unit})
+                       (λ {(inl _) → true ; (inr _) → false})
+                       (λ {(inl _) → idp ; (inr _) → idp})
+                       (λ {true → idp ; false → idp})

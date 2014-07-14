@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K #-}
+{-# OPTIONS  #-}
 
 {-
 Truncated higher inductive types look like higher inductive types except that

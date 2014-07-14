@@ -59,7 +59,7 @@ n` and `x : A ⊢ B : Set m`, then the dependent function type `(x : A) → B` i
 
 - inductive types and inductive families. The default pattern matching algorithm allows more than
 dependent eliminators, for example you can prove axiom K easily by pattern matching. But using the
-`--without-K` flag, you can restrict dependent pattern matching to something that should not allow
+`` flag, you can restrict dependent pattern matching to something that should not allow
 you to prove K. I’m trying to use pattern matching in a minimal way, every pattern matching should
 be directly translatable into a single dependent eliminator use.
 
@@ -107,7 +107,7 @@ understand (and use) are
 - Options. If you have at the beginning of your file the special comment
   `{-# OPTIONS --something #-}`, Agda will be called with the command-line option `--something`.
   This is not inherited by imported modules, so homotopy type theorists should begin *every* Agda
-  file with the special comment `{-# OPTIONS --without-K #-}`.
+  file with the special comment `{-# OPTIONS  #-}`.
 
 - Builtins. A builtin command is used to register some type as a builtin type that is handled
   specially by Agda. I’m using two of them : universe levels (see the part about universe
@@ -121,7 +121,7 @@ An Agda source file *must* contain a module (the global module) named after the 
 (see the section about modules for more). For example a source file named `Test.agda` will start
 with the following :
 
-    {-# OPTIONS --without-K #-}
+    {-# OPTIONS  #-}
     
     module Test where
     -- Interesting stuff, that does not need to be indented

@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K #-}
+{-# OPTIONS  #-}
 
 open import lib.Basics
 open import lib.types.Sigma
@@ -6,6 +6,8 @@ open import lib.types.Pi
 open import lib.types.Paths
 open import lib.types.Unit
 open import lib.types.Empty
+open import lib.types.Coproduct
+open import lib.types.Bool
 
 module lib.Equivalences2 where
 
@@ -138,7 +140,9 @@ ua-∘e =
     (λ {A} {B} e₁ → ∀ {C} → ∀ (e₂ : B ≃ C) → ua (e₂ ∘e e₁) == ua e₁ ∙ ua e₂)
     (λ A → λ e₂ → ap ua (∘e-unit-r e₂) ∙ ap (λ w → (w ∙ ua e₂)) (! (ua-η idp)))
 
-{- Type former equivalences involving Empty may require λ=. -}
+{- Type former equivalences involving Empty and Coprod may require λ=.
+   Because of this dependency, we thus cannot put them in Equivalences.agda. -}
+
 module _ {j} {B : Empty → Type j} where
   Σ₁-Empty : Σ Empty B ≃ Empty
   Σ₁-Empty = equiv (⊥-rec ∘ fst) ⊥-rec ⊥-elim (⊥-rec ∘ fst)
@@ -146,5 +150,53 @@ module _ {j} {B : Empty → Type j} where
   Π₁-Empty : Π Empty B ≃ Unit
   Π₁-Empty = equiv (cst tt) (cst ⊥-elim) (λ _ → contr-has-all-paths Unit-is-contr _ _) (λ _ → λ= ⊥-elim)
 
-Σ₂-Empty : ∀ {i} {A : Type i} → Σ A (λ _ → Empty) ≃ Empty
-Σ₂-Empty = equiv (⊥-rec ∘ snd) ⊥-rec ⊥-elim (⊥-rec ∘ snd)
+Σ₂-Empty : ∀ {i} {A : Type i} → A × Empty ≃ Empty
+Σ₂-Empty = Σ₁-Empty ∘e ×-comm
+
+module _ {i j k} {A : Type i} {B : Type j} {P : Coprod A B → Type k} where
+  Σ₁-Coprod : Σ (Coprod A B) P ≃ Coprod (Σ A (P ∘ inl)) (Σ B (P ∘ inr))
+  Σ₁-Coprod = equiv (λ {(inl a , x) → inl (a , x) ; (inr b , x) → inr (b , x)})
+                    (λ {(inl (a , x)) → (inl a , x) ; (inr (b , x)) → (inr b , x)})
+                    (λ {(inl (a , x)) → idp ; (inr (b , x)) → idp})
+                    (λ {(inl a , x) → idp ; (inr b , x) → idp})
+
+  Π₁-Coprod : Π (Coprod A B) P ≃ Π A (P ∘ inl) × Π B (P ∘ inr)
+  Π₁-Coprod = equiv 
+    (λ f → (f ∘ inl , f ∘ inr))
+    (λ {(l , r) → λ {(inl a) → l a ; (inr b) → r b}})
+    (λ _ → idp)
+    (λ f → λ= (λ {(inl a) → idp ; (inr b) → idp}))
+
+Σ₂-Coprod : ∀ {i j k} {A : Type i} {B : A → Type j} {C : A → Type k}
+            → Σ A (λ a → Coprod (B a) (C a)) ≃ Coprod (Σ A B) (Σ A C)
+Σ₂-Coprod = equiv (λ {(a , inl b) → inl (a , b) ; (a , inr c) → inr (a , c)})
+                  (λ {(inl (a , b)) → (a , inl b) ; (inr (a , c)) → (a , inr c)})
+                  (λ {(inl x) → idp ; (inr x) → idp})
+                  (λ {(a , inl x) → idp ; (a , inr x) → idp})
+
+-- Derived equivalences for Bool
+module _ {j} {B : Bool → Type j} where
+  Σ₁-Bool : Σ Bool B ≃ Coprod (B true) (B false)
+  Σ₁-Bool = 
+      Σ Bool B
+    ≃⟨ equiv-Σ-fst' (Bool-as-Coprod ⁻¹) ⁻¹ ⟩
+      Σ (Coprod Unit Unit) (B ∘ <– Bool-as-Coprod)
+    ≃⟨ Σ₁-Coprod ⟩
+      Coprod (Σ Unit (λ {tt → B true})) (Σ Unit (λ {tt → B false}))
+    ≃⟨ equiv-Coprod Σ₁-Unit Σ₁-Unit ⟩
+      Coprod (B true) (B false)
+    ≃∎
+
+  Π₁-Bool : Π Bool B ≃ B true × B false
+  Π₁-Bool =
+      Π Bool B
+    ≃⟨ equiv-Π-l' (Bool-as-Coprod ⁻¹) ⁻¹ ⟩
+      Π (Coprod Unit Unit) (B ∘ <– Bool-as-Coprod)
+    ≃⟨ Π₁-Coprod ⟩
+      Π Unit (λ {tt → B true}) × Π Unit (λ {tt → B false})
+    ≃⟨ equiv-Σ Π₁-Unit (cst Π₁-Unit) ⟩
+      B true × B false
+    ≃∎
+
+Σ₂-Bool : ∀ {i} {A : Type i} → A × Bool ≃ Coprod A A
+Σ₂-Bool = Σ₁-Bool ∘e ×-comm

@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K #-}
+{-# OPTIONS  #-}
 
 {-
 This file contains a bunch of basic stuff which is needed early.

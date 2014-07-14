@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K #-}
+{-# OPTIONS  #-}
 
 {-
   Now it only has specialized constructs and lemmas for π₀ (x ≡ y)

@@ -1,5 +1,5 @@
 
-{-# OPTIONS --without-K #-}
+{-# OPTIONS  #-}
 
 module lib.groups.Groups where
 

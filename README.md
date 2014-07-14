@@ -11,7 +11,7 @@ Agda Options
 ------------
 
 This library is assuming the options `--universe-polymorphism` (on by default)
-and the experimental one `--without-K`.
+and the experimental one ``.
 
 Style and naming conventions
 ----------------------------

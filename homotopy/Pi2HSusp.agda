@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K #-}
+{-# OPTIONS  #-}
 
 open import HoTT
 open import homotopy.HSpace renaming (HSpaceStructure to HSS)

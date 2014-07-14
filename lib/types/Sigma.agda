@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K #-}
+{-# OPTIONS  #-}
 
 open import lib.Basics
 
@@ -102,7 +102,7 @@ abstract
 -- Equivalences in a Σ-type
 
 equiv-Σ-fst : ∀ {i j k} {A : Type i} {B : Type j} (P : B → Type k) {h : A → B}
-                  → is-equiv h → (Σ A (P ∘ h)) ≃ (Σ B P)
+                  → is-equiv h → Σ A (P ∘ h) ≃ Σ B P
 equiv-Σ-fst {A = A} {B = B} P {h = h} e = equiv f g f-g g-f
   where f : Σ A (P ∘ h) → Σ B P
         f (a , r) = (h a , r)
@@ -119,6 +119,11 @@ equiv-Σ-fst {A = A} {B = B} P {h = h} e = equiv f g f-g g-f
                 (transport (λ q → transport P (! q) r == r [ P ∘ h ↓ is-equiv.g-f e a ])
                            (is-equiv.adj e a)
                            (trans-ap-↓ P h (is-equiv.g-f e a) r) )
+
+-- with "proper" type signature
+equiv-Σ-fst' : ∀ {i j k} {A : Type i} {B : Type j} {P : B → Type k}
+                 (h : A ≃ B) → Σ A (P ∘ –> h) ≃ Σ B P
+equiv-Σ-fst' {P = P} e = equiv-Σ-fst P (snd e)
 
 equiv-Σ-snd : ∀ {i j k} {A : Type i} {B : A → Type j} {C : A → Type k}
   → (∀ x → B x ≃ C x) → Σ A B ≃ Σ A C
@@ -147,6 +152,21 @@ module _ {i₀ i₁ j₀ j₁} {A₀ : Type i₀} {A₁ : Type i₁}
   equiv-Σ' u v = Σ A₀ B₀           ≃⟨ equiv-Σ-snd v ⟩
                  Σ A₀ (B₁ ∘ –> u)  ≃⟨ equiv-Σ-fst _ (snd u) ⟩
                  Σ A₁ B₁           ≃∎
+
+
+-- Analogous equivalences for non-dependent products
+equiv-×-fst : ∀ {i₀ i₁ j} {A₀ : Type i₀} {A₁ : Type i₁} {B : Type j}
+              → A₀ ≃ A₁ → A₀ × B ≃ A₁ × B
+equiv-×-fst = equiv-Σ-fst'
+
+equiv-×-snd : ∀ {i j₀ j₁} {A : Type i} {B₀ : Type j₀} {B₁ : Type j₁}
+              → B₀ ≃ B₁ → A × B₀ ≃ A × B₁
+equiv-×-snd e = equiv-Σ-snd (cst e)
+
+module _ {i₀ i₁ j₀ j₁} {A₀ : Type i₀} {A₁ : Type i₁}
+                       {B₀ : Type j₀} {B₁ : Type j₁} where
+  equiv-× : A₀ ≃ A₁ → B₀ ≃ B₁ → A₀ × B₀ ≃ A₁ × B₁
+  equiv-× u v = equiv-×-snd v ∘e equiv-×-fst u
 
 
 -- Implementation of [_∙'_] on Σ

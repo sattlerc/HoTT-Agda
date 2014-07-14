@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K #-}
+{-# OPTIONS  #-}
 
 open import lib.Basics
 open import lib.types.Empty
@@ -63,3 +63,42 @@ X ∙⊔ Y = ∙[ Coprod (fst X) (fst Y) , inl (snd X) ]
 
 _⊔∙_ : ∀ {i j} → Ptd i → Ptd j → Ptd (lmax i j)
 X ⊔∙ Y = ∙[ Coprod (fst X) (fst Y) , inr (snd Y) ]
+
+
+-- Equivalences in a coproduct
+
+equiv-Coprod-l : ∀ {i₁ i₂ j} {A₁ : Type i₁} {A₂ : Type i₂} {B : Type j}
+                 → A₁ ≃ A₂ → Coprod A₁ B ≃ Coprod A₂ B
+equiv-Coprod-l e = equiv (λ {(inl a₁) → inl (–> e a₁) ; (inr b) → inr b})
+                         (λ {(inl a₂) → inl (<– e a₂) ; (inr b) → inr b})
+                         (λ {(inl a₂) → ap inl (<–-inv-r e a₂) ; (inr b) → idp})
+                         (λ {(inl a₁) → ap inl (<–-inv-l e a₁) ; (inr b) → idp})
+
+equiv-Coprod-r : ∀ {i j₁ j₂} {A : Type i} {B₁ : Type j₁} {B₂ : Type j₂}
+                 → B₁ ≃ B₂ → Coprod A B₁ ≃ Coprod A B₂
+equiv-Coprod-r e = equiv (λ {(inl a) → inl a ; (inr b₁) → inr (–> e b₁)})
+                         (λ {(inl a) → inl a ; (inr b₂) → inr (<– e b₂)})
+                         (λ {(inl a) → idp ; (inr b₂) → ap inr (<–-inv-r e b₂)})
+                         (λ {(inl a) → idp ; (inr b₁) → ap inr (<–-inv-l e b₁)})
+
+equiv-Coprod : ∀ {i₁ i₂ j₁ j₂}
+                 {A₁ : Type i₁} {A₂ : Type i₂}
+                 {B₁ : Type j₁} {B₂ : Type j₂}
+               → A₁ ≃ A₂ → B₁ ≃ B₂ → Coprod A₁ B₁ ≃ Coprod A₂ B₂
+equiv-Coprod ea eb = equiv-Coprod-r eb ∘e equiv-Coprod-l ea
+
+Coprod-comm : ∀ {i j} {A : Type i} {B : Type j} → Coprod A B ≃ Coprod B A
+Coprod-comm = equiv (λ {(inl a) → inr a ; (inr b) → inl b})
+                    (λ {(inl b) → inr b ; (inr a) → inl a})
+                    (λ {(inl b) → idp ; (inr a) → idp})
+                    (λ {(inl a) → idp ; (inr b) → idp})
+
+
+Coprod-l-Empty : ∀ {j} {B : Type j} → Coprod ⊥ B ≃ B
+Coprod-l-Empty = equiv (λ {(inl x) → ⊥-rec x ; (inr b) → b})
+                       inr
+                       (λ _ → idp)
+                       (λ {(inl x) → ⊥-rec x ; (inr b) → idp})
+
+Coprod-r-Empty : ∀ {j} {B : Type j} → Coprod B ⊥ ≃ B
+Coprod-r-Empty = Coprod-l-Empty ∘e Coprod-comm
