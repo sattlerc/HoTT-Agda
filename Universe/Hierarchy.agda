@@ -76,7 +76,7 @@ module _ {i} {A : Type i} where
   Ω^-Type n = Ω^-Π•-comm _ _ n ∘e• equiv-Ω^ n Ω²-Type
 
 
-{- The predicate named P in the article.
+{- The pointed family P from the article.
    It takes an n-type A and returns the space of (n+1)-loops
    with basepoint A in U_n^n (the n-th universe restricted to n-types).
    This crucial restriction to n-types implies it is just a set. -}

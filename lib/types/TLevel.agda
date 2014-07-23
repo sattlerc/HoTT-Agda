@@ -171,9 +171,10 @@ minT≤r (S m) (S n) = ≤T-ap-S (minT≤r m n)
 minT-out : (m n : ℕ₋₂) → Coprod (minT m n == m) (minT m n == n)
 minT-out ⟨-2⟩ _ = inl idp
 minT-out (S _) ⟨-2⟩ = inr idp
-minT-out (S m) (S n) with minT-out m n
-minT-out (S m) (S n) | inl p = inl (ap S p)
-minT-out (S m) (S n) | inr q = inr (ap S q)
+minT-out (S m) (S n) = lem (minT-out m n) where
+  lem : Coprod (minT m n == m) (minT m n == n) → _
+  lem (inl p) = inl (ap S p)
+  lem (inr q) = inr (ap S q)
 
 minT-out-l : {m n : ℕ₋₂} → (m ≤T n) → minT m n == m
 minT-out-l {m} {n} lte with minT-out m n

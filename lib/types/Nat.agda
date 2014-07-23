@@ -11,8 +11,6 @@ data ℕ : Type₀ where
   S : (n : ℕ) → ℕ
 
 {-# BUILTIN NATURAL ℕ #-}
-{-# BUILTIN ZERO O #-}
-{-# BUILTIN SUC S #-}
 
 Nat = ℕ
 
@@ -61,19 +59,6 @@ abstract
 
   ℕ-O≠S : (n : ℕ) → (O ≠ S n)
   ℕ-O≠S n p = ℕ-S≠O n (! p)
-
-  ℕ-has-dec-eq : has-dec-eq ℕ
-  ℕ-has-dec-eq O O = inl idp
-  ℕ-has-dec-eq O (S n) = inr (ℕ-O≠S n)
-  ℕ-has-dec-eq (S n) O = inr (ℕ-S≠O n)
-  ℕ-has-dec-eq (S n) (S m) with ℕ-has-dec-eq n m
-  ℕ-has-dec-eq (S n) (S m) | inl p = inl (ap S p)
-  ℕ-has-dec-eq (S n) (S m) | inr p⊥ = inr (λ p → p⊥ (S-injective n m p))
-
-  ℕ-is-set : is-set ℕ
-  ℕ-is-set = dec-eq-is-set ℕ-has-dec-eq
-
-ℕ-level = ℕ-is-set
 
 {- Inequalities -}
 infix 4 _<_

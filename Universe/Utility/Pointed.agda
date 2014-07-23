@@ -6,7 +6,7 @@
    and observe that univalence between identical types is a pointed equivalence.
 
    We define pointed versions of dependent sums and products using the usual
-   notion of pointed predicates and observe that they commute in a certain sense
+   notion of pointed families and observe that they commute in a certain sense
    with taking loop spaces.
 
    We finish by deriving a generalization to n-truncation and n-th loop spaces
@@ -166,29 +166,29 @@ module _ {i} {A : Type i} where
   ua-equiv• = ((ua-equiv ⁻¹) , idp) ⁻¹•
 
 
-{- Pointed predicates.
-   A pointed predicate over a pointed type is a predicate over the base
-   together with a inhabitant of the predicate at the point.
-   Note that pointed types are equivalent to pointed predicates
+{- Pointed families.
+   A pointed family over a pointed type is a family over the base
+   together with a inhabitant of the family at the point.
+   Note that pointed types are equivalent to pointed families
    over the pointed unit type (not shown here). -}
-Pred• : ∀ {i} (X : Type• i) (j : ULevel) → Type (i ⊔ lsucc j)
-Pred• X j = Σ (base X → Type j) (λ P → P (pt X))
+Fam• : ∀ {i} (X : Type• i) (j : ULevel) → Type (i ⊔ lsucc j)
+Fam• X j = Σ (base X → Type j) (λ P → P (pt X))
 
 -- We have fibered notions of the loop space contruction and n-truncatedness.
 module _ {i} {X : Type• i} {j} where
-  Ω̃ : Pred• X j → Pred• (Ω X) j
+  Ω̃ : Fam• X j → Fam• (Ω X) j
   Ω̃ (P , x) = ((λ p → x == x [ P ↓ p ]) , idp)
 
-  pred-has-level : ℕ₋₂ → Pred• X j → Type (i ⊔ j)
-  pred-has-level n Q = (a : base X) → has-level n (fst Q a)
+  fam-has-level : ℕ₋₂ → Fam• X j → Type (i ⊔ j)
+  fam-has-level n Q = (a : base X) → has-level n (fst Q a)
 
 
 {- == Pointed dependent sums ==
-   Pointed predicates as defined above enable us to introduce a Σ-connective
+   Pointed families as defined above enable us to introduce a Σ-connective
    for pointed types. Because of the abstract nature of some of our lemmata, we
    give Σ• in its uncurried form and first define the type of its parameter. -}
 Σ•-param : ∀ i j → Type (lsucc (i ⊔ j))
-Σ•-param i j = Σ (Type• i) (λ X → Pred• X j)
+Σ•-param i j = Σ (Type• i) (λ X → Fam• X j)
 
 module _ {i j} where
   Ω-Σ•-param : Σ•-param i j → Σ•-param i j
@@ -235,8 +235,8 @@ equiv-Π• (u , v) = (equiv-Π u (fst ∘ v) , λ= (snd ∘ v))
 
 
 -- In an n-th loop space, we can forget components of truncation level n.
-forget-Ω^-Σ•₂ : ∀ {i j} {X : Type• i} (Q : Pred• X j) (n : ℕ)
-                → pred-has-level (n -2) Q → (Ω ^ n) (Σ• (X , Q)) ≃• (Ω ^ n) X
+forget-Ω^-Σ•₂ : ∀ {i j} {X : Type• i} (Q : Fam• X j) (n : ℕ)
+                → fam-has-level (n -2) Q → (Ω ^ n) (Σ• (X , Q)) ≃• (Ω ^ n) X
 forget-Ω^-Σ•₂     {X = X} Q    O  h = (Σ₂-contr h , idp)
 forget-Ω^-Σ•₂ {i} {X = X} Q (S n) h =
   (Ω ^ (S n)) (Σ• (X , Q))  ≃•⟨ equiv-Ω^ n (Ω-Σ•-comm _) ⟩

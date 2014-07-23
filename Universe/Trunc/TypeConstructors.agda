@@ -48,7 +48,7 @@ module trunc-self {i} {n : ℕ₋₂} (A : n -Type i) where
 
 module trunc-⊤ {n : ℕ₋₂} = trunc-self {n = n} ⊤-≤
 
-{- The truncation of a dependent sum type (where the predicate depends
+{- The truncation of a dependent sum type (where the family depends
    only on the truncation of the first component) is the dependent sums
    of the truncations. -}
 module trunc-Σ {ia ib j} {n : ℕ₋₂} {A : Type ia}

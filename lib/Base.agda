@@ -27,19 +27,8 @@ name from the point of view of HoTT, so we define [Type] as a synonym of [Set]
 and [Set] should never be used again.
 -}
 
-open import Agda.Prim renaming (lzero to lzero-pre)
-
-ULevel : Set
-ULevel = Level
-
-lzero : ULevel
-lzero = lzero-pre
-
-lsucc : ULevel → ULevel
-lsucc = lsuc
-
-lmax : ULevel → ULevel → ULevel
-lmax = _⊔_
+open import Agda.Primitive public using (lzero)
+  renaming (Level to ULevel; lsuc to lsucc; _⊔_ to lmax)
 
 Type : (i : ULevel) → Set (lsucc i)
 Type i = Set i
