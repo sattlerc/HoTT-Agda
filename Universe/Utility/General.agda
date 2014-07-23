@@ -10,7 +10,6 @@ open import lib.types.Unit
 
 
 -- A readable notation for the join of universe levels.
--- TODO: not strictly necessary, now that Agda.Prim has it.
 infixr 8  _⊔_
 
 _⊔_ : ULevel → ULevel → ULevel
