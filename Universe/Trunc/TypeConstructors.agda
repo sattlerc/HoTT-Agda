@@ -106,7 +106,8 @@ module trunc-path {i j} {n : ℕ₋₂} {A : Type i} (TrA : trunc-ty (S n) A (ls
          we instead talk about the continuation type (a₀ == a₁ → U) → U
          for any n-type U instead. -}
       code : ⟦ type TrAA ⟧ → n -Type l
-      code = rec {j = lsucc l} TrAA (n -Type-≤ l) (λ {(a₀ , a₁) → (a₀ == a₁ → ⟦ U ⟧) →-≤ U})
+      code = rec {j = lsucc l} TrAA (n -Type-≤ l)
+                 (λ {(a₀ , a₁) → (a₀ == a₁ → ⟦ U ⟧) →-≤ U})
 
       code-β : {a₀ a₁ : A} → ⟦ code (cons TrAA (a₀ , a₁)) ⟧
                            ≃ ((a₀ == a₁ → ⟦ U ⟧) → ⟦ U ⟧)
