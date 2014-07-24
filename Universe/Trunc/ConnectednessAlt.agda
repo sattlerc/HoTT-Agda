@@ -3,7 +3,8 @@
 {- This brief section introduces an alternative definition
    of n-connectedness defined purely using propositional truncation,
    in contrast to the standard one using n-truncations
-   (compare Exercise 7.6 in the HoTT book).
+   (The below observation has resulted in Exercise 7.6 of
+   the HoTT book being modified accordingly).
 
    In detail, a type A is usually called n-connected if Trunc n A
    is contractible. Here, we show that n-connectedness of A can also
@@ -32,28 +33,14 @@ open import Universe.Utility.TruncUniverse
 -- Preliminary lemmata.
 module _ where
 
-  -- On proposition, equivalence coincides with logical equivalence.
-  prop-equiv : ∀ {i j} {A : ⟨-1⟩ -Type i} {B : ⟨-1⟩ -Type j}
-               → (⟦ A ⟧ → ⟦ B ⟧) → (⟦ B ⟧ → ⟦ A ⟧) → ⟦ A ⟧ ≃ ⟦ B ⟧
-  prop-equiv {A = (_ , h)} {B = (_ , k)} f g =
-    equiv f g (λ _ → prop-has-all-paths k _ _) (λ _ → prop-has-all-paths h _ _)
-
-  -- Equivalent types have equivalent truncatedness propositions.
-  equiv-level : ∀ {i j} {n : ℕ₋₂} {A : Type i} {B : Type j}
-              → A ≃ B → has-level n A ≃ has-level n B
-  equiv-level e = prop-equiv {A = (_ , has-level-is-prop)}
-                             {B = (_ , has-level-is-prop)}
-                             (equiv-preserves-level e)
-                             (equiv-preserves-level (e ⁻¹))
-
   {- The structural lemma for the below equivalence of connectedness notions:
     Contractibility is equivalent to propositionality and mere inhabitation. -}
   contr-decompose : ∀ {i} {A : Type i} → is-contr A ≃ (Trunc ⟨-1⟩ A × is-prop A)
-  contr-decompose {i} {A} = prop-equiv {A = U} {B = V} f g where
-    U = (_ , is-contr-is-prop)
-    V = (_ , Trunc-level) ×-≤ (_ , is-prop-is-prop)
+  contr-decompose {i} {A} = prop-equiv h k f g where
+    h = is-contr-is-prop
+    k = snd ((_ , Trunc-level) ×-≤ (_ , is-prop-is-prop))
     f = λ c → ([ fst c ] , contr-is-prop c)
-    g = λ {(ta , h) → Trunc-rec (snd U) (λ a → inhab-prop-is-contr a h) ta}
+    g = λ {(ta , s) → Trunc-rec h (flip inhab-prop-is-contr s) ta}
 
 -- Everything here will happen in universe Type i.
 module _ {i} where
@@ -65,7 +52,9 @@ module _ {i} where
       (λ f → f ∘ [_]) (Trunc-elim (snd ∘ B)) (λ _ → idp)
       (λ f → λ= (Trunc-elim (snd ∘ (λ a → Path-≤ (B a) _ _)) (λ a → idp)))
 
-    -- The truncation functor is applicative (here only a special case)
+    {- The truncation functor is applicative (here only a special case).
+       Note the more elegant alternative of using the approach
+       from TypeConstructors.agda with unicity of truncations. -}
     Trunc-×-equiv : {A B : Type i} → Trunc n (A × B) ≃ (Trunc n A × Trunc n B)
     Trunc-×-equiv {A} {B} = equiv f g f-g g-f where
       f = λ t → (Trunc-fmap fst t , Trunc-fmap snd t)

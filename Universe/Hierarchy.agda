@@ -31,6 +31,7 @@ open import Universe.Utility.Pointed
 open import Universe.Utility.TruncUniverse
 
 
+-- *** Lemma 5.2 ***
 {- Our Local-global looping principle.
    We would like to state this principle in the form of
      Ωⁿ⁺¹ (Type i , A) == ∀• a → Ωⁿ (A , a)
@@ -81,6 +82,7 @@ module _ {i} {A : Type i} where
    with basepoint A in U_n^n (the n-th universe restricted to n-types).
    This crucial restriction to n-types implies it is just a set. -}
 module _ (n : ℕ) (A : ⟨ n ⟩ -Type ｢ n ｣) where
+  -- *** Definition of P and Corollary 5.6 ***
   P : ⟨0⟩ -Type• ｢ n + 1 ｣
   P = Ω^-≤' (n + 1) q where
     q : ⟨ n + 1 ⟩ -Type• ｢ n + 1 ｣
@@ -93,6 +95,7 @@ module _ (n : ℕ) (A : ⟨ n ⟩ -Type ｢ n ｣) where
   P-is-Q : fst P ≃• Q
   P-is-Q = equiv-Ω^ n (forget-Ω^-Σ•₂ _ 1 (λ _ → has-level-is-prop))
 
+-- *** Definition of Loop and Lemma 5.7 ***
 {- The type Loop of (images of) n-loops in U_(n-1)^(n-1) is
    just the dependent sum over P except for the special case n ≡ 0,
    where we take U_(-1)^(-1) (and hence Loop) to be the booleans.
@@ -111,6 +114,7 @@ Loop (S n) = Σ-≤ (⟨ n ⟩ -Type-≤ ｢ n ｣) (λ A →
                raise-≤T {n = ⟨ n + 1 ⟩} (≤T-+2+-l ⟨0⟩ (-2≤T _))
                                         (fst (<– Σ-comm-snd (P n A))))
 
+-- *** Section 2: the base case ***
 -- The base case is as usual (there is a non-trivial automorphism on booleans).
 base-case : ¬ (is-contr• (Q 0 (Loop 0)))
 base-case c = Bool-false≠true false-is-true where
@@ -126,7 +130,7 @@ base-case c = Bool-false≠true false-is-true where
   -- Negation being equal to the identity yields a contradiction.
   false-is-true =
     false             =⟨ ! (coe-β e true) ⟩
-    coe (ua e) true   =⟨ ap (λ p → coe p true) (c (ua e)) ⟩
+    coe (ua e) true   =⟨ ap (λ p → coe p true) (! (c (ua e))) ⟩
     coe idp true      =⟨ idp ⟩
     true              ∎
 
@@ -157,9 +161,9 @@ f-is-trivial : (m : ℕ) → is-contr• (Q (m + 1) (Loop (m + 1))) → f m == p
 
 -- m ≡ 0
 f-is-trivial 0 c = ap (λ f' → fst ∘ f')
-                      (–> (equiv-is-contr• …-is-E') c f') where
+                      (! (–> (equiv-is-contr• …-is-E') c f')) where
   {- This is almost E, except for the additional component
-     specifying that the first component p should commute with q. -}
+      specifying that the first component p should commute with q. -}
   E' = Π• (_ , λ {(A , q) → (Σ (A == A) (λ p → q == q [ (λ x → x == x) ↓ p ])
                                        , (idp , idp))})
 
@@ -173,8 +177,9 @@ f-is-trivial 0 c = ap (λ f' → fst ∘ f')
 
 {- m ≥ 1: We can show Q (k + 2) (Loop (k + 2)) ≃ E (k + 1),
           thus E is contractible, hence f trivial. -}
-f-is-trivial (S k) c = –> (equiv-is-contr• (…-is-E ∘e• Q-L-is-… (k + 1)))
-                          c (f (k + 1)) where
+f-is-trivial (S k) c = ! (–> (equiv-is-contr• (…-is-E ∘e• Q-L-is-… (k + 1)))
+                             c
+                             (f (k + 1))) where
   …-is-E : _ ≃• E (k + 1)
   …-is-E = equiv-Π• (ide _ , equiv-Ω^ k ∘ (λ {(A , q) → forget-Ω^-Σ•₂
              {｢ k + 2 ｣} (base ∘ fst ∘ P (k + 1) , q) 2
@@ -192,32 +197,35 @@ main (S m) c = main m step where
      so the conclusion follows by induction hypothesis. -}
   step : is-contr• (Q m (Loop m))
   step = –> (equiv-is-contr• (P-is-Q m (Loop m)))
-            (λ q → app= (f-is-trivial m c) (Loop m , q))
+            (λ q → app= (! (f-is-trivial m c)) (Loop m , q))
+
+-- Alternate form of the main lemma
+main' : (n : ℕ) → ¬ (is-contr• ((Ω ^ (n + 1)) (⟨ n ⟩ -Type ｢ n ｣ , Loop n )))
+main' n = main n ∘ –> (equiv-is-contr• (P-is-Q n (Loop n)))
+
+
+-- Small helper thingy
+helpy : ∀ {i} {n : ℕ} {X : Type• i}
+        → has-level• (n -1) X → is-contr• ((Ω ^ n) X)
+helpy {n = n} {X} = <– contr•-equiv-prop
+                  ∘ trunc-many n
+                  ∘ transport (λ k → has-level• (k -2) X)
+                              (+-comm 1 n)
 
 -- Main theorems now fall out as corollaries.
 module _ (n : ℕ) where
-  Ω-⟦Loop⟧-is-not-tr : ¬ (has-level• (n -1) (Ω (_ , ⟦ Loop n ⟧)))
-  Ω-⟦Loop⟧-is-not-tr = main n
-                     ∘ prop-is-contr• _
-                     ∘ trunc-many n
-                     ∘ transport (λ k → has-level• (k -2) (Ω (_ , ⟦ Loop n ⟧)))
-                                 (+-comm 1 n)
-
-  Ω-Loop-is-not-tr : ¬ (has-level• (n -1) (Ω (_ , Loop n)))
-  Ω-Loop-is-not-tr = Ω-⟦Loop⟧-is-not-tr
-                   ∘ equiv-preserves-level
-                       (fst (forget-Ω^-Σ•₂ _ 1 (λ _ → has-level-is-prop)))
-
   {- Recall that L n is n-truncated.
      We also know it is not (n-1)-truncated, it is thus a 'strict' n-type. -}
   Loop-is-not-trunc : ¬ (has-level (n -1) ⟦ Loop n ⟧)
-  Loop-is-not-trunc = Ω-⟦Loop⟧-is-not-tr ∘ (λ t → universe-=-level t t)
+  Loop-is-not-trunc = main n ∘ helpy ∘ (λ t → universe-=-level t t)
 
+  -- *** Theorem 5.9 ***
   -- The n-th universe is not n-truncated.
   Type-is-not-trunc : ¬ (has-level ⟨ n ⟩ (Type ｢ n ｣))
-  Type-is-not-trunc = Ω-⟦Loop⟧-is-not-tr ∘ (λ t → t ⟦ Loop n ⟧ ⟦ Loop n ⟧)
+  Type-is-not-trunc = main n ∘ helpy
 
+  -- *** Theorem 5.11 ***
   {- MAIN RESULT:
      The n-th universe restricted to n-types is a 'strict' (n+1)-type. -}
   Type-≤-is-not-trunc : ¬ (has-level ⟨ n ⟩ (⟨ n ⟩ -Type ｢ n ｣))
-  Type-≤-is-not-trunc = Ω-Loop-is-not-tr ∘ (λ t → t (Loop n) (Loop n))
+  Type-≤-is-not-trunc = main' n ∘ helpy

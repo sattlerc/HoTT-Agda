@@ -59,9 +59,10 @@ trivial-fibers {A = A} {B} a =
    to have the universal property of the n-truncation of A. -}
 module _ {i} {n : ℕ₋₂} {A : Type i}
          (type : n -Type i) (cons : A → ⟦ type ⟧) where
-  
+
+  -- *** Definition 6.2 ***
   {- The (non-dependent) universal property:
-     λ f → f ∘ cons  iinduces  type → X ≃ A → X -}
+     λ f → f ∘ cons  induces equivalence  (type → X) ≃ (A → X) -}
   univ-Type : ∀ (k : ULevel) → Type (i ⊔ lsucc k)
   univ-Type k = (X : n -Type k) → is-equiv
                   {A = ⟦ type ⟧ → ⟦ X ⟧}
@@ -92,6 +93,7 @@ module _ {i} {n : ℕ₋₂} {A : Type i}
      ∘ise univ (Lift-≤ X)
      ∘ise pre∘-is-equiv (snd (e ⁻¹))
 
+  -- *** Lemma 6.6 ***
   {- We will now prove the main lemma of this section:
      The (non-dependent) universal property implies the dependent one. -}
   module with-univ {j} (univ : univ-Type (i ⊔ j)) (P : ⟦ type ⟧ → n -Type j) where

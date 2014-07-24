@@ -3,52 +3,101 @@ This code base contains the accompanying code to the article
   "On the Hierarchy of Univalent Universes: U(n) is not n-Truncated"
 
 and all of its dependencies. It has been verified to typecheck
-with the latest Agda release as of 14/11/2012, version 2.3.2.2.
+with the latest Agda release as of 24/07/2014, version 2.4.0.1.
 
 
 Contents
 ========
 
 The subdirectory 'Universe' contains our Agda developments implementing
-the contents of the above article. The code is extensively documented
-and should be self-explanatory. The reader is invited to start with
+the contents of the above article. The code is extensively documented,
+we hope it to be self-explanatory. The reader is invited to start with
 the entry point 'Universe/index.agda', which establishes correspondence
-of sections of the article with individual modules.
+of sections of the article with individual modules and lemmata and theorems
+of the article and definitions inside the modules.
 
-The subdirectory 'lib' contains a slightly modified portion of the 2.0 branch
-of the HoTT community's Agda library. For readability and verifiability,
+The subdirectory 'lib' contains a slightly modified portion of
+the HoTT community's Agda library. For readability and verifiability,
 we decided to include only those parts that are required to typecheck
 the actual code implementing the development of the article.
 
-The only notable use of a postulate occurs in 'lib/types/Truncation'
-to emulate a higher inductive type, the n-truncation, in Agda using
-Dan Licata's "trick" of a partially private definition (note that
-Agda does not currently support higher inductive types natively).
+The only notable uses of a postulate occur in 'lib/Univalence' for
+the Univalence Axiom and in 'lib/types/Truncation' to emulate a higher
+inductive type, the n-truncation, in Agda using Dan Licata's "trick"
+of a partially private definition (note that Agda does not currently
+support higher inductive types natively).
 This file is important at the very end of our development when we
 want to compare our "internal" notions of connectedness to the
 standard one derived from truncations in the theory.
-
-The subdirectory 'html' contains a browser-readable interactive version
-of the source code generatable by 'agda Universe/index.agda --html'.
 
 
 How to typecheck
 ================
 
-Since this development lead to the discovery of a number of small bugs in
-the typechecking mechanism of Agda, we recommend an installation of the most
-current release of Agda, version 2.3.2.2. Future versions of Agda (2.4 and
-higher) are expected to predefine their own universe level type and would
-hence be compatible only with a small change to 'lib/Base.agda'.
+The Agda API for universe levels recently changed, introducing breakage for
+code written for versions below 2.4. We decided to port our code to version 2.4
+because of the simultaneous introduction of the semantically justified
+implementation of the --without-K flag by Jesper Cockx.
+The code has specifically been verified to typecheck under Agda 2.4.0.1.
 
 The entry point 'Universe/index.agda' imports all of the files of our
 developments. It is hence enough to run 'agda Universe/index.agda'
 within the working directory this README file is residing in. The flag
 "--without-K" required to make Agda compatible with homotopy type theory
 is given in the header of each individual file, so it is not necessary
-to include it as a command line parameter. Execution of the above command
-should result in a final output line "Finished Universe.index" with no errors,
-unresolved meta-variables or outstanding termination checks.
+to pass as a command line parameter. Execution of the above command should
+result in a final output line "Finished Universe.index" with no errors,
+unresolved meta-variables, or outstanding termination checks.
+
+
+Correspondence to the article text
+==================================
+
+Formalization of proofs necessitates strict modularity if one wants to avoid
+the hidden complexities implicit in formalizing hand-written arguments.
+This introduces a software engineering perspective into the enterprise.
+For this reason, the organization of the code is slightly different from
+that of the article, in which e.g. one may freely allude to arguments from proofs
+of previous lemmata without giving these facts an external representation.
+
+The file 'Universe/index.agda' establishes a basic correspondence of sections
+of the article with modules of the codebase. In addition to this overview,
+it also mentions which Definitions, Lemmata, Corollaries, and Theorems
+may be found in which file. Individual such references are additionally
+given at the corresponding places inside each module.
+
+Let us elaborate on a few differences between the type theory implemented
+by Agda and HoTT.
+
+The first difference concerns the presence of eta-rules for record types,
+i.e. for the Sigma-type-former within Agda. While this enables shorter code
+on a number of occasions, we believe this difference to be minor and not
+relevant to this formalization. 
+
+Secondly, Agda implements universe polymorphism by giving the user access
+to an internal type of universe indices, e.g. enabling internal inductive
+arguments over the universe hierarchy. No such thing is possible in HoTT.
+We exploit this feature to give a polymorphic proof of our main theorems,
+which in the article are always indexed over some external natural constant n.
+To produce a 'proper' type derivation in HoTT, one would recursively
+instantiate the code for each universe in the hierarchy, eliminating the
+internal universe index variables in the process.
+
+Relatedly, universes in Agda are not cumulative (and ordering relations
+on universe indices are not specifiable), in contrast to the theory of our
+reference, the HoTT book. This introduces a number of technical deviations,
+which are properly explained at the appropriate places, most notably
+the first one, explaining the explicit usage of equivalences
+instead of equalities for some aspects of section 5:
+  * Universe/Hierachy.agda, line 8
+  * Universe/Trunc/Basic.agda, line 40
+  * Universe/Trunc/Universal.agda, line 80
+  * Universe/Trunc/Connection.agda, line 36
+
+Finally, a minor difference is the definition of the fibered version of
+the loop space operator, where we choose an equivalent representation.
+This is explained in situ:
+  * Universe/Utility/Pointed.agda, line 222
 
 
 Copyright and Licensing

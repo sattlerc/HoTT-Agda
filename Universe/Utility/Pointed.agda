@@ -119,21 +119,62 @@ trunc-many (S n) t = trunc-many n (t _ _)
 
 
 {- Pointedness allows for a more direct notion of contractibility.
-   Since pointed types are always inhabited,
-   being contractible and propositional is equivalent. -}
+   Beware that is-contr• will be equivalent --- not definitionally equal ---
+   to has-level∙ ⟨-2⟩. -}
 module _ {i} (X : Type• i) where
   is-contr• : Type i
-  is-contr• = ∀ a → a == pt X
+  is-contr• = ∀ a → pt X == a
 
-  prop-is-contr• : has-level• ⟨-1⟩ X → is-contr•
-  prop-is-contr• t _ = prop-has-all-paths t _ _
+{- Since pointed types are always inhabited,
+   being contractible and propositional is equivalent. -}
+module _ {i} {X : Type• i} where
+  contr•-equiv-contr : is-contr• X ≃ is-contr (base X)
+  contr•-equiv-contr = prop-equiv'
+                         (λ c → Π-level (λ a → raise-level-<T (ltSR ltS) c _ _))
+                         (cst is-contr-is-prop)
+                         (λ x → (pt X , x))
+                         (λ y _ → prop-has-all-paths (contr-is-prop y) _ _)
+
+  is-contr•-is-prop : is-prop (is-contr• X)
+  is-contr•-is-prop = equiv-preserves-level (contr•-equiv-contr ⁻¹)
+                                            is-contr-is-prop
+
+  prop-equiv-contr : is-prop (base X) ≃ is-contr (base X)
+  prop-equiv-contr = prop-equiv is-prop-is-prop
+                                is-contr-is-prop
+                                (inhab-prop-is-contr (pt X))
+                                contr-is-prop
+
+  contr•-equiv-prop : is-contr• X ≃ is-prop (base X)
+  contr•-equiv-prop = prop-equiv-contr ⁻¹ ∘e contr•-equiv-contr
+
+-- ** Lemma 5.4 ***
+{- The induction step for Lemma 7.2.9 in the HoTT Book is much
+   more complicated than neccesarry. Associating iterated loop spaces in
+   the reverse order, we can do away with the prerequisites 7.2.7 and 7.2.8
+   as well as further auxiliary steps. -}
+has-level-equiv-contr-loops : ∀ {i} {n : ℕ} {A : Type i}
+                              →   has-level (n -1) A
+                                ≃ ((a : A) → is-contr• ((Ω ^ n) (A , a)))
+has-level-equiv-contr-loops {n = O} {A} =
+    is-prop A                      ≃⟨ prop-equiv-inhab-to-contr ⟩
+    (A → is-contr A)               ≃⟨ equiv-Π-r (λ _ → contr•-equiv-contr ⁻¹) ⟩
+    ((a : A) → is-contr• (A , a))  ≃∎
+has-level-equiv-contr-loops {n = S n} {A} = equiv-Π-r lem where
+  lem = λ a →
+      (((b : A) → has-level ( n -1) (a == b)))
+    ≃⟨ equiv-Π-r (λ _ → has-level-equiv-contr-loops) ⟩
+      (((b : A) (p : a == b) → is-contr• ((Ω ^ n) (a == b , p))))
+    ≃⟨ Π₁-contr (pathfrom-is-contr _) ∘e curry-equiv ⁻¹ ⟩
+      is-contr• ((Ω ^ n) (a == a , idp))
+    ≃∎
 
 -- Pointed equivalences preserve (pointed) contractibility.
 equiv-is-contr• : ∀ {i j} {X : Type• i} {Y : Type• j}
                 → X ≃• Y → is-contr• X ≃ is-contr• Y
-equiv-is-contr• (u , p) = equiv-Π u (λ a → (_ , post∙-is-equiv p)
-                                        ∘e (_ , pre∙-is-equiv (<–-inv-r u a)) ⁻¹
-                                        ∘e equiv-ap u _ _)
+equiv-is-contr• (u , p) = contr•-equiv-contr ⁻¹
+                       ∘e equiv-level u
+                       ∘e contr•-equiv-contr
 
 
 -- Univalence for pointed equivalences.
@@ -166,6 +207,7 @@ module _ {i} {A : Type i} where
   ua-equiv• = ((ua-equiv ⁻¹) , idp) ⁻¹•
 
 
+-- *** Definition 4.1 ***
 {- Pointed families.
    A pointed family over a pointed type is a family over the base
    together with a inhabitant of the family at the point.
@@ -176,6 +218,11 @@ Fam• X j = Σ (base X → Type j) (λ P → P (pt X))
 
 -- We have fibered notions of the loop space contruction and n-truncatedness.
 module _ {i} {X : Type• i} {j} where
+  -- *** Definition 4.3 ***
+  {- Note that the definition of the family of path types differs slightly from
+     that of the article, which would correspond to transport P p x == x.
+     We use dependent paths since this follows the design of the HoTT
+     community's Agda library. Clearly, both types are equivalent. -}
   Ω̃ : Fam• X j → Fam• (Ω X) j
   Ω̃ (P , x) = ((λ p → x == x [ P ↓ p ]) , idp)
 
@@ -194,9 +241,11 @@ module _ {i j} where
   Ω-Σ•-param : Σ•-param i j → Σ•-param i j
   Ω-Σ•-param (X , W) = (Ω X , Ω̃ W)
 
+  -- *** Definition 4.4 ***
   Σ• : Σ•-param i j → Type• (i ⊔ j)
   Σ• (X , Q) = (Σ (base X) (fst Q) , (pt X , snd Q))
   
+  -- *** Lemma 4.5 ***
   {- Commutativity of pointed dependent sums and the loop space construction
      will become an important technical tool, enabling us to work at a more
      abstract level later on. -}
@@ -215,9 +264,11 @@ module _ {i j} where
   Ω-Π•-param : Π•-param i j → Π•-param i j
   Ω-Π•-param (A , F) = (A , Ω ∘ F)
 
+  -- *** Definition 4.6 ***
   Π• : Π•-param i j → Type• (i ⊔ j)
   Π• (A , Y) = (Π A (base ∘ Y) , pt ∘ Y)
 
+  -- *** Lemma 4.7 ***
   {- Pointed dependent products and loop space construction on
      its codomain parameter commute as well. -}
   Ω-Π•-comm : (R : Π•-param i j) → Ω (Π• R) ≃• Π• (Ω-Π•-param R)
@@ -234,6 +285,7 @@ equiv-Π• : ∀ {i₀ i₁ j₀ j₁} {R₀ : Π•-param i₀ j₀} {R₁ : �
 equiv-Π• (u , v) = (equiv-Π u (fst ∘ v) , λ= (snd ∘ v))
 
 
+-- *** Lemma 5.1 ***
 -- In an n-th loop space, we can forget components of truncation level n.
 forget-Ω^-Σ•₂ : ∀ {i j} {X : Type• i} (Q : Fam• X j) (n : ℕ)
                 → fam-has-level (n -2) Q → (Ω ^ n) (Σ• (X , Q)) ≃• (Ω ^ n) X

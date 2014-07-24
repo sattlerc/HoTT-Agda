@@ -24,6 +24,7 @@ open import Universe.Utility.TruncUniverse
 open import Universe.Trunc.Universal
 
 
+-- *** Definition 6.4 ***
 record trunc-ty {i} (n : ℕ₋₂) (A : Type i)
                 (j : ULevel) : Type (lsucc (i ⊔ j)) where
   constructor ty-cons
@@ -41,7 +42,7 @@ module _ {i} {n : ℕ₋₂} {A : Type i} where
    specified in the module arguments, since the truncation type depends on it,
    even though we would rather have it at each individual definition.
    This shortcoming will be the source of many explicitely specified levels. -}
-module trunc-prop {i} {n : ℕ₋₂} {A : Type i} {j k} (tr : trunc-ty n A (i ⊔ j ⊔ k)) where
+module trunc-props {i} {n : ℕ₋₂} {A : Type i} {j k} (tr : trunc-ty n A (i ⊔ j ⊔ k)) where
   open trunc-ty tr
 
   up : (U : n -Type k) → (⟦ type ⟧ → ⟦ U ⟧) ≃ (A → ⟦ U ⟧)
@@ -71,7 +72,7 @@ module trunc-prop {i} {n : ℕ₋₂} {A : Type i} {j k} (tr : trunc-ty n A (i �
    use of fmap-equiv in showing that trunc-ty is propositional. -}
 module trunc-functor {n : ℕ₋₂} where
   open trunc-ty
-  open trunc-prop
+  open trunc-props
 
   -- The functorial action of truncation (truncation preserves maps).
   module _ {ia ib j} where
@@ -109,7 +110,7 @@ module trunc-functor {n : ℕ₋₂} where
         module G  = fmap {j = l} TrB TrC g
         module GF = fmap {j = l} TrA TrC (g ∘ f)
 
-      open trunc-prop
+      open trunc-props
 
       fmap-fuse-∘ : (ta : ⟦ type TrA ⟧) → GF.map ta == G.map (F.map ta)
       fmap-fuse-∘ = elim {j = l} TrA (λ ta →
@@ -218,6 +219,7 @@ module _ {i} {n : ℕ₋₂} {A : Type i} where
                             (fst (–> e Tr₁)) (fst (–> e Tr₂))
       type-cons-path = <– (path _ _) (type-equiv , cons-path)
 
+    -- *** Lemma 6.7 ***
     -- We are now ready to prove propositionality of trunc-ty.
     trunc-ty-prop : is-prop (trunc-ty n A _)
     trunc-ty-prop = all-paths-is-prop $ λ Tr₀ Tr₁ → <– (equiv-ap e _ _) (pair=

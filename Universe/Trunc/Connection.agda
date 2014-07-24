@@ -21,14 +21,17 @@ open import Universe.Utility.General
 open import Universe.Utility.Pointed
 open import Universe.Utility.TruncUniverse
 
+open import Universe.Hierarchy
+
 open import Universe.Trunc.Universal
 open import Universe.Trunc.Basics
 open import Universe.Trunc.TypeConstructors
 
 
 open trunc-ty
-open trunc-prop
+open trunc-props
 
+-- *** Definition 6.13 ***
 {- Our plain MLTT connectedness predicate.
    Because of predicativity issues, it has to live in one universe higher
    than its argument type C. Internally, we really want to quantify over
@@ -45,7 +48,7 @@ module _ {i} (n : ℕ₋₂) (C : Type (lsucc i)) where
                   (TrC : trunc-ty n C (lsucc i))
                 → is-contr ⟦ type TrC ⟧
 
-{- The (n+1)-connected version, or n-connection of some Type A at point a.
+{- The (n+1)-connected version, or n-connection of some pointed type A.
    Since we internally quantify over the type of truncations of a path space
    from a before being able to require an element in the truncation,
    predicativity issues force 'connection' to live in a universe one level
@@ -53,37 +56,40 @@ module _ {i} (n : ℕ₋₂) (C : Type (lsucc i)) where
    
    Take particular care in noting that the parameter n is in fact one-off,
    for example, The type 'connection (-2)' denotes the (-1)-connection. -}
-module _ {i} (A : Type i) (a : A) where
-  module _ (n : ℕ₋₂) where
+module _ {i} (A : Type• i) where
+  module con (n : ℕ₋₂) where
+    -- *** Definition 6.11 ***
     connection• : Type• (lsucc i)
     connection• =
-      Σ• ((A , a)
-        , ((λ b → (TrP : trunc-ty n (a == b) i) → ⟦ type TrP ⟧)
+      Σ• (A
+        , ((λ b → (TrP : trunc-ty n (pt A == b) i) → ⟦ type TrP ⟧)
          , (λ TrP → cons TrP idp)))
 
-    {- The base type of the (n+1)-connection base type:
+    {- The base type of the (n+1)-connection:
       Σ A (λ b → (TrP : trunc-ty n (a == b) i) → ⟦ type TrP ⟧. -}
     connection : Type (lsucc i)
     connection = base connection•
 
+    -- *** Lemma 6.14 ***
     connection-is-connected : is-connected⋆ (S n) connection
     connection-is-connected Tr TrC = equiv-preserves-level (e ⁻¹) h where
 
       -- The supplied generic truncation operator is used only to truncate A.
-      TrA : trunc-ty (S n) A (lsucc i)
-      TrA = Tr A
+      TrA : trunc-ty (S n) (base A) (lsucc i)
+      TrA = Tr (base A)
 
-      TrP : (b : A) → trunc-ty n (a == b) i
-      TrP = trunc-path.trunc {j = i} TrA a
+      TrP : (b : base A) → trunc-ty n (pt A == b) i
+      TrP = trunc-path.trunc {j = i} TrA (pt A)
 
       {- This definition typechecks since
-           Σ A (λ b → ⟦ type (TrP b) ⟧  ≡  Σ A (λ a → cons TrA a == cons TrA b)
+              Σ A (λ b → ⟦ type (TrP b) ⟧
+           ≡  Σ A (λ a → cons TrA (pt A) == cons TrA b)
          by construction of trunc-path.trunc. -}
-      TrD : trunc-ty (S n) (Σ A (λ b → ⟦ type (TrP b) ⟧)) (lsucc i)
+      TrD : trunc-ty (S n) (Σ (base A) (λ b → ⟦ type (TrP b) ⟧)) (lsucc i)
       TrD = trunc-Σ.trunc {j = lsucc i} TrA
-              (λ b → trunc-self.trunc (Path-≤ (type TrA) (cons TrA a) b))
+              (λ b → trunc-self.trunc (Path-≤ (type TrA) (cons TrA (pt A)) b))
 
-      u : connection ≃ Σ A (λ b → ⟦ type (TrP b) ⟧)
+      u : connection ≃ Σ (base A) (λ b → ⟦ type (TrP b) ⟧)
       u = equiv-Σ-snd {B = λ _ → Π _ _}  -- No idea why Agda wants this.
                       (λ b → Π₁-contr (trunc-inhab-contr {j = i} (TrP b)))
 
@@ -91,16 +97,22 @@ module _ {i} (A : Type i) (a : A) where
       e = trunc-functor.fmap-equiv {j = lsucc i} TrC TrD u
 
       {- Note that
-           ⟦ type TrD ⟧  ≡  Σ ⟦ type TrA ⟧ (λ tb → cons TrA a == tb)
+           ⟦ type TrD ⟧  ≡  Σ ⟦ type TrA ⟧ (λ tb → cons TrA (pt A) == tb)
          by construction of trunc-Σ.trunc. -}
       h : is-contr ⟦ type TrD ⟧
-      h = pathfrom-is-contr (cons TrA a)
+      h = pathfrom-is-contr (cons TrA (pt A))
 
-  -- the (n+1)-connection of A coincides with A on dimension n+2 and above.
-  connection-higher-dim : (n : ℕ) → (Ω ^ (n + 2)) (connection• ⟨ n ⟩)
-                                 ≃• (Ω ^ (n + 2)) (A , a)
-  connection-higher-dim n =
-    forget-Ω^-Σ•₂ _ (n + 2) (λ _ → Π-level (λ Tr → snd (type Tr)))
+  module con2 (n : ℕ) where
+    open con (n -2)
+
+    -- *** Lemma 6.12 ***
+    -- The (n+1)-connection of A coincides with A on dimension n+2 and above.
+    connection-higher-dim : (Ω ^ n) connection• ≃• (Ω ^ n) A
+    connection-higher-dim =
+      forget-Ω^-Σ•₂ _ n (λ _ → Π-level (λ Tr → snd (type Tr)))
+
+  open con public
+  open con2 public
 
 -- For the first time in the dependency chain, we assume HITs.
 module with-hits where
@@ -122,8 +134,30 @@ module with-hits where
     trunc-contr : {n : ℕ₋₂} {A : Type i} → is-contr (trunc-ty n A (i ⊔ j))
     trunc-contr = trunc-inhab-contr {j = j} (trunc _ _)
 
+  -- *** Lemma 6.15 ***
   -- Our connectedness⋆ is equivalent to HIT connectedness.
   module _ {i} {n : ℕ₋₂} {A : Type (lsucc i)} where
     conn⋆-conn : is-connected⋆ n A ≃ is-connected n A
     conn⋆-conn = Π₁-contr (trunc-contr {j = lsucc i})
               ∘e Π₁-contr (Π-level (λ _ → trunc-contr {j = lsucc i}))
+
+
+-- *** Theorem 7.1 ***
+module _ (n : ℕ) where
+  M• : Type• ｢ n + 2 ｣
+  M• = connection• (_ , Loop n) (n -1)
+
+  assertion-0 : has-level ⟨ n + 1 ⟩ (base M•)
+  assertion-0 = snd (Σ-≤ (⟨ n ⟩ -Type-≤ ｢ n ｣)
+                    (λ b → Π-≤ (trunc-ty _ (_ == b) _)
+                               (λ tr → raise (raise (type tr)))))
+
+  assertion-1 : ¬ (has-level ⟨ n ⟩ (base M•))
+  assertion-1 =
+      main' n
+    ∘ –> (equiv-is-contr• (connection-higher-dim _ (n + 1)))
+    ∘ (λ z → z (pt M•))
+    ∘ –> has-level-equiv-contr-loops
+
+  assertion-2 : is-connected⋆ ⟨ n ⟩ (base M•)
+  assertion-2 = connection-is-connected _ _

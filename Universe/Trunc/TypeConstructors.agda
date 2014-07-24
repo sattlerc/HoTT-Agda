@@ -37,7 +37,7 @@ open import Universe.Trunc.Basics
 
 
 open trunc-ty
-open trunc-prop
+open trunc-props
 
 module trunc-self {i} {n : ℕ₋₂} (A : n -Type i) where
   trunc : ∀ {j} → trunc-ty n ⟦ A ⟧ j
@@ -48,6 +48,7 @@ module trunc-self {i} {n : ℕ₋₂} (A : n -Type i) where
 
 module trunc-⊤ {n : ℕ₋₂} = trunc-self {n = n} ⊤-≤
 
+-- *** Lemma 6.9 ***
 {- The truncation of a dependent sum type (where the family depends
    only on the truncation of the first component) is the dependent sums
    of the truncations. -}
@@ -79,6 +80,7 @@ module trunc-× {ia ib j} {n : ℕ₋₂} {A : Type ia} {B : Type ib}
                (TrB : trunc-ty n B (ib ⊔ j)) =
   trunc-Σ {j = j} TrA (λ _ → TrB)
 
+-- *** Lemma 6.10 ***
 {- The n-truncation of a path space is the path space of the (n+1)-truncation.
    The use of the encode-decode method is the reason why we have to assume
    elimination into Type (lsucc i): large recursion is used to define
@@ -91,8 +93,8 @@ module trunc-path {i j} {n : ℕ₋₂} {A : Type i} (TrA : trunc-ty (S n) A (ls
     TrAA : trunc-ty (S n) (A × A) (lsucc l)
     TrAA = trunc-×.trunc {j = lsucc l} TrA TrA
 
-    module MA  = trunc-prop {j = lsucc l} {k = l} TrA
-    module MAA = trunc-prop {j = lsucc l} {k = l} TrAA
+    module MA  = trunc-props {j = lsucc l} {k = l} TrA
+    module MAA = trunc-props {j = lsucc l} {k = l} TrAA
 --    module MAL = trunc-elim {j = _} TrAA
 
   {- There is some Yoneda hidden here that would enable us to express the final

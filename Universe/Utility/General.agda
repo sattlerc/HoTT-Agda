@@ -2,6 +2,7 @@
 module Universe.Utility.General where
 
 open import lib.Basics
+open import lib.NType2
 
 open import lib.types.Nat hiding (_+_)
 open import lib.types.Pi
@@ -68,6 +69,10 @@ module _ {i j} {A : Type i} {B : A → Type j} where
   Σ A (λ a → C a × B a)          ≃⟨ Σ-assoc ⁻¹ ⟩
   Σ (Σ A C) (λ ac → B (fst ac))  ≃∎
 
+flip : ∀ {i j k} {A : Type i} {B : Type j} {C : A → B → Type k}
+       → ((a : A) (b : B) → C a b) → ((b : B) (a : A) → C a b)
+flip = –> (curry-equiv ∘e equiv-Π-l _ (snd ×-comm) ∘e curry-equiv ⁻¹)
+
 
 module _ {i j k} {A : Type i} {B : Type j} {C : A → B → Type k} where
   ↓-cst→app-equiv : {x x' : A} {p : x == x'} {u : (b : B) → C x b} {u' : (b : B) → C x' b}
@@ -84,3 +89,26 @@ module _ {i} {A B : Type i} (e : A ≃ B) {u : A} {v : B} where
   ↓-idf-ua-equiv : (–> e u == v) ≃ (u == v [ (λ x → x) ↓ (ua e) ])
   ↓-idf-ua-equiv = to-transp-equiv _ _ ⁻¹ ∘e (_ , pre∙-is-equiv (ap (λ z → z u) (ap coe (ap-idf (ua e)) ∙ ap –> (coe-equiv-β e))))
 
+
+-- On propositions, equivalence coincides with logical equivalence.
+module _ {i j} {A : Type i} {B : Type j} where
+  prop-equiv' : (B → is-prop A) → (A → is-prop B) → (A → B) → (B → A) → A ≃ B
+  prop-equiv' h k f g = equiv f g (λ b → prop-has-all-paths (k (g b)) _ _)
+                                  (λ a → prop-has-all-paths (h (f a)) _ _)
+
+  prop-equiv : is-prop A → is-prop B → (A → B) → (B → A) → A ≃ B
+  prop-equiv h k f g = prop-equiv' (cst h) (cst k) f g
+
+-- Equivalent types have equivalent truncatedness propositions.
+equiv-level : ∀ {i j} {A : Type i} {B : Type j} {n : ℕ₋₂}
+            → A ≃ B → has-level n A ≃ has-level n B
+equiv-level u = prop-equiv has-level-is-prop
+                           has-level-is-prop
+                           (equiv-preserves-level u)
+                           (equiv-preserves-level (u ⁻¹))
+
+prop-equiv-inhab-to-contr : ∀ {i} {A : Type i} → is-prop A ≃ (A → is-contr A)
+prop-equiv-inhab-to-contr = prop-equiv is-prop-is-prop
+                                       (Π-level (λ _ → is-contr-is-prop))
+                                       (flip inhab-prop-is-contr)
+                                       inhab-to-contr-is-prop
