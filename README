@@ -1,6 +1,6 @@
 This code base contains the accompanying code to the article
 
-  "On the Hierarchy of Univalent Universes: U(n) is not n-Truncated"
+  "Higher Homotopies in a Hierarchy of Univalent Universes"
 
 and all of its dependencies. It has been verified to typecheck
 with the latest Agda release as of 24/07/2014, version 2.4.0.1.
