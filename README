@@ -94,6 +94,15 @@ instead of equalities for some aspects of section 5:
   * Universe/Trunc/Universal.agda, line 80
   * Universe/Trunc/Connection.agda, line 36
 
+A real difference between the development of the article and the codebase
+is the choice of proving a slightly weaker variant of Lemma 5.8
+that nevertheless turns out to be sufficient.
+Instead of giving an explicit description of a non-trivial inhabitant
+of a certain loop space, we merely prove it non-contractible.
+It is certainly possible to follow the exact strategy as the article here,
+but we have found that this makes for a particularly present formal
+induction step, with no other change further on.
+
 Finally, a minor difference is the definition of the fibered version of
 the loop space operator, where we choose an equivalent representation.
 This is explained in situ:

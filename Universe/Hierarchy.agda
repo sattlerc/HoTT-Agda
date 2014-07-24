@@ -185,6 +185,7 @@ f-is-trivial (S k) c = ! (–> (equiv-is-contr• (…-is-E ∘e• Q-L-is-… (
              {｢ k + 2 ｣} (base ∘ fst ∘ P (k + 1) , q) 2
              (snd ∘ P (k + 1))}))
 
+-- *** Lemma 5.8, part one ***
 -- Our main lemma: like in the article, but in negative form.
 main : (n : ℕ) → ¬ (is-contr• (Q n (Loop n)))
 main 0       = base-case
@@ -199,6 +200,7 @@ main (S m) c = main m step where
   step = –> (equiv-is-contr• (P-is-Q m (Loop m)))
             (λ q → app= (! (f-is-trivial m c)) (Loop m , q))
 
+-- *** Lemma 5.8, part two ***
 -- Alternate form of the main lemma
 main' : (n : ℕ) → ¬ (is-contr• ((Ω ^ (n + 1)) (⟨ n ⟩ -Type ｢ n ｣ , Loop n )))
 main' n = main n ∘ –> (equiv-is-contr• (P-is-Q n (Loop n)))
