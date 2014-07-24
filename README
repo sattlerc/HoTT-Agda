@@ -62,7 +62,7 @@ of previous lemmata without giving these facts an external representation.
 
 The file 'Universe/index.agda' establishes a basic correspondence of sections
 of the article with modules of the codebase. In addition to this overview,
-it also mentions which Definitions, Lemmata, Corollaries, and Theorems
+it also mentions which definitions, lemmata, corollaries, and theorems
 may be found in which file. Individual such references are additionally
 given at the corresponding places inside each module.
 
