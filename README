@@ -3,7 +3,7 @@ This code base contains the accompanying code to the article
   "Higher Homotopies in a Hierarchy of Univalent Universes"
 
 and all of its dependencies. It has been verified to typecheck
-with the latest Agda release as of 24/07/2014, version 2.4.0.1.
+with Agda release 2.4.2.
 
 
 Contents
@@ -38,7 +38,10 @@ The Agda API for universe levels recently changed, introducing breakage for
 code written for versions below 2.4. We decided to port our code to version 2.4
 because of the simultaneous introduction of the semantically justified
 implementation of the --without-K flag by Jesper Cockx.
-The code has specifically been verified to typecheck under Agda 2.4.0.1.
+
+The code has specifically been verified to typecheck under Agda 2.4.2.
+Regressions related to Agda Issue 1214 cause Agda 2.4.0.* to fail
+termination checking.
 
 The entry point 'Universe/index.agda' imports all of the files of our
 developments. It is hence enough to run 'agda Universe/index.agda'
