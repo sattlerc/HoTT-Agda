@@ -28,7 +28,7 @@ has-conn-fibers {A = A} {B = B} n f =
 
 {- all inhabited types are -1-connected -}
 inhab-conn : ∀ {i} {A : Type i} (a : A) → is-connected -1 A
-inhab-conn a = has-level-in ([ a ] , prop-has-all-paths [ a ])
+inhab-conn a = has-level-in ([ a ] , prop-has-all-paths ⦃ Trunc-level ⦄ [ a ])
 
 {- connectedness is a prop -}
 is-connected-is-prop : ∀ {i} {n : ℕ₋₂} {A : Type i}
@@ -58,11 +58,11 @@ module ConnExtend {i j k} {A : Type i} {B : Type j} {n : ℕ₋₂}
   private
     abstract
       ext-β' : (f : Π A (fst ∘ P ∘ h)) (a : A) → restr (ext f) a == f a
-      ext-β' f a =
-        transport
-          (λ r →  Trunc-rec {{snd (P (h a))}} _ r == f a)
-          (! (contr-path(c (h a)) [ (a , idp) ]))
+      ext-β' f a = transport
+          (λ r → Trunc-rec {{snd (P (h a))}} (λ x → coe (ap (λ y → fst (P y)) (snd x)) (f (fst x))) r == f a)
+          (! (contr-path (c (h a)) [ (a , idp) ]))
           idp
+
 
   abstract
     restr-β : (t : Π B (fst ∘ P)) (b : B) → ext (restr t) b == t b
@@ -219,19 +219,24 @@ conn-in : ∀ {i j} {A : Type i} {B : Type j} {n : ℕ₋₂} {h : A → B}
          (λ u → ∀ (t : Π A (fst ∘ P ∘ h)) → u t ∘ h ∼ t))
   → has-conn-fibers n h
 conn-in {A = A} {B = B} {h = h} sec b =
-  let s = sec (λ b → (Trunc _ (hfiber h b) , Trunc-level))
-  in has-level-in (fst s (λ a → [ a , idp ]) b ,
-      Trunc-elim (λ k → transport
-                   (λ v → fst s (λ a → [ a , idp ]) (fst v) == [ fst k , snd v ])
-                   (contr-path (pathfrom-is-contr (h (fst k))) (b , snd k))
-                   (snd s (λ a → [ a , idp ]) (fst k))))
+  has-level-in $ fst s (λ a → [ a , idp ]) b ,
+      Trunc-elim {{ λ x → =-preserves-level Trunc-level }} w
+  where
+  s = sec (λ b → (Trunc _ (hfiber h b) , Trunc-level))
+  w : (k : Σ A (λ v → h v == b)) → fst s (λ a → [ a , idp ]) b == [ fst k , snd k ]
+  w k = transport (λ v → fst s (λ a → [ a , idp ]) (fst v) == [ fst k , snd v ])
+                  (contr-path c' (b , snd k))
+                  (snd s (λ a → [ a , idp ]) (fst k))
+    where
+    -- make center of contraction visible again.
+    c' = has-level-in {n = -2} ((h (fst k) , idp) , contr-has-all-paths ⦃ pathfrom-is-contr (h (fst k)) ⦄ _)
 
 abstract
   pointed-conn-in : ∀ {i} {n : ℕ₋₂} (A : Type i) (a₀ : A)
     → has-conn-fibers {A = ⊤} n (cst a₀) → is-connected (S n) A
   pointed-conn-in {n = n} A a₀ c = has-level-in
     ([ a₀ ] ,
-     Trunc-elim
+     Trunc-elim {{ λ x → =-preserves-level Trunc-level }}
        (λ a → Trunc-rec
              (λ x → ap [_] (snd x)) (contr-center $ c a)))
 
@@ -241,7 +246,7 @@ abstract
   pointed-conn-out {n = n} A a₀ {{c}} a = has-level-in
     (point ,
      λ y → ! (cancel point)
-           ∙ (ap out $ contr-has-all-paths (into point) (into y))
+           ∙ (ap out $ contr-has-all-paths {{ =-preserves-level c }} (into point) (into y))
            ∙ cancel y)
     where
       into-aux : Trunc n (Σ ⊤ (λ _ → a₀ == a)) → Trunc n (a₀ == a)
@@ -264,7 +269,7 @@ abstract
         out-aux (into-aux x)
           =⟨ Trunc-fmap-∘ _ _ x ⟩
         Trunc-fmap (λ q → (tt , (snd q))) x
-          =⟨ Trunc-elim {P = λ x → Trunc-fmap (λ q → (tt , snd q)) x == x}
+          =⟨ Trunc-elim {P = λ x → Trunc-fmap (λ q → (tt , snd q)) x == x} {{ λ _ → =-preserves-level Trunc-level }}
                (λ _ → idp) x ⟩
         x =∎
 
@@ -284,9 +289,9 @@ instance
   Trunc-preserves-conn {A = A} {n = S n} {m} c = lemma (contr-center c) (contr-path c)
     where
     lemma : (x₀ : Trunc (S n) A) → (∀ x → x₀ == x) → is-connected (S n) (Trunc m A)
-    lemma = Trunc-elim
+    lemma = Trunc-elim {{ λ _ → Π-level λ _ → raise-level-≤T (≤T-ap-S (-2≤T _)) is-connected-is-prop }}
       (λ a → λ p → has-level-in ([ [ a ] ] ,
-        Trunc-elim
+        Trunc-elim {{ λ _ → =-preserves-level Trunc-level }}
           (Trunc-elim
             {{λ _ → =-preserves-level
                       (Trunc-preserves-level (S n) Trunc-level)}}
@@ -304,13 +309,16 @@ abstract
   Σ-conn {A = A} {B = B} {n = S m} cA cB =
     Trunc-elim
       {P = λ ta → (∀ tx → ta == tx) → is-connected (S m) (Σ A B)}
+      {{ λ _ → Π-level $ λ _ → raise-level-≤T (≤T-ap-S (-2≤T _)) is-connected-is-prop }}
       (λ a₀ pA →
         Trunc-elim
           {P = λ tb → (∀ ty → tb == ty) → is-connected (S m) (Σ A B)}
+          {{ λ _ → Π-level $ λ _ → raise-level-≤T (≤T-ap-S (-2≤T _)) is-connected-is-prop }}
           (λ b₀ pB → has-level-in
             ([ a₀ , b₀ ] ,
               Trunc-elim
                 {P = λ tp → [ a₀ , b₀ ] == tp}
+                {{ λ _ → =-preserves-level Trunc-level }}
                 (λ {(r , s) →
                   Trunc-rec
                     (λ pa → Trunc-rec
