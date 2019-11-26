@@ -142,7 +142,7 @@ module _ {i j} {A : Type i} {B : A → Type j} where
   (q : B == B' [ (λ X → (X → Type j)) ↓ p ]) → Σ A B == Σ A' B'
 Σ= idp idp = idp
 
-instance
+module _ where -- instance
   Σ-level : ∀ {i j} {n : ℕ₋₂} {A : Type i} {P : A → Type j}
     → has-level n A → ((x : A) → has-level n (P x))
       → has-level n (Σ A P)

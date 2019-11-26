@@ -6,6 +6,7 @@ open import lib.types.Pi
 open import lib.types.Paths
 open import lib.types.Unit
 open import lib.types.Empty
+open import lib.types.Coproduct
 
 module lib.Equivalence2 where
 
@@ -44,7 +45,7 @@ is-contr-map {A = A} {B = B} f = (y : B) → is-contr (hfiber f y)
 equiv-is-contr-map : ∀ {i j} {A : Type i} {B : Type j} {f : A → B}
   → (is-equiv f → is-contr-map f)
 equiv-is-contr-map e y =
-   equiv-preserves-level (Σ-emap-l (_== y) (_ , e) ⁻¹)
+   equiv-preserves-level (Σ-emap-l (_== y) (_ , e) ⁻¹) ⦃ pathto-is-contr _ ⦄
 
 contr-map-is-equiv : ∀ {i j} {A : Type i} {B : Type j} {f : A → B}
   → (is-contr-map f → is-equiv f)
@@ -162,10 +163,14 @@ module _ {j} {B : Empty → Type j} where
   Σ₁-Empty = equiv (⊥-rec ∘ fst) ⊥-rec ⊥-elim (⊥-rec ∘ fst)
 
   Π₁-Empty : Π Empty B ≃ Unit
-  Π₁-Empty = equiv (cst tt) (cst ⊥-elim) (λ _ → contr-has-all-paths _ _) (λ _ → λ= ⊥-elim)
+  Π₁-Empty = equiv (cst tt) (cst ⊥-elim) (λ _ → idp) (λ _ → λ= ⊥-elim)
 
 Σ₂-Empty : ∀ {i} {A : Type i} → Σ A (λ _ → Empty) ≃ Empty
 Σ₂-Empty = equiv (⊥-rec ∘ snd) ⊥-rec ⊥-elim (⊥-rec ∘ snd)
+
+module _ {i₀ i₁ j} {A₀ : Type i₀} {A₁ : Type i₁} {B : Coprod A₀ A₁ → Type j} where
+  Π₁-Coprod : Π (Coprod A₀ A₁) B ≃ Π A₀ (B ∘ inl) × Π A₁ (B ∘ inr)
+  Π₁-Coprod = equiv (λ f → (f ∘ inl , f ∘ inr)) (λ {g → ⊔-elim (g .fst) (g .snd)}) (λ _ → idp) (λ f → λ= λ z → ⊔-elim {C = λ z → Coprod-elim (f ∘ inl) (f ∘ inr) z == f z} (λ _ → idp) (λ _ → idp) z)
 
 {- Fiberwise equivalence -}
 module _ {i j k} {A : Type i} {P : A → Type j} {Q : A → Type k}

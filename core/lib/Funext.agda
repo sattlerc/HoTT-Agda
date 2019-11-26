@@ -41,7 +41,7 @@ module FunextNonDep {j} {B : Type j} {f g : A → B} (h : f ∼ g)
       fst-is-equiv =
         is-eq fst (λ z → (z , (z , idp))) (λ _ → idp)
           (λ x' → ap (λ x → (_ , x))
-                        (contr-has-all-paths _ _))
+                        (contr-has-all-paths ⦃ pathfrom-is-contr _ ⦄ _ _))
 
       comp-fst-is-equiv : is-equiv (λ (f : A → free-path-space-B)
                                      → (λ x → fst (f x)))

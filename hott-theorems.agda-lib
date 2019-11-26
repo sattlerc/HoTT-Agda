@@ -1,3 +1,3 @@
-name: hott-theorems
-depend: hott-core
+name: hott-theorems-no-instance
+depend: hott-core-no-instance
 include: theorems

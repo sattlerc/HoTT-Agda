@@ -155,21 +155,21 @@ module _ {i} where
           unique-path idp = !-inv-l (contr-path p _)
 
     {- If [A] has level [n], then so does [x == y] for [x y : A] -}
-    instance
+--    instance
       =-preserves-level : {n : ℕ₋₂} {x y : A}
         → has-level n A → has-level n (x == y)
       =-preserves-level {⟨-2⟩} = =-preserves-contr
       =-preserves-level {S n} {x} {y} p = raise-level n (has-level-apply p x y)
 
     {- The type of paths from a fixed point is contractible -}
-    instance
+--    instance
       pathfrom-is-contr : (x : A) → is-contr (Σ A (λ t → x == t))
       pathfrom-is-contr x = has-level-in ((x , idp) , pathfrom-unique-path) where
         pathfrom-unique-path : {u : A} (pp : Σ A (λ t → u == t)) → (u , idp) == pp
         pathfrom-unique-path (u , idp) = idp
 
     {- The type of paths to a fixed point is contractible -}
-    instance
+--    instance
       pathto-is-contr : (x : A) → is-contr (Σ A (λ t → t == x))
       pathto-is-contr x = has-level-in ((x , idp) , pathto-unique-path) where
         pathto-unique-path : {u : A} (pp : Σ A (λ t → t == u)) → (u , idp) == pp

@@ -174,15 +174,15 @@ abstract
       , (λ e → pair= (λ= (λ _ → contr-path pB _))
                      (from-transp is-equiv _ (prop-path is-equiv-is-prop _ _))))
 
-instance
+module _ where -- instance
   ≃-level : ∀ {i j} {n : ℕ₋₂} {A : Type i} {B : Type j}
     → (has-level n A → has-level n B → has-level n (A ≃ B))
   ≃-level {n = ⟨-2⟩} = ≃-contr
-  ≃-level {n = S n} pA pB = Σ-level ⟨⟩ ⟨⟩ where instance _ = pA; _ = pB
+  ≃-level {n = S n} pA pB = Σ-level (Π-level (λ _ → pB)) (λ x → is-equiv-level) -- where instance _ = pA; _ = pB
 
   universe-=-level : ∀ {i} {n : ℕ₋₂} {A B : Type i}
     → (has-level n A → has-level n B → has-level n (A == B))
-  universe-=-level pA pB = equiv-preserves-level ua-equiv where instance _ = pA; _ = pB
+  universe-=-level pA pB = equiv-preserves-level ua-equiv ⦃ ≃-level pA pB ⦄ -- where instance _ = pA; _ = pB
 
 module _ {i} {n} where
   private
@@ -214,13 +214,13 @@ module _ {i} {n} where
     nType-∙ = Subtype-∙ prop
 
 abstract
- instance
+ -- instance
   _-Type-level_ : (n : ℕ₋₂) (i : ULevel)
     → has-level (S n) (n -Type i)
   (n -Type-level i) = has-level-in (λ { (A , pA) (B , pB) → aux A B pA pB}) where
 
     aux : (A B : Type i) (pA : has-level n A) (pB : has-level n B) → has-level n ((A , pA) == (B , pB))
-    aux A B pA pB = equiv-preserves-level (nType=-econv (A , ⟨⟩) (B , ⟨⟩)) where instance _ = pA; _ = pB
+    aux A B pA pB = equiv-preserves-level (nType=-econv (A , pA) (B , pB)) ⦃ universe-=-level pA pB ⦄ -- where instance _ = pA; _ = pB
 
 hProp-is-set : (i : ULevel) → is-set (hProp i)
 hProp-is-set i = -1 -Type-level i

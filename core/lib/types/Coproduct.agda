@@ -65,7 +65,7 @@ module _ {i j} {A : Type i} {B : Type j} where
   inr≠inl : (b₁ : B) (a₂ : A) → (inr b₁ ≠ inl a₂)
   inr≠inl a₁ b₂ p = lower $ Coprod=-in p
 
-  instance
+  module _ where -- instance
     ⊔-level : ∀ {n} → has-level (S (S n)) A → has-level (S (S n)) B
               → has-level (S (S n)) (Coprod A B)
     ⊔-level {n} pA pB = has-level-in (⊔-level-aux pA pB) where

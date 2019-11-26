@@ -9,7 +9,7 @@ module lib.Relation2 where
 
 module _ {i} {P : Type i} where
 
-  instance
+  -- instance
     Dec-level : ∀ {n} → has-level (S n) P → has-level (S n) (Dec P)
     Dec-level {n} pP = has-level-in Dec-level-aux where
 
@@ -18,4 +18,4 @@ module _ {i} {P : Type i} where
       Dec-level-aux (inl p) (inr ¬p) = ⊥-rec $ ¬p p
       Dec-level-aux (inr ¬p) (inl p) = ⊥-rec $ ¬p p
       Dec-level-aux (inr ¬p₁) (inr ¬p₂) = equiv-preserves-level (inr=inr-equiv ¬p₁ ¬p₂ ⁻¹)
-        {{has-level-apply (prop-has-level-S ⟨⟩) ¬p₁ ¬p₂}}
+        {{has-level-apply (prop-has-level-S (Π-level λ _ → ⊥-level)) ¬p₁ ¬p₂}}

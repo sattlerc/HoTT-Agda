@@ -18,7 +18,7 @@ lift-equiv = equiv lift lower (λ _ → idp) (λ _ → idp)
 
 -- [lower-equiv] is in Equivalences.agda
 
-instance
+module _ where -- instance
   Lift-level : ∀ {i j} {A : Type i} {n : ℕ₋₂}
     → has-level n A → has-level n (Lift {j = j} A)
   Lift-level p = equiv-preserves-level lift-equiv {{p}}

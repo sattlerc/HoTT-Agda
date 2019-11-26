@@ -7,7 +7,7 @@ open import lib.types.Paths
 
 module lib.types.Pi where
 
-instance
+module _ where -- instance
   Π-level : ∀ {i j} {A : Type i} {B : A → Type j} {n : ℕ₋₂}
     → ((x : A) → has-level n (B x)) → has-level n (Π A B)
   Π-level {n = ⟨-2⟩} p = has-level-in ((λ x → contr-center (p x)) , lemma)
