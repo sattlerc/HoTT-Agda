@@ -73,11 +73,12 @@ module _ {i} {j} {A : Type i} {B : Type j} where
   and a proof that it’s an inverse (you don’t need the adj part).
   [is-eq] is a very, very bad name.
   -}
-  is-eq : (f : A → B)
-    (g : B → A) (f-g : (b : B) → f (g b) == b)
-    (g-f : (a : A) → g (f a) == a) → is-equiv f
-  is-eq f g f-g g-f =
-   record {g = g; f-g = f-g'; g-f = g-f; adj = adj} where
+  module _
+   (f : A → B)
+   (g : B → A) (f-g : (b : B) → f (g b) == b)
+   (g-f : (a : A) → g (f a) == a) where
+
+   private
     abstract
      f-g' : (b : B) → f (g b) == b
      f-g' b = ! (ap (f ∘ g) (f-g b)) ∙ ap f (g-f (g b)) ∙ f-g b
@@ -107,6 +108,13 @@ module _ {i} {j} {A : Type i} {B : Type j} where
           =⟨ ∘-ap g f (g-f a) ∙ htpy-natural-app=idf g-f a
              |in-ctx (λ q → ap f q ∙ f-g (f a)) ⟩
         ap f (g-f (g (f a))) ∙ f-g (f a) =∎
+
+   is-eq : is-equiv f
+   is-eq = λ where
+      .is-equiv.g → g
+      .is-equiv.f-g → f-g'
+      .is-equiv.g-f → g-f
+      .is-equiv.adj → adj where
 
 infix 30 _≃_
 
