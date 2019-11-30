@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --rewriting #-}
+{-# OPTIONS --without-K --rewriting --postfix-projections #-}
 
 open import lib.Basics
 
@@ -188,7 +188,17 @@ module _ where -- instance
 
 ×-isemap-l : ∀ {i₀ i₁ j} {A₀ : Type i₀} {A₁ : Type i₁} (B : Type j) {h : A₀ → A₁}
   → is-equiv h → is-equiv (×-fmap-l B h)
-×-isemap-l B = Σ-isemap-l (λ _ → B)
+×-isemap-l {A₀ = A₀} {A₁} B {h} e = is-eq f g f-g g-f where
+  f = ×-fmap-l B h
+
+  g : A₁ × B → A₀ × B
+  g (b , s) = (is-equiv.g e b , s)
+
+  f-g : ∀ y → f (g y) == y
+  f-g (b , s) = pair×= (is-equiv.f-g e b) idp
+
+  g-f : ∀ x → g (f x) == x
+  g-f (a , r) = pair×= (is-equiv.g-f e a) idp
 
 Σ-emap-l : ∀ {i j k} {A : Type i} {B : Type j} (P : B → Type k)
   → (e : A ≃ B) → (Σ A (P ∘ –> e) ≃ Σ B P)
@@ -196,7 +206,7 @@ module _ where -- instance
 
 ×-emap-l : ∀ {i₀ i₁ j} {A₀ : Type i₀} {A₁ : Type i₁} (B : Type j)
   → (e : A₀ ≃ A₁) → (A₀ × B ≃ A₁ × B)
-×-emap-l B = Σ-emap-l (λ _ → B)
+×-emap-l B (f , e) = _ , ×-isemap-l B e
 
 Σ-fmap-r : ∀ {i j k} {A : Type i} {B : A → Type j} {C : A → Type k}
   → (∀ x → B x → C x) → (Σ A B → Σ A C)
@@ -484,14 +494,25 @@ pair×=-split-r idp idp = idp
 
 -- Commutativity of products and derivatives.
 module _ {i j} {A : Type i} {B : Type j} where
-
   ×-comm : A × B ≃ B × A
-  ×-comm = equiv ×-swap ×-swap (λ _ → idp) (λ _ → idp)
+  ×-comm .fst = ×-swap
+  ×-comm .snd .is-equiv.g = ×-swap
+  ×-comm .snd .is-equiv.f-g _ = idp
+  ×-comm .snd .is-equiv.g-f _ = idp
+  ×-comm .snd .is-equiv.adj _ = idp
 
 module _ {i j k} {A : Type i} {B : A → Type j} {C : A → Type k} where
   Σ₂-×-comm : Σ (Σ A B) (λ ab → C (fst ab)) ≃ Σ (Σ A C) (λ ac → B (fst ac))
-  Σ₂-×-comm = Σ-assoc ⁻¹ ∘e Σ-emap-r (λ a → ×-comm) ∘e Σ-assoc
+  Σ₂-×-comm .fst ((a , b) , c) = ((a , c) , b)
+  Σ₂-×-comm .snd .is-equiv.g ((a , c) , b) = ((a , b) , c)
+  Σ₂-×-comm .snd .is-equiv.f-g _ = idp
+  Σ₂-×-comm .snd .is-equiv.g-f _ = idp
+  Σ₂-×-comm .snd .is-equiv.adj _ = idp
 
 module _ {i j k} {A : Type i} {B : Type j} {C : A → B → Type k} where
   Σ₁-×-comm : Σ A (λ a → Σ B (λ b → C a b)) ≃ Σ B (λ b → Σ A (λ a → C a b))
-  Σ₁-×-comm = Σ-assoc ∘e Σ-emap-l _ ×-comm ∘e Σ-assoc ⁻¹
+  Σ₁-×-comm .fst (a , (b , c)) = (b , (a , c))
+  Σ₁-×-comm .snd .is-equiv.g (b , (a , c)) = (a , (b , c))
+  Σ₁-×-comm .snd .is-equiv.f-g _ = idp
+  Σ₁-×-comm .snd .is-equiv.g-f _ = idp
+  Σ₁-×-comm .snd .is-equiv.adj _ = idp

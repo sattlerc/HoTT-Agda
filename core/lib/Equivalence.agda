@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --rewriting #-}
+{-# OPTIONS --without-K --rewriting --postfix-projections #-}
 
 open import lib.Base
 open import lib.NType
@@ -49,23 +49,26 @@ module _ {i} {j} {A : Type i} {B : Type j} where
       g-f : (a : A) → g (f a) == a
       adj : (a : A) → ap f (g-f a) == f-g (f a)
 
+    adj'' : (b : B) → ap g (f-g b) == g-f (g b)
+    adj'' b = anti-whisker-left (ap g (f-g (f (g b)))) $ ! $
+      ap g (f-g (f (g b))) ∙ g-f (g b)
+        =⟨ ! $ htpy-natural-app=idf f-g b |in-ctx (λ p → ap g p ∙ g-f (g b)) ⟩
+      ap g (ap (f ∘ g) (f-g b)) ∙ g-f (g b)
+        =⟨ ! $ ap-∘ g (f ∘ g) (f-g b) |in-ctx (λ p → p ∙ g-f (g b)) ⟩
+      ap (g ∘ f ∘ g) (f-g b) ∙ g-f (g b)
+        =⟨ htpy-natural (g-f ∘ g) (f-g b) ⟩
+      g-f (g (f (g b))) ∙ ap g (f-g b)
+        =⟨ ! $ htpy-natural-app=idf g-f (g b) |in-ctx (λ p → p ∙ ap g (f-g b)) ⟩
+      ap (g ∘ f) (g-f (g b)) ∙ ap g (f-g b)
+        =⟨ ap-∘ g f (g-f (g b)) |in-ctx (λ p → p ∙ ap g (f-g b)) ⟩
+      ap g (ap f (g-f (g b))) ∙ ap g (f-g b)
+        =⟨ adj (g b) |in-ctx (λ p → ap g p ∙ ap g (f-g b)) ⟩
+      ap g (f-g (f (g b))) ∙ ap g (f-g b)
+        =∎
+
     abstract
       adj' : (b : B) → ap g (f-g b) == g-f (g b)
-      adj' b = anti-whisker-left (ap g (f-g (f (g b)))) $ ! $
-        ap g (f-g (f (g b))) ∙ g-f (g b)
-          =⟨ ! $ htpy-natural-app=idf f-g b |in-ctx (λ p → ap g p ∙ g-f (g b)) ⟩
-        ap g (ap (f ∘ g) (f-g b)) ∙ g-f (g b)
-          =⟨ ! $ ap-∘ g (f ∘ g) (f-g b) |in-ctx (λ p → p ∙ g-f (g b)) ⟩
-        ap (g ∘ f ∘ g) (f-g b) ∙ g-f (g b)
-          =⟨ htpy-natural (g-f ∘ g) (f-g b) ⟩
-        g-f (g (f (g b))) ∙ ap g (f-g b)
-          =⟨ ! $ htpy-natural-app=idf g-f (g b) |in-ctx (λ p → p ∙ ap g (f-g b)) ⟩
-        ap (g ∘ f) (g-f (g b)) ∙ ap g (f-g b)
-          =⟨ ap-∘ g f (g-f (g b)) |in-ctx (λ p → p ∙ ap g (f-g b)) ⟩
-        ap g (ap f (g-f (g b))) ∙ ap g (f-g b)
-          =⟨ adj (g b) |in-ctx (λ p → ap g p ∙ ap g (f-g b)) ⟩
-        ap g (f-g (f (g b))) ∙ ap g (f-g b)
-          =∎
+      adj' = adj''
 
 
   {-
@@ -209,6 +212,44 @@ _∘ise_ : ∀ {i j k} {A : Type i} {B : Type j} {C : Type k}
   → is-equiv g → is-equiv f → is-equiv (g ∘ f)
 i1 ∘ise i2 = snd ((_ , i1) ∘e (_ , i2))
 
+-- Computational.
+infixr 80 _∘e'_
+
+_∘e'_ : ∀ {i j k} {A : Type i} {B : Type j} {C : Type k}
+  → B ≃ C → A ≃ B → A ≃ C
+e1 ∘e' e2 = λ where
+    .fst → f
+    .snd .is-equiv.g → g
+    .snd .is-equiv.f-g → f-g
+    .snd .is-equiv.g-f → g-f
+    .snd .is-equiv.adj → adj
+  where
+    f = –> e1 ∘ –> e2
+    g = <– e2 ∘ <– e1
+
+    f-g : ∀ c → f (g c) == c
+    f-g c = ap (–> e1) (<–-inv-r e2 (<– e1 c)) ∙ <–-inv-r e1 c
+    g-f : ∀ a → g (f a) == a
+    g-f a = ap (<– e2) (<–-inv-l e1 (–> e2 a)) ∙ <–-inv-l e2 a
+    adj : ∀ a → ap f (g-f a) == f-g (f a)
+    adj a =
+      ap (–> e1 ∘ –> e2) (ap (<– e2) (<–-inv-l e1 (–> e2 a)) ∙ <–-inv-l e2 a)
+          =⟨ ap-∘ (–> e1) (–> e2) (ap (<– e2) (<–-inv-l e1 (–> e2 a)) ∙ <–-inv-l e2 a) ⟩
+      ap (–> e1) (ap (–> e2) (ap (<– e2) (<–-inv-l e1 (–> e2 a)) ∙ <–-inv-l e2 a))
+          =⟨ ap-∙ (–> e2) (ap (<– e2) (<–-inv-l e1 (–> e2 a))) (<–-inv-l e2 a)  |in-ctx ap (–> e1) ⟩
+      ap (–> e1) (ap (–> e2) (ap (<– e2) (<–-inv-l e1 (–> e2 a))) ∙ ap (–> e2) (<–-inv-l e2 a))
+          =⟨ ! (ap-∘ (–> e2) (<– e2) (<–-inv-l e1 (–> e2 a))) ∙2 <–-inv-adj e2 a |in-ctx ap (–> e1) ⟩
+      ap (–> e1) (ap (–> e2 ∘ <– e2) (<–-inv-l e1 (–> e2 a)) ∙ <–-inv-r e2 (–> e2 a))
+          =⟨ htpy-natural (<–-inv-r e2) (<–-inv-l e1 (–> e2 a))    |in-ctx ap (–> e1) ⟩
+      ap (–> e1) (<–-inv-r e2 (<– e1 ((–> e1 ∘ –> e2) a)) ∙ ap (λ z → z) (<–-inv-l e1 (–> e2 a)))
+          =⟨ <–-inv-r e2 (<– e1 ((–> e1 ∘ –> e2) a)) ∙ₗ ap-idf (<–-inv-l e1 (–> e2 a)) |in-ctx ap (–> e1) ⟩
+      ap (–> e1) (<–-inv-r e2 (<– e1 ((–> e1 ∘ –> e2) a)) ∙ <–-inv-l e1 (–> e2 a))
+          =⟨ ap-∙ (–> e1) (<–-inv-r e2 (<– e1 ((–> e1 ∘ –> e2) a))) (<–-inv-l e1 (–> e2 a)) ⟩
+      ap (–> e1) (<–-inv-r e2 (<– e1 ((–> e1 ∘ –> e2) a))) ∙ ap (–> e1) (<–-inv-l e1 (–> e2 a))
+          =⟨  ap (–> e1) (<–-inv-r e2 (<– e1 ((–> e1 ∘ –> e2) a))) ∙ₗ (<–-inv-adj e1 (–> e2 a)) ⟩
+      ap (–> e1) (<–-inv-r e2 (<– e1 ((–> e1 ∘ –> e2) a))) ∙ <–-inv-r e1 ((–> e1 ∘ –> e2) a)
+          =∎
+
 is-equiv-inverse : ∀ {i j} {A : Type i} {B : Type j} {f : A → B}
   → (f-is-equiv : is-equiv f) → is-equiv (is-equiv.g f-is-equiv)
 is-equiv-inverse {f = g} ise = record { g = _ ; M } where
@@ -225,6 +266,19 @@ is-equiv-inverse {f = g} ise = record { g = _ ; M } where
 infix 120 _⁻¹
 _⁻¹ : ∀ {i j} {A : Type i} {B : Type j} → (A ≃ B) → (B ≃ A)
 (_ , ise) ⁻¹ = (is-equiv.g ise , is-equiv-inverse ise)
+
+-- Computational.
+infix 120 _⁻¹'
+_⁻¹' : ∀ {i j} {A : Type i} {B : Type j} → (A ≃ B) → (B ≃ A)
+(f , e) ⁻¹' = λ where
+  .fst → g
+  .snd .is-equiv.g → f
+  .snd .is-equiv.f-g → g-f
+  .snd .is-equiv.g-f → f-g
+  .snd .is-equiv.adj → adj'' where
+  open is-equiv e
+
+-- (is-equiv.g ise , is-equiv-inverse ise) 
 
 {- Equational reasoning for equivalences -}
 infix 15 _≃∎
@@ -307,31 +361,58 @@ abstract
 -}
 module _ {j} {B : Unit → Type j} where
   Σ₁-Unit : Σ Unit B ≃ B unit
-  Σ₁-Unit = equiv (λ {(unit , b) → b}) (λ b → (unit , b)) (λ _ → idp) (λ _ → idp)
+  Σ₁-Unit .fst (unit , b) = b
+  Σ₁-Unit .snd .is-equiv.g b = (unit , b)
+  Σ₁-Unit .snd .is-equiv.f-g b = idp
+  Σ₁-Unit .snd .is-equiv.g-f (unit , b) = idp
+  Σ₁-Unit .snd .is-equiv.adj (unit , b) = idp
 
   Π₁-Unit : Π Unit B ≃ B unit
-  Π₁-Unit = equiv (λ f → f unit) (λ b _ → b) (λ _ → idp) (λ _ → idp)
+  Π₁-Unit .fst f = f unit
+  Π₁-Unit .snd .is-equiv.g b unit = b
+  Π₁-Unit .snd .is-equiv.f-g b = idp
+  Π₁-Unit .snd .is-equiv.g-f f = idp
+  Π₁-Unit .snd .is-equiv.adj f = idp
 
 module _ {i} {A : Type i} where
   Σ₂-Unit : Σ A (λ _ → Unit) ≃ A
-  Σ₂-Unit = equiv fst (λ a → (a , unit)) (λ _ → idp) (λ _ → idp)
+  Σ₂-Unit .fst (a , unit) = a
+  Σ₂-Unit .snd .is-equiv.g a = (a , unit)
+  Σ₂-Unit .snd .is-equiv.f-g a = idp
+  Σ₂-Unit .snd .is-equiv.g-f (a , unit) = idp
+  Σ₂-Unit .snd .is-equiv.adj (a , unit) = idp
 
   Π₂-Unit : Π A (λ _ → Unit) ≃ Unit
-  Π₂-Unit = equiv (λ _ → unit) (λ _ _ → unit) (λ _ → idp) (λ _ → idp)
+  Π₂-Unit .fst f = unit
+  Π₂-Unit .snd .is-equiv.g unit a = unit
+  Π₂-Unit .snd .is-equiv.f-g unit = idp
+  Π₂-Unit .snd .is-equiv.g-f f = idp
+  Π₂-Unit .snd .is-equiv.adj f = idp
 
 module _ {i j k} {A : Type i} {B : A → Type j} {C : (a : A) → B a → Type k} where
   Σ-assoc : Σ (Σ A B) (uncurry C) ≃ Σ A (λ a → Σ (B a) (C a))
-  Σ-assoc = equiv (λ {((a , b) , c) → (a , (b , c))})
-                  (λ {(a , (b , c)) → ((a , b) , c)}) (λ _ → idp) (λ _ → idp)
+  Σ-assoc .fst ((a , b) , c) = (a , (b , c))
+  Σ-assoc .snd .is-equiv.g (a , (b , c)) = ((a , b) , c)
+  Σ-assoc .snd .is-equiv.f-g _ = idp
+  Σ-assoc .snd .is-equiv.g-f _ = idp
+  Σ-assoc .snd .is-equiv.adj _ = idp
 
   curry-equiv : Π (Σ A B) (uncurry C) ≃ Π A (λ a → Π (B a) (C a))
-  curry-equiv = equiv curry uncurry (λ _ → idp) (λ _ → idp)
+  curry-equiv .fst f a b = f (a , b)
+  curry-equiv .snd .is-equiv.g g (a , b) = g a b
+  curry-equiv .snd .is-equiv.f-g g = idp
+  curry-equiv .snd .is-equiv.g-f f = idp
+  curry-equiv .snd .is-equiv.adj f = idp
 
   {- The type-theoretic axiom of choice -}
   choice : Π A (λ a → Σ (B a) (λ b → C a b)) ≃ Σ (Π A B) (λ g → Π A (λ a → C a (g a)))
-  choice = equiv f g (λ _ → idp) (λ _ → idp)
-    where f = λ c → ((λ a → fst (c a)) , (λ a → snd (c a)))
-          g = λ d → (λ a → (fst d a , snd d a))
+  choice .fst h .fst a = h a .fst
+  choice .fst h .snd a = h a .snd
+  choice .snd .is-equiv.g k a .fst = k .fst a
+  choice .snd .is-equiv.g k a .snd = k .snd a
+  choice .snd .is-equiv.f-g _ = idp
+  choice .snd .is-equiv.g-f _ = idp
+  choice .snd .is-equiv.adj _ = idp
 
 ∼-preserves-equiv : ∀ {i j} {A : Type i} {B : Type j} {f₀ f₁ : A → B}
   → f₀ ∼ f₁ → is-equiv f₀ → is-equiv f₁
