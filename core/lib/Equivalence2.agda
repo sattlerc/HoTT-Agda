@@ -172,6 +172,14 @@ module _ {i₀ i₁ j} {A₀ : Type i₀} {A₁ : Type i₁} {B : Coprod A₀ A�
   Π₁-Coprod : Π (Coprod A₀ A₁) B ≃ Π A₀ (B ∘ inl) × Π A₁ (B ∘ inr)
   Π₁-Coprod = equiv (λ f → (f ∘ inl , f ∘ inr)) (λ {g → ⊔-elim (g .fst) (g .snd)}) (λ _ → idp) (λ f → λ= λ z → ⊔-elim {C = λ z → Coprod-elim (f ∘ inl) (f ∘ inr) z == f z} (λ _ → idp) (λ _ → idp) z)
 
+module _ {i₀ i₁ j₀ j₁} {A₀ : Type i₀} {A₁ : Type i₁} {B₀ : Type j₀} {B₁ : Type j₁} where
+  Coprod-emap : (A₀ ≃ A₁) → (B₀ ≃ B₁) → (Coprod A₀ B₀ ≃ Coprod A₁ B₁)
+  Coprod-emap u v = equiv
+    (⊔-fmap (–> u) (–> v))
+    (⊔-fmap (<– u) (<– v))
+    (λ { (inl a₁) → ap inl (<–-inv-r u _) ; (inr b₁) → ap inr (<–-inv-r v _)})
+    (λ { (inl a₀) → ap inl (<–-inv-l u _) ; (inr b₀) → ap inr (<–-inv-l v _)})
+
 {- Fiberwise equivalence -}
 module _ {i j k} {A : Type i} {P : A → Type j} {Q : A → Type k}
   (f : ∀ x → P x → Q x) where
