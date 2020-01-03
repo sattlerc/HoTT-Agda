@@ -113,11 +113,10 @@ module _ {i} {j} {A : Type i} {B : Type j} where
         ap f (g-f (g (f a))) ∙ f-g (f a) =∎
 
    is-eq : is-equiv f
-   is-eq = λ where
-      .is-equiv.g → g
-      .is-equiv.f-g → f-g'
-      .is-equiv.g-f → g-f
-      .is-equiv.adj → adj where
+   is-eq .is-equiv.g = g
+   is-eq .is-equiv.f-g = f-g'
+   is-eq .is-equiv.g-f = g-f
+   is-eq .is-equiv.adj = adj
 
 infix 30 _≃_
 
@@ -165,7 +164,10 @@ module _ {i} {j} {A : Type i} {B : Type j} where
   equiv-is-inj ise = –>-is-inj (_ , ise)
 
 idf-is-equiv : ∀ {i} (A : Type i) → is-equiv (idf A)
-idf-is-equiv A = record {g = idf A; f-g = (λ _ → idp); g-f = (λ _ → idp); adj = (λ _ → idp)}
+idf-is-equiv A .is-equiv.g = idf _
+idf-is-equiv A .is-equiv.f-g _ = idp
+idf-is-equiv A .is-equiv.g-f _ = idp
+idf-is-equiv A .is-equiv.adj _ = idp
 
 ide : ∀ {i} (A : Type i) → A ≃ A
 ide A = idf A , idf-is-equiv A
@@ -179,33 +181,16 @@ infixr 80 _∘ise_
 
 _∘e_ : ∀ {i j k} {A : Type i} {B : Type j} {C : Type k}
   → B ≃ C → A ≃ B → A ≃ C
-e1 ∘e e2 = (–> e1 ∘ –> e2) , record {g = (<– e2 ∘ <– e1); M} where
-  module M where
-    f = –> e1 ∘ –> e2
-    g = <– e2 ∘ <– e1
-    abstract
-      f-g : ∀ c → f (g c) == c
-      f-g c = ap (–> e1) (<–-inv-r e2 (<– e1 c)) ∙ <–-inv-r e1 c
-      g-f : ∀ a → g (f a) == a
-      g-f a = ap (<– e2) (<–-inv-l e1 (–> e2 a)) ∙ <–-inv-l e2 a
-      adj : ∀ a → ap f (g-f a) == f-g (f a)
-      adj a =
-        ap (–> e1 ∘ –> e2) (ap (<– e2) (<–-inv-l e1 (–> e2 a)) ∙ <–-inv-l e2 a)
-            =⟨ ap-∘ (–> e1) (–> e2) (ap (<– e2) (<–-inv-l e1 (–> e2 a)) ∙ <–-inv-l e2 a) ⟩
-        ap (–> e1) (ap (–> e2) (ap (<– e2) (<–-inv-l e1 (–> e2 a)) ∙ <–-inv-l e2 a))
-            =⟨ ap-∙ (–> e2) (ap (<– e2) (<–-inv-l e1 (–> e2 a))) (<–-inv-l e2 a)  |in-ctx ap (–> e1) ⟩
-        ap (–> e1) (ap (–> e2) (ap (<– e2) (<–-inv-l e1 (–> e2 a))) ∙ ap (–> e2) (<–-inv-l e2 a))
-            =⟨ ! (ap-∘ (–> e2) (<– e2) (<–-inv-l e1 (–> e2 a))) ∙2 <–-inv-adj e2 a |in-ctx ap (–> e1) ⟩
-        ap (–> e1) (ap (–> e2 ∘ <– e2) (<–-inv-l e1 (–> e2 a)) ∙ <–-inv-r e2 (–> e2 a))
-            =⟨ htpy-natural (<–-inv-r e2) (<–-inv-l e1 (–> e2 a))    |in-ctx ap (–> e1) ⟩
-        ap (–> e1) (<–-inv-r e2 (<– e1 ((–> e1 ∘ –> e2) a)) ∙ ap (λ z → z) (<–-inv-l e1 (–> e2 a)))
-            =⟨ <–-inv-r e2 (<– e1 ((–> e1 ∘ –> e2) a)) ∙ₗ ap-idf (<–-inv-l e1 (–> e2 a)) |in-ctx ap (–> e1) ⟩
-        ap (–> e1) (<–-inv-r e2 (<– e1 ((–> e1 ∘ –> e2) a)) ∙ <–-inv-l e1 (–> e2 a))
-            =⟨ ap-∙ (–> e1) (<–-inv-r e2 (<– e1 ((–> e1 ∘ –> e2) a))) (<–-inv-l e1 (–> e2 a)) ⟩
-        ap (–> e1) (<–-inv-r e2 (<– e1 ((–> e1 ∘ –> e2) a))) ∙ ap (–> e1) (<–-inv-l e1 (–> e2 a))
-            =⟨  ap (–> e1) (<–-inv-r e2 (<– e1 ((–> e1 ∘ –> e2) a))) ∙ₗ (<–-inv-adj e1 (–> e2 a)) ⟩
-        ap (–> e1) (<–-inv-r e2 (<– e1 ((–> e1 ∘ –> e2) a))) ∙ <–-inv-r e1 ((–> e1 ∘ –> e2) a)
-            =∎
+e1 ∘e e2 = equiv f g f-g g-f where
+  f = –> e1 ∘ –> e2
+  g = <– e2 ∘ <– e1
+
+  abstract
+    f-g : ∀ c → f (g c) == c
+    f-g c = ap (–> e1) (<–-inv-r e2 (<– e1 c)) ∙ <–-inv-r e1 c
+
+    g-f : ∀ a → g (f a) == a
+    g-f a = ap (<– e2) (<–-inv-l e1 (–> e2 a)) ∙ <–-inv-l e2 a
 
 _∘ise_ : ∀ {i j k} {A : Type i} {B : Type j} {C : Type k}
   {f : A → B} {g : B → C}
@@ -252,16 +237,7 @@ e1 ∘e' e2 = λ where
 
 is-equiv-inverse : ∀ {i j} {A : Type i} {B : Type j} {f : A → B}
   → (f-is-equiv : is-equiv f) → is-equiv (is-equiv.g f-is-equiv)
-is-equiv-inverse {f = g} ise = record { g = _ ; M } where
-  module M where
-    f = is-equiv.g ise
-    abstract
-      f-g : ∀ b → f (g b) == b
-      f-g = is-equiv.g-f ise
-      g-f : ∀ a → g (f a) == a
-      g-f = is-equiv.f-g ise
-      adj : ∀ a → ap f (g-f a) == f-g (f a)
-      adj = is-equiv.adj' ise
+is-equiv-inverse {f = f} ise = is-eq (<– (_ , ise)) f (<–-inv-l (_ , ise)) (<–-inv-r (_ , ise)) where
 
 infix 120 _⁻¹
 _⁻¹ : ∀ {i j} {A : Type i} {B : Type j} → (A ≃ B) → (B ≃ A)
